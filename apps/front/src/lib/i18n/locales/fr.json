@@ -1,0 +1,241 @@
+{
+  "common": {
+    "other": "Autre",
+    "courses": "Cours",
+    "preview": "Aperçu",
+    "listen": "Écouter",
+    "youtube": "YouTube",
+    "language": "Langue",
+    "viewAll": "Voir tout",
+    "events": "Événements",
+    "podcasts": "Podcasts",
+    "search": "Rechercher",
+    "learnMore": "En savoir plus",
+    "visitChannel": "Visiter la chaîne",
+    "becomeprovider": "Devenir créateur",
+    "browseCourses": "Parcourir les cours",
+    "exploreCourses": "Explorer les cours",
+    "browseEvents": "Parcourir les événements",
+    "exploreAllServices": "Explorer tous les services",
+    "whatDoYouWantToLearn": "Que voulez-vous apprendre?"
+  },
+  "home": {
+    "roadmap": {
+      "badgeNew": "Nouvelle fonctionnalité",
+      "title": "Parcours d’apprentissage",
+      "intro": "Parcourez votre trajectoire d’apprentissage avec des parcours conçus par des experts. Suivez des étapes structurées du niveau débutant à avancé.",
+      "features": {
+        "structured": {
+          "title": "Progression structurée",
+          "desc": "Des parcours clairs, étape par étape, conçus par des experts du secteur"
+        },
+        "community": {
+          "title": "Porté par la communauté",
+          "desc": "Apprenez aux côtés d’autres personnes suivant le même parcours et partagez vos expériences"
+        },
+        "track": {
+          "title": "Suivi de progression",
+          "desc": "Suivez vos avancées et célébrez chaque étape importante"
+        }
+      },
+      "preview": {
+        "title": "Commencez votre parcours dès aujourd’hui",
+        "desc": "Choisissez parmi divers parcours conçus par des experts. Que vous partiez de zéro ou que vous perfectionniez vos compétences, nos parcours vous guident à chaque étape.",
+        "alt": "Aperçu du parcours"
+      },
+      "actions": {
+        "explore": "Explorer les parcours"
+      }
+    },
+    "hero": {
+      "titleLine1": "Votre parcours",
+      "titleLine2": "de développement professionnel",
+      "subtitle": "Tout au même endroit",
+      "descriptionLine1": "Votre chemin, votre choix —",
+      "descriptionLine2": "l’IA de Loopskey, conçue pour vous",
+      "explore": "Explorer",
+      "categoriesTitle": "Catégories",
+      "searchNow": "Rechercher",
+      "tagPython": "Programmation Python",
+      "tagUiUx": "Conception UI/UX",
+      "tagAiMl": "IA / Apprentissage automatique",
+      "imageAlt": "Apprentissage professionnel",
+      "categories": {
+        "webDev": "Développement web",
+        "dataScience": "Science des données",
+        "design": "Design",
+        "business": "Business",
+        "marketing": "Marketing",
+        "mobileDev": "Développement mobile"
+      }
+    },
+    "categories": {
+      "title": "Catégories populaires",
+      "courses": "cours",
+      "webDev": "Développement web",
+      "design": "Design",
+      "business": "Business",
+      "marketing": "Marketing",
+      "dataScience": "Science des données",
+      "mobileDev": "Développement mobile",
+      "coursesCount_one": "{{count}} cours",
+      "coursesCount_other": "{{count}} cours",
+      "description": "Explorez notre large gamme de cours dans diverses catégories"
+    },
+    "featured": {
+      "title": "Dernier Contenu",
+      "description": "Découvrez nos ressources les plus populaires et les mieux notées",
+      "actions": {
+        "viewAllCourses": "Voir tous les cours",
+        "viewAllEvents": "Voir tous les événements",
+        "viewAllPodcasts": "Voir tous les podcasts",
+        "viewAllChannels": "Voir toutes les chaînes",
+        "viewAllRoadmaps": "Voir toutes les feuilles de route"
+      }
+    },
+    "services": {
+      "title": "Nos services",
+      "description": "Découvrez comment Loopskey peut transformer votre expérience d'apprentissage et d'enseignement avec notre plateforme éducative complète.",
+      "learning": {
+        "title": "Apprentissage complet",
+        "description": "Accédez à une vaste bibliothèque de cours, webinaires, podcasts et chaînes YouTube, le tout au même endroit. Apprenez à votre propre rythme avec des formats de contenu flexibles.",
+        "features": {
+          "feature1": "Cours à votre rythme avec accès à vie",
+          "feature2": "Quiz et devoirs interactifs",
+          "feature3": "Suivi des progrès et certificats"
+        }
+      }
+    },
+    "cta": {
+      "title": "Prêt à commencer à apprendre ?",
+      "description": "Rejoignez des milliers d'apprenants qui font déjà progresser leur carrière avec nos cours."
+    },
+    "provider": {
+      "title": "Plateforme de création",
+      "description": "Partagez votre expertise avec le monde grâce à nos puissants outils de création. Développez votre audience, monétisez votre contenu et faites une différence.",
+      "features": {
+        "feature1": "Outils intuitifs de création de cours",
+        "feature2": "Options multiples de monétisation",
+        "feature3": "Analyses et gestion des étudiants"
+      }
+    },
+    "testimonials": { "title": "Ce que disent nos utilisateurs" }
+  },
+  "nav": {
+    "home": "Accueil",
+    "courses": "Cours",
+    "services": "Notre Services",
+    "about": "À propos",
+    "contact": "Contact",
+    "login": "Connexion",
+    "signup": "Inscription",
+    "dashboard": "Tableau de bord",
+    "profile": "Profil",
+    "logout": "Déconnexion",
+    "joinForFree": "Rejoindre gratuitement",
+    "professional": "Professionnel",
+    "provider": "Créateur"
+  },
+  "footer": {
+    "description": "Votre plateforme tout-en-un pour tous vos besoins éducatifs. Découvrez, apprenez et grandissez avec nous.",
+    "explore": "Explorer",
+    "resources": "Ressources",
+    "blog": "Blog et Articles",
+    "help": "Centre d'aide",
+    "affiliates": "Programme d'affiliation",
+    "careers": "Carrières",
+    "contact": "Contactez-nous",
+    "rights": "Tous droits réservés.",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "cookies": "Politique des cookies",
+    "contactTitle": "Contactez-nous"
+  },
+  "about": {
+    "hero": {
+      "badge": "À propos de LoopsKey",
+      "title": "Un apprentissage professionnel plus intelligent, au même endroit",
+      "subtitle": "Avec LoopsKey, il est facile de trouver des ressources d’apprentissage — webinaires, conférences et cours en ligne. Recevez des recommandations d’événements, planifiez vos formations et archivez vos notes et supports.",
+      "ctaPrimary": "Explorer nos services",
+      "ctaSecondary": "Nous contacter"
+    },
+    "intro": {
+      "title": "Pourquoi LoopsKey",
+      "p1": "Avec LoopsKey, vous recevez des recommandations d’événements, vous pouvez planifier des programmes de formation et conserver vos supports et notes bien organisés.",
+      "p2": "Organisez aussi des alertes et mises à jour sur les sujets qui vous intéressent. LoopsKey aide les créateurs à promouvoir leurs événements et à obtenir des tendances anonymisées.",
+      "p3": "Les employeurs et équipes RH coordonnent mieux la formation professionnelle et suivent l’avancement de leurs collaborateurs."
+    },
+    "stats": {
+      "resources": "10k+",
+      "resourcesLabel": "Ressources d’apprentissage",
+      "learners": "50k+",
+      "learnersLabel": "Apprenants actifs",
+      "events": "3k+",
+      "eventsLabel": "Événements en direct & à la demande",
+      "providers": "1,2k+",
+      "providersLabel": "Créateurs / organismes"
+    },
+    "why": {
+      "title": "Tout ce qu’il vous faut pour apprendre et progresser",
+      "subtitle": "Choisissez votre parcours — découvrir, regarder, participer et se connecter.",
+      "items": {
+        "proMeeting": {
+          "title": "Trouver des rencontres & talks pros",
+          "desc": "Découvrez des meetups, conférences et talks pertinents avec filtres intelligents et rappels."
+        },
+        "proVideo": {
+          "title": "Regarder des vidéos professionnelles",
+          "desc": "Des vidéos de haute qualité, issues de sources fiables, adaptées à vos centres d’intérêt."
+        },
+        "learningContent": {
+          "title": "Contenus & événements d’apprentissage",
+          "desc": "Cours, webinaires, ateliers et plus — centralisés et faciles à rechercher."
+        },
+        "courses": {
+          "title": "Apprendre via des cours",
+          "desc": "Cours en autonomie ou en cohorte, suivi de progression, notes et certificats."
+        },
+        "networking": {
+          "title": "Réseautage & communauté",
+          "desc": "Suivez les créateurs, partagez vos idées, connectez-vous avec des pairs."
+        },
+        "webinars": {
+          "title": "Trouver des webinaires",
+          "desc": "Participez en direct ou en différé ; ajoutez au calendrier pour ne rien manquer."
+        }
+      }
+    },
+    "audiences": {
+      "learners": {
+        "title": "Pour les apprenants",
+        "desc": "Découverte personnalisée, alertes, notes sauvegardées et feuilles de route pour accélérer votre progression."
+      },
+      "providers": {
+        "title": "Pour les créateurs",
+        "desc": "Présentez événements et cours, touchez des audiences ciblées, accédez à des tendances anonymisées."
+      },
+      "employers": {
+        "title": "Pour les employeurs",
+        "desc": "Coordonnez la formation, suivez l’avancement et alignez les compétences sur les objectifs."
+      }
+    },
+    "cta": {
+      "title": "Construisons ensemble la meilleure plateforme de formation intelligente",
+      "subtitle": "Rejoignez LoopsKey et contribuez à une meilleure expérience d’apprentissage.",
+      "primary": "S’inscrire gratuitement",
+      "secondary": "Parler à notre équipe"
+    }
+  },
+  "services": {
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "description": "Rejoignez des milliers d’apprenants et de formateurs qui profitent déjà de notre plateforme éducative complète.",
+      "actions": {
+        "createAccount": "Créer un compte",
+        "browseCourses": "Parcourir les cours",
+        "createAccountAria": "Créer un compte",
+        "browseCoursesAria": "Parcourir les cours"
+      }
+    }
+  }
+}

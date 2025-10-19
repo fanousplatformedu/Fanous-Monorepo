@@ -1,0 +1,395 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ============== 1) Brand Tokens ============== */
+:root {
+  /* Brand palette */
+  --brand-base: #f5f5f5;
+  --brand-blue: #1f1f8e; /* primary */
+  --brand-orange: #f07915; /* accent  */
+  --base-text: #424242;
+
+  /* Neutrals & UI */
+  --ui-bg: #ffffff;
+  --ui-bg-muted: #fafafa;
+  --ui-border: #e6e6e6;
+  --ui-ring: rgba(31, 31, 142, 0.35); /* blue with alpha */
+
+  /* States */
+  --success: #16a34a;
+  --warning: #eab308;
+  --danger: #ef4444;
+  --info: #0ea5e9;
+
+  /* Radii */
+  --radius-2xs: 6px;
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-soft: 0 30px 60px -30px rgba(13, 25, 61, 0.45);
+  --shadow-sm: 0 6px 18px -8px rgba(13, 25, 61, 0.12);
+  --shadow-md: 0 12px 28px -12px rgba(13, 25, 61, 0.16);
+
+  /* Typography scale (rem) */
+  --fs-xs: 0.75rem; /* 12px */
+  --fs-sm: 0.875rem; /* 14px */
+  --fs-md: 1rem; /* 16px */
+  --fs-lg: 1.125rem; /* 18px */
+  --fs-xl: 1.25rem; /* 20px */
+  --fs-2xl: 1.5rem; /* 24px */
+  --fs-3xl: 1.875rem; /* 30px */
+  --fs-4xl: 2.25rem; /* 36px */
+  --fs-5xl: 3rem; /* 48px */
+
+  /* Line-heights */
+  --lh-tight: 1.1;
+  --lh-snug: 1.25;
+  --lh-normal: 1.5;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  --font-display: var(--font-sans);
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New";
+}
+
+/* ================ 2) Map to Tailwind/shadcn ================= */
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+  /* Fonts */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Border radius (Tailwind tokens) */
+  --radius-sm: var(--radius-xs);
+  --radius-md: var(--radius-sm);
+  --radius-lg: var(--radius-md);
+  --radius-xl: var(--radius-lg);
+
+  /* Core semantic colors (Light) */
+  --color-background: var(--ui-bg);
+  --color-foreground: var(--base-text);
+
+  --color-card: var(--ui-bg);
+  --color-card-foreground: var(--base-text);
+
+  --color-popover: var(--ui-bg);
+  --color-popover-foreground: var(--base-text);
+
+  --color-primary: var(--brand-blue);
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: var(--brand-base);
+  --color-secondary-foreground: var(--brand-blue);
+
+  --color-accent: var(--brand-orange);
+  --color-accent-foreground: #ffffff;
+
+  --color-muted: var(--ui-bg-muted);
+  --color-muted-foreground: #6b7280; /* slate-500 */
+
+  --color-destructive: var(--danger);
+  --color-ring: var(--ui-ring);
+  --color-input: var(--ui-bg);
+  --color-border: var(--ui-border);
+
+  /* Chart palette (optional) */
+  --color-chart-1: #6e59ff; /* indigo-ish */
+  --color-chart-2: #06b6d4; /* cyan   */
+  --color-chart-3: #22c55e; /* green  */
+  --color-chart-4: #f59e0b; /* amber  */
+  --color-chart-5: #ef4444; /* red    */
+
+  /* Sidebar (optional) */
+  --color-sidebar: var(--ui-bg);
+  --color-sidebar-foreground: var(--base-text);
+  --color-sidebar-primary: var(--brand-blue);
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: var(--ui-bg-muted);
+  --color-sidebar-accent-foreground: var(--base-text);
+  --color-sidebar-border: var(--ui-border);
+  --color-sidebar-ring: var(--ui-ring);
+}
+
+/* ============= 3) Dark Mode Token ============== */
+.dark {
+  --ui-bg: #0b0c10;
+  --ui-bg-muted: #0f1117;
+  --ui-border: rgba(255, 255, 255, 0.08);
+  --ui-ring: rgba(240, 121, 21, 0.45); /* orange with alpha */
+  --base-text: #f4f6f8;
+
+  /* Semantic */
+  --color-background: var(--ui-bg);
+  --color-foreground: var(--base-text);
+
+  --color-card: #0f1117;
+  --color-card-foreground: var(--base-text);
+
+  --color-popover: #0f1117;
+  --color-popover-foreground: var(--base-text);
+
+  --color-primary: var(--brand-blue);
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #151823;
+  --color-secondary-foreground: var(--base-text);
+
+  --color-accent: var(--brand-orange);
+  --color-accent-foreground: #101114;
+
+  --color-muted: #11131a;
+  --color-muted-foreground: #c5c9d3;
+
+  --color-destructive: #ef4444;
+  --color-ring: var(--ui-ring);
+  --color-input: #0f1117;
+  --color-border: var(--ui-border);
+}
+
+/* =============== 4) Base Layer =============== */
+@layer base {
+  :root {
+    --radius: var(--radius-md);
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  h1 {
+    font-size: var(--fs-5xl);
+    line-height: var(--lh-tight);
+    font-weight: 800;
+  }
+  h2 {
+    font-size: var(--fs-4xl);
+    line-height: var(--lh-tight);
+    font-weight: 800;
+  }
+  h3 {
+    font-size: var(--fs-2xl);
+    line-height: var(--lh-snug);
+    font-weight: 700;
+  }
+  h4 {
+    font-size: var(--fs-xl);
+    line-height: var(--lh-snug);
+    font-weight: 700;
+  }
+  p,
+  li,
+  input,
+  button {
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
+  }
+  small {
+    font-size: var(--fs-sm);
+  }
+}
+
+/* =============== 5) Component Tokens ================ */
+:root {
+  /* Buttons */
+  --btn-radius: var(--radius-pill);
+  --btn-shadow: var(--shadow-sm);
+
+  --btn-primary-bg: var(--brand-blue);
+  --btn-primary-fg: #fff;
+  --btn-primary-hover: #18187a;
+  --btn-primary-active: #141463;
+
+  --btn-accent-bg: var(--brand-orange);
+  --btn-accent-fg: #fff;
+  --btn-accent-hover: #d56d12;
+  --btn-accent-active: #b85f10;
+
+  --btn-outline-border: var(--ui-border);
+  --btn-outline-fg: var(--base-text);
+  --btn-outline-hover: rgba(31, 31, 142, 0.06);
+
+  /* Inputs */
+  --input-radius: 12px;
+  --input-bg: #fff;
+  --input-fg: var(--base-text);
+  --input-ph: #9ca3af;
+  --input-border: var(--ui-border);
+  --input-ring: var(--ui-ring);
+
+  /* Cards */
+  --card-radius: 16px;
+  --card-bg: var(--color-card);
+  --card-fg: var(--color-card-foreground);
+  --card-border: var(--color-border);
+  --card-shadow: var(--shadow-sm);
+}
+.dark {
+  --btn-outline-hover: rgba(240, 121, 21, 0.08);
+  --input-bg: #0f1117;
+  --input-ph: #8e95a9;
+}
+
+/* =============== 6) Components Layer ============= */
+@layer components {
+  /* Brand Buttons */
+  .btn-brand {
+    @apply inline-flex items-center justify-center font-semibold transition active:scale-[0.98];
+    border-radius: var(--btn-radius);
+    box-shadow: var(--btn-shadow);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-fg);
+    padding: 0.625rem 1rem; /* 10px 16px */
+  }
+  .btn-brand:hover {
+    background: var(--btn-primary-hover);
+  }
+  .btn-brand:active {
+    background: var(--btn-primary-active);
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center font-semibold transition active:scale-[0.98];
+    border-radius: var(--btn-radius);
+    box-shadow: var(--btn-shadow);
+    background: var(--btn-accent-bg);
+    color: var(--btn-accent-fg);
+    padding: 0.625rem 1rem;
+  }
+  .btn-accent:hover {
+    background: var(--btn-accent-hover);
+  }
+  .btn-accent:active {
+    background: var(--btn-accent-active);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center font-medium transition;
+    border-radius: var(--btn-radius);
+    padding: 0.625rem 1rem;
+    color: var(--btn-outline-fg);
+    border: 1px solid var(--btn-outline-border);
+    background: transparent;
+  }
+  .btn-outline:hover {
+    background: var(--btn-outline-hover);
+  }
+
+  /* Inputs */
+  .input-brand {
+    @apply w-full transition;
+    border-radius: var(--input-radius);
+    background: var(--input-bg);
+    color: var(--input-fg);
+    border: 1px solid var(--input-border);
+    height: 44px;
+    padding: 0.5rem 0.875rem;
+  }
+  .input-brand::placeholder {
+    color: var(--input-ph);
+  }
+  .input-brand:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--input-ring);
+    border-color: transparent;
+  }
+
+  /* Card */
+  .card-brand {
+    border-radius: var(--card-radius);
+    background: var(--card-bg);
+    color: var(--card-fg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+  }
+
+  /* Text helpers */
+  .text-muted {
+    color: var(--color-muted-foreground);
+  }
+  .text-brand {
+    color: var(--brand-blue);
+  }
+  .text-accent {
+    color: var(--brand-orange);
+  }
+
+  /* Border helpers */
+  .border-soft {
+    border-color: var(--color-border);
+  }
+
+  /* Ring helpers */
+  .ring-brand {
+    box-shadow: 0 0 0 3px var(--color-ring);
+  }
+}
+
+/* ================ 7) Animations ================== */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite ease-in-out;
+}
+
+@layer utilities {
+  @keyframes fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out both;
+  }
+}

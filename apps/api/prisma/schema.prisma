@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PROFESSIONAL
+  PROVIDER
+  ADMIN
+  ORGANIZATION
+}
+
+model User {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  password   String
+  avatar     String?
+  phone      String?
+  location   String?
+  website    String?
+  bio        String?
+  occupation String?
+  education  String?
+  joinDate   DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isActive   Boolean  @default(true)
+  role       Role     @default(PROFESSIONAL)
+
+  coursesEnrolled    Int @default(0)
+  certificatesEarned Int @default(0)
+  learningHours      Int @default(0)
+
+  googleCalendarEnabled Boolean          @default(false)
+  GoogleAuthToken       GoogleAuthToken?
+}
+
+model GoogleAuthToken {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  accessToken  String
+  refreshToken String?
+  expiryDate   DateTime?
+  scope        String?
+  tokenType    String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum AppLanguage {
+  en
+  fa
+}
+
+enum AppTheme {
+  light
+  dark
+  system
+}
+
+enum ProfileVisibility {
+  public
+  private
+  followers
+}

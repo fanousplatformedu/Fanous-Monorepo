@@ -1,0 +1,262 @@
+{
+  "common": {
+    "browseCourses": "Browse Courses",
+    "becomeprovider": "Become a provider",
+    "exploreCourses": "Explore Courses",
+    "browseEvents": "Browse Events",
+    "viewAll": "View All",
+    "learnMore": "Learn More",
+    "exploreAllServices": "Explore All Services",
+    "preview": "Preview",
+    "listen": "Listen",
+    "visitChannel": "Visit Channel",
+    "courses": "Courses",
+    "events": "Events",
+    "podcasts": "Podcasts",
+    "youtube": "YouTube",
+    "language": "Language",
+    "other": "Other",
+    "whatDoYouWantToLearn": "What do you want to learn?",
+    "search": "Search"
+  },
+  "home": {
+    "roadmap": {
+      "badgeNew": "New Feature",
+      "title": "Learning Roadmaps",
+      "intro": "Navigate your learning journey with expert-crafted roadmaps. Follow structured paths from beginner to advanced levels.",
+      "features": {
+        "structured": {
+          "title": "Structured Progress",
+          "desc": "Clear, step-by-step learning paths designed by industry experts"
+        },
+        "community": {
+          "title": "Community Driven",
+          "desc": "Learn alongside others following the same path and share experiences"
+        },
+        "track": {
+          "title": "Track Progress",
+          "desc": "Monitor your advancement and celebrate milestones along the way"
+        }
+      },
+      "preview": {
+        "title": "Start Your Journey Today",
+        "desc": "Choose from various learning paths curated by industry experts. Whether you're starting from scratch or advancing your skills, our roadmaps guide you every step of the way.",
+        "alt": "Roadmap preview"
+      },
+      "actions": {
+        "explore": "Explore Roadmaps"
+      }
+    },
+    "hero": {
+      "titleLine1": "Your Professional",
+      "titleLine2": "Development Journey",
+      "subtitle": "All In One Place",
+      "descriptionLine1": "Your Path, Your Choice —",
+      "descriptionLine2": "Loopskey's AI, tailored for you",
+      "explore": "Explore",
+      "categoriesTitle": "Categories",
+      "searchNow": "Search now",
+      "tagPython": "Python programming",
+      "tagUiUx": "UI/UX Design",
+      "tagAiMl": "AI/Machine Learning",
+      "imageAlt": "Professional learning",
+      "categories": {
+        "webDev": "Web Development",
+        "dataScience": "Data Science",
+        "design": "Design",
+        "business": "Business",
+        "marketing": "Marketing",
+        "mobileDev": "Mobile Development"
+      }
+    },
+    "categories": {
+      "design": "Design",
+      "courses": "courses",
+      "business": "Business",
+      "marketing": "Marketing",
+      "title": "Popular Categories",
+      "webDev": "Web Development",
+      "dataScience": "Data Science",
+      "mobileDev": "Mobile Development",
+      "coursesCount_one": "{{count}} course",
+      "coursesCount_other": "{{count}} courses",
+      "description": "Explore our wide range of courses in various categories"
+    },
+    "featured": {
+      "title": "Latest Content",
+      "description": "Discover our most popular and highly-rated resources",
+      "actions": {
+        "viewAllCourses": "View All Courses",
+        "viewAllEvents": "View All Events",
+        "viewAllPodcasts": "View All Podcasts",
+        "viewAllChannels": "View All Channels",
+        "viewAllRoadmaps": "View All Roadmaps"
+      }
+    },
+    "services": {
+      "title": "Our Services",
+      "description": "Discover how Loopskey can transform your learning and teaching experience with our comprehensive educational platform.",
+      "learning": {
+        "title": "Comprehensive Learning",
+        "description": "Access a vast library of courses, webinars, podcasts, and YouTube channels all in one place. Learn at your own pace with flexible content formats.",
+        "features": {
+          "feature1": "Self-paced courses with lifetime access",
+          "feature2": "Interactive quizzes and assignments",
+          "feature3": "Progress tracking and certificates"
+        }
+      },
+      "provider": {
+        "title": "provider Platform",
+        "description": "Share your expertise with the world through our powerful provider tools. Build your audience, monetize your content, and make an impact.",
+        "features": {
+          "feature1": "Intuitive course creation tools",
+          "feature2": "Multiple monetization options",
+          "feature3": "Analytics and professional management"
+        }
+      },
+      "events": {
+        "title": "Live Events",
+        "description": "Connect with experts and peers through our live webinars, workshops, and events. Get real-time answers to your questions and network with like-minded individuals.",
+        "features": {
+          "feature1": "Live webinars with industry experts",
+          "feature2": "Interactive Q&A sessions",
+          "feature3": "Recorded sessions for later viewing"
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to start learning?",
+      "description": "Join thousands of learners who are already advancing their careers with our courses."
+    },
+    "provider": {
+      "title": "Share Your Knowledge, Grow Your Audience",
+      "description": "Join our community of educators and content providers. Upload courses, host webinars, or promote your existing content to reach thousands of eager learners.",
+      "stats": {
+        "learners": "Active Learners",
+        "earnings": "provider Earnings",
+        "providers": "Expert providers",
+        "countries": "Countries Reached"
+      }
+    },
+    "testimonials": {
+      "title": "What Our Users Say"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "services": "Our Services",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Sign Up",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Logout",
+    "joinForFree": "Join for free",
+    "professional": "Professional",
+    "provider": "provider"
+  },
+  "footer": {
+    "description": "Your one-stop platform for all educational needs. Discover, learn, and grow with us.",
+    "explore": "Explore",
+    "resources": "Resources",
+    "blog": "Blog & Articles",
+    "help": "Help Center",
+    "affiliates": "Affiliate Program",
+    "careers": "Careers",
+    "contact": "Contact Us",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "contactTitle": "Contact Us"
+  },
+  "about": {
+    "hero": {
+      "badge": "About LoopsKey",
+      "title": "Smarter Professional Learning, All in One Place",
+      "subtitle": "With LoopsKey it's easy to find learning materials — webinars, conferences, and online courses. Get tailored event recommendations, schedule training programs, and archive notes and handouts for your professional growth.",
+      "ctaPrimary": "Explore our services",
+      "ctaSecondary": "Contact us"
+    },
+    "intro": {
+      "title": "Why LoopsKey",
+      "p1": "In LoopsKey, you receive event recommendations, you can schedule training programs, and keep your handouts and notes organized for professional development events.",
+      "p2": "You can also organize alerts and updates about the topics you are interested in. LoopsKey helps content providers advertise their events and obtain anonymized trend data.",
+      "p3": "Employers and HR teams benefit by coordinating professional development and receiving visibility into their teams’ progress."
+    },
+    "stats": {
+      "resources": "10k+",
+      "resourcesLabel": "Learning Resources",
+      "learners": "50k+",
+      "learnersLabel": "Active Learners",
+      "events": "3k+",
+      "eventsLabel": "Live & On-Demand Events",
+      "providers": "1.2k+",
+      "providersLabel": "Content Providers"
+    },
+    "why": {
+      "title": "Everything you need to learn and grow",
+      "subtitle": "Pick your path—discover, watch, attend, and connect across formats.",
+      "items": {
+        "proMeeting": {
+          "title": "Find Pro Meetings & Talks",
+          "desc": "Discover relevant professional meetups, talks, and conferences with smart filtering and reminders."
+        },
+        "proVideo": {
+          "title": "Watch Professional Videos",
+          "desc": "High-quality videos curated from trusted sources and channels, tailored to your interests."
+        },
+        "learningContent": {
+          "title": "Learning Content & Events",
+          "desc": "Courses, webinars, workshops, and more—organized and searchable in one unified place."
+        },
+        "courses": {
+          "title": "Learn from Courses",
+          "desc": "Self-paced or cohort-based courses with progress tracking, notes, and certificates."
+        },
+        "networking": {
+          "title": "Networking & Community",
+          "desc": "Follow providers, share insights, and connect with peers working on similar topics."
+        },
+        "webinars": {
+          "title": "Find Webinars",
+          "desc": "Attend live or on-demand webinars; add to calendar and never miss an update."
+        }
+      }
+    },
+    "audiences": {
+      "learners": {
+        "title": "For Learners",
+        "desc": "Personalized discovery, alerts, saved notes, and structured roadmaps to accelerate your growth."
+      },
+      "providers": {
+        "title": "For Providers",
+        "desc": "Showcase events and courses, reach targeted audiences, and access anonymized trend insights."
+      },
+      "employers": {
+        "title": "For Employers",
+        "desc": "Coordinate team development, track progress at a glance, and align training with business goals."
+      }
+    },
+    "cta": {
+      "title": "Let’s build the best intelligent learning platform together",
+      "subtitle": "Join LoopsKey and contribute to a better learning experience.",
+      "primary": "Sign up for free",
+      "secondary": "Talk to our team"
+    }
+  },
+  "services": {
+    "cta": {
+      "title": "Ready to Get Started?",
+      "description": "Join thousands of learners and educators who are already benefiting from our comprehensive educational platform.",
+      "actions": {
+        "createAccount": "Create an Account",
+        "browseCourses": "Browse Courses",
+        "createAccountAria": "Create an account",
+        "browseCoursesAria": "Browse courses"
+      }
+    }
+  }
+}

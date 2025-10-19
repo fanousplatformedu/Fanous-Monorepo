@@ -1,0 +1,41 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@common/*": ["src/common/*"],
+      "@modules/*": ["src/modules/*"],
+
+      "@app/*": ["src/modules/app/*"],
+      "@app-event/*": ["src/modules/app-event/*"],
+      "@auth/*": ["src/modules/auth/*"],
+      "@certificate/*": ["src/modules/certificate/*"],
+      "@course/*": ["src/modules/course/*"],
+      "@enrollment/*": ["src/modules/enrollment/*"],
+      "@event/*": ["src/modules/event/*"],
+      "@faq/*": ["src/modules/faq/*"],
+      "@google-calendar/*": ["src/modules/google-calendar/*"],
+      "@learning/*": ["src/modules/learning/*"],
+      "@marketing/*": ["src/modules/marketing/*"],
+      "@notifications/*": ["src/modules/notifications/*"],
+      "@podcast/*": ["src/modules/podcast/*"],
+      "@review/*": ["src/modules/review/*"],
+      "@roadmap/*": ["src/modules/roadmap/*"],
+      "@search/*": ["src/modules/search/*"],
+      "@settings/*": ["src/modules/settings/*"],
+      "@user/*": ["src/modules/user/*"],
+      "@wishlist/*": ["src/modules/wishlist/*"],
+      "@youtube/*": ["src/modules/youtube/*"],
+
+      "@dtos/*": ["src/common/dto/*"],
+      "@entities/*": ["src/common/entities/*"],
+      "@enums/*": ["src/common/enums/*"],
+      "@guards/*": ["src/common/guards/*"],
+      "@decorators/*": ["src/common/decorators/*"],
+      "@utils/*": ["src/common/utils/*"],
+      "@config/*": ["src/config/*"],
+      "@prisma/*": ["src/modules/prisma/*"]
+    }
+  },
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+}
