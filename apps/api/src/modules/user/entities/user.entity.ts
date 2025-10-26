@@ -11,7 +11,6 @@ export class UserEntity {
   @Field(() => Int) learningHours: number;
   @Field(() => Int) coursesEnrolled: number;
   @Field(() => Int) certificatesEarned: number;
-  @Field(() => Boolean) googleCalendarEnabled: boolean;
   @Field(() => String, { nullable: true }) bio?: string | null;
   @Field(() => Date, { nullable: true }) joinDate?: Date | null;
   @Field(() => String, { nullable: true }) phone?: string | null;

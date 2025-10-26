@@ -1,8 +1,4 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { LinkedInStrategy } from "@auth/strategy/linkedin.strategy";
-import { FacebookStrategy } from "@auth/strategy/facebook.strategy";
-import { AuthController } from "@auth/controllers/auth.controller";
-import { GoogleStrategy } from "@auth/strategy/google.strategy";
 import { PrismaService } from "@prisma/prisma.service";
 import { AuthResolver } from "@auth/resolvers/auth.resolver";
 import { AuthService } from "@auth/services/auth.service";
@@ -26,15 +22,6 @@ import { Module } from "@nestjs/common";
       },
     }),
   ],
-  controllers: [AuthController],
-  providers: [
-    JwtStrategy,
-    AuthService,
-    AuthResolver,
-    PrismaService,
-    GoogleStrategy,
-    LinkedInStrategy,
-    FacebookStrategy,
-  ],
+  providers: [JwtStrategy, AuthService, AuthResolver, PrismaService],
 })
 export class AuthModule {}

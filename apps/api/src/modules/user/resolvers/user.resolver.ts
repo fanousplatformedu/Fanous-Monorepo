@@ -1,5 +1,4 @@
 import { Resolver, Mutation, Args, Query, Context } from "@nestjs/graphql";
-import { CreateUserInput } from "@user/dto/user.input";
 import { UpdateMeInput } from "@user/dto/update-user.input";
 import { JwtAuthGuard } from "@guards/jwt-auth.guard";
 import { UserService } from "@user/services/user.service";
@@ -18,12 +17,6 @@ export class UserResolver {
     return "GraphQL API is up and running!";
   }
 
-  @Public()
-  @Mutation(() => UserEntity, { name: QueryNames.CREATE_USER })
-  async createUser(@Args("createUserInput") createUserInput: CreateUserInput) {
-    return await this.userService.create(createUserInput);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Query(() => UserEntity, { name: QueryNames.ME })
   async me(@Context() ctx): Promise<UserEntity> {
@@ -33,24 +26,11 @@ export class UserResolver {
 
   @UseGuards(JwtAuthGuard)
   @Mutation(() => UserEntity, { name: QueryNames.UPDATE_ME })
-  async updateMe(@Context() ctx, @Args("input") input: UpdateMeInput) {
+  async updateMe(
+    @Context() ctx,
+    @Args("input") input: UpdateMeInput
+  ): Promise<UserEntity> {
     const userId = ctx.req.user.id;
     return this.userService.updateMe(userId, input);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Mutation(() => Boolean)
-  async enableGoogleCalendar(@Context() ctx) {
-    const userId = ctx.req.user.id;
-    await this.userService.setGoogleCalendar(userId, true);
-    return true;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Mutation(() => Boolean)
-  async disableGoogleCalendar(@Context() ctx) {
-    const userId = ctx.req.user.id;
-    await this.userService.setGoogleCalendar(userId, false);
-    return true;
   }
 }

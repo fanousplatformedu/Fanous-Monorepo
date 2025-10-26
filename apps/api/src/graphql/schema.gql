@@ -1,0 +1,73 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserEntity {
+  id: ID!
+  role: Role!
+  name: String!
+  email: String!
+  learningHours: Int!
+  coursesEnrolled: Int!
+  certificatesEarned: Int!
+  bio: String
+  joinDate: DateTime
+  phone: String
+  avatar: String
+  website: String
+  location: String
+  education: String
+  occupation: String
+}
+
+"""User role"""
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type AuthPayloadEntity {
+  name: String!
+  id: ID!
+  accessToken: String!
+  role: Role!
+  avatar: String
+}
+
+type Query {
+  healthCheck: String!
+  me: UserEntity!
+}
+
+type Mutation {
+  requestOtp(input: RequestOtpInput!): Boolean!
+  verifyOtp(input: VerifyOtpInput!): AuthPayloadEntity!
+  updateMe(input: UpdateMeInput!): UserEntity!
+}
+
+input RequestOtpInput {
+  mobile: String!
+  fullName: String!
+}
+
+input VerifyOtpInput {
+  mobile: String!
+  code: String!
+}
+
+input UpdateMeInput {
+  bio: String
+  name: String
+  website: String
+  phone: String
+  avatar: String
+  location: String
+  education: String
+  occupation: String
+}

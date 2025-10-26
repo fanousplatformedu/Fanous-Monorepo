@@ -11,5 +11,5 @@ export class CreateUserInput {
   @Field() @IsString() @MinLength(6) password: string;
   @Field({ nullable: true }) @IsOptional() bio?: string;
   @Field({ nullable: true }) @IsOptional() avatar?: string;
-  @Field(() => Role, { defaultValue: Role.PROVIDER }) role: Role;
+  @Field(() => Role, { defaultValue: Role.ADMIN }) role: Role;
 }

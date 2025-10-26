@@ -1,7 +1,7 @@
-import { PrismaService } from "../prisma/prisma.service";
-import { PrismaModule } from "../prisma/prisma.module";
-import { UserResolver } from "./resolvers/user.resolver";
-import { UserService } from "./services/user.service";
+import { PrismaService } from "@prisma/prisma.service";
+import { PrismaModule } from "@prisma/prisma.module";
+import { UserResolver } from "@user/resolvers/user.resolver";
+import { UserService } from "@user/services/user.service";
 import { Module } from "@nestjs/common";
 
 @Module({

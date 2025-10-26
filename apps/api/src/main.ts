@@ -1,7 +1,7 @@
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./modules/app/app.module";
+import { AppModule } from "@app/app.module";
 
 function isString(x: unknown): x is string {
   return typeof x === "string" && x.length > 0;

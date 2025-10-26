@@ -1,25 +1,28 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { CreateUserInput } from "../dto/user.input";
-import { PrismaService } from "src/modules/prisma/prisma.service";
-import { UpdateMeInput } from "../dto/update-user.input";
-import { hash } from "argon2";
+import { UserMessageEnum } from "@user/enums/user.message.enum";
+import { PrismaService } from "@prisma/prisma.service";
+import { UpdateMeInput } from "@user/dto/update-user.input";
 
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
 
-  async create(createUserInput: CreateUserInput) {
-    const { password, ...rest } = createUserInput;
-    const hashedPassword = await hash(password);
-    return this.prismaService.user.create({
-      data: {
-        ...rest,
-        password: hashedPassword,
-      },
-    });
-  }
-
-  async me(userId: string) {
+  async me(userId: string): Promise<{
+    id: string;
+    bio: string | null;
+    role: any;
+    name: string;
+    email: string;
+    phone: string | null;
+    avatar: string | null;
+    website: string | null;
+    location: string | null;
+    education: string | null;
+    occupation: string | null;
+    learningHours: number;
+    coursesEnrolled: number;
+    certificatesEarned: number;
+  }> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
       select: {
@@ -37,19 +40,37 @@ export class UserService {
         learningHours: true,
         coursesEnrolled: true,
         certificatesEarned: true,
-        googleCalendarEnabled: true,
       },
     });
-    if (!user) throw new NotFoundException("User not found");
+
+    if (!user) throw new NotFoundException(UserMessageEnum.USER_NOT_FOUND);
     return user;
   }
 
-  async updateMe(userId: string, input: UpdateMeInput) {
+  async updateMe(
+    userId: string,
+    input: UpdateMeInput
+  ): Promise<{
+    id: string;
+    bio: string | null;
+    role: any;
+    name: string;
+    email: string;
+    phone: string | null;
+    avatar: string | null;
+    website: string | null;
+    location: string | null;
+    education: string | null;
+    occupation: string | null;
+    learningHours: number;
+    coursesEnrolled: number;
+    certificatesEarned: number;
+  }> {
     const exists = await this.prismaService.user.findUnique({
       where: { id: userId },
       select: { id: true },
     });
-    if (!exists) throw new NotFoundException("User not found");
+    if (!exists) throw new NotFoundException(UserMessageEnum.USER_NOT_FOUND);
     return this.prismaService.user.update({
       where: { id: userId },
       data: { ...input },
@@ -68,31 +89,6 @@ export class UserService {
         learningHours: true,
         coursesEnrolled: true,
         certificatesEarned: true,
-        googleCalendarEnabled: true,
-      },
-    });
-  }
-
-  async setGoogleCalendar(userId: string, enabled: boolean) {
-    return this.prismaService.user.update({
-      where: { id: userId },
-      data: { googleCalendarEnabled: enabled },
-      select: {
-        id: true,
-        bio: true,
-        name: true,
-        role: true,
-        email: true,
-        phone: true,
-        avatar: true,
-        website: true,
-        location: true,
-        education: true,
-        occupation: true,
-        learningHours: true,
-        coursesEnrolled: true,
-        certificatesEarned: true,
-        googleCalendarEnabled: true,
       },
     });
   }

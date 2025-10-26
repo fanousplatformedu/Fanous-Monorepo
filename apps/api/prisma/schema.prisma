@@ -8,10 +8,9 @@ datasource db {
 }
 
 enum Role {
-  PROFESSIONAL
-  PROVIDER
+  STUDENT
+  TEACHER
   ADMIN
-  ORGANIZATION
 }
 
 model User {
@@ -20,7 +19,7 @@ model User {
   email      String   @unique
   password   String
   avatar     String?
-  phone      String?
+  phone      String?  @unique
   location   String?
   website    String?
   bio        String?
@@ -30,44 +29,21 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   isActive   Boolean  @default(true)
-  role       Role     @default(PROFESSIONAL)
+  role       Role     @default(STUDENT)
 
   coursesEnrolled    Int @default(0)
   certificatesEarned Int @default(0)
   learningHours      Int @default(0)
-
-  googleCalendarEnabled Boolean          @default(false)
-  GoogleAuthToken       GoogleAuthToken?
 }
 
-model GoogleAuthToken {
-  id           String    @id @default(cuid())
-  userId       String    @unique
-  accessToken  String
-  refreshToken String?
-  expiryDate   DateTime?
-  scope        String?
-  tokenType    String?
+model OtpRequest {
+  id         String    @id @default(cuid())
+  mobile     String
+  fullName   String
+  codeHash   String
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum AppLanguage {
-  en
-  fa
-}
-
-enum AppTheme {
-  light
-  dark
-  system
-}
-
-enum ProfileVisibility {
-  public
-  private
-  followers
+  @@index([mobile, createdAt])
 }
