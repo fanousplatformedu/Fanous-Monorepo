@@ -2,10 +2,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "@app/app.module";
-
-function isString(x: unknown): x is string {
-  return typeof x === "string" && x.length > 0;
-}
+import { isString } from "@utils/to-string";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -17,14 +17,12 @@ export class UserResolver {
     return "GraphQL API is up and running!";
   }
 
-  @UseGuards(JwtAuthGuard)
   @Query(() => UserEntity, { name: QueryNames.ME })
   async me(@Context() ctx): Promise<UserEntity> {
     const userId = ctx.req.user.id;
     return this.userService.me(userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Mutation(() => UserEntity, { name: QueryNames.UPDATE_ME })
   async updateMe(
     @Context() ctx,
