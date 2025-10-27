@@ -2,6 +2,82 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type TenantSettingsEntity {
+  id: ID!
+  tenantId: String!
+  defaultLanguage: LanguageCode!
+  brandingJson: String
+  retentionDays: Float
+  ssoConfigJson: String
+  webhookConfigJson: String
+  allowedLanguages: [LanguageCode!]
+}
+
+enum LanguageCode {
+  FA
+  EN
+  AR
+}
+
+type SubscriptionEntity {
+  id: ID!
+  createdAt: DateTime!
+  tenantId: String!
+  currentPeriodEnd: DateTime!
+  plan: LicensePlan!
+  currentPeriodStart: DateTime!
+  cancelAtPeriodEnd: Boolean!
+  status: SubscriptionStatus!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum LicensePlan {
+  FREE
+  STANDARD
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+}
+
+type LicenseEntity {
+  id: ID!
+  seats: Int!
+  startsAt: DateTime!
+  createdAt: DateTime!
+  tenantId: String!
+  plan: LicensePlan!
+  endsAt: DateTime
+}
+
+type TenantEntity {
+  id: ID!
+  name: String!
+  slug: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  settings: TenantSettingsEntity
+  licenses: [LicenseEntity!]
+  subscriptions: [SubscriptionEntity!]
+}
+
+type TenantPageResult {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [TenantEntity!]!
+}
+
 type UserEntity {
   id: ID!
   role: Role!
@@ -22,15 +98,14 @@ type UserEntity {
 
 """User role"""
 enum Role {
+  ADMIN
+  PARENT
   STUDENT
   TEACHER
-  ADMIN
+  COUNSELOR
+  SUPER_ADMIN
+  CONTENT_EDITOR
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type AuthPayloadEntity {
   name: String!
@@ -43,12 +118,29 @@ type AuthPayloadEntity {
 type Query {
   healthCheck: String!
   me: UserEntity!
+  tenantById(id: ID!): TenantEntity!
+  tenantBySlug(slug: String!): TenantEntity!
+  tenants(input: TenantPageInput!): TenantPageResult!
+}
+
+input TenantPageInput {
+  search: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  includeDeleted: Boolean! = false
 }
 
 type Mutation {
   requestOtp(input: RequestOtpInput!): Boolean!
   verifyOtp(input: VerifyOtpInput!): AuthPayloadEntity!
   updateMe(input: UpdateMeInput!): UserEntity!
+  createTenant(input: CreateTenantInput!): TenantEntity!
+  updateTenant(input: UpdateTenantInput!): TenantEntity!
+  archiveTenant(id: ID!): Boolean!
+  restoreTenant(id: ID!): Boolean!
+  setTenantSettings(input: SetTenantSettingsInput!): TenantSettingsEntity!
+  assignLicense(input: AssignLicenseInput!): LicenseEntity!
+  createSubscription(input: CreateSubscriptionInput!): SubscriptionEntity!
 }
 
 input RequestOtpInput {
@@ -70,4 +162,41 @@ input UpdateMeInput {
   location: String
   education: String
   occupation: String
+}
+
+input CreateTenantInput {
+  name: String!
+  slug: String!
+}
+
+input UpdateTenantInput {
+  id: ID!
+  slug: String
+  name: String
+}
+
+input SetTenantSettingsInput {
+  tenantId: ID!
+  brandingJson: String
+  ssoConfigJson: String
+  webhookConfigJson: String
+  defaultLanguage: LanguageCode
+  allowedLanguages: [LanguageCode!]
+  retentionDays: Float
+}
+
+input AssignLicenseInput {
+  tenantId: ID!
+  startsAt: DateTime!
+  plan: LicensePlan!
+  seats: Int!
+  endsAt: DateTime
+}
+
+input CreateSubscriptionInput {
+  tenantId: ID!
+  currentPeriodEnd: DateTime!
+  plan: LicensePlan!
+  currentPeriodStart: DateTime!
+  cancelAtPeriodEnd: Boolean! = false
 }

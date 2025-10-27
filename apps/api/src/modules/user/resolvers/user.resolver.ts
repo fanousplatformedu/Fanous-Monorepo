@@ -1,10 +1,8 @@
 import { Resolver, Mutation, Args, Query, Context } from "@nestjs/graphql";
 import { UpdateMeInput } from "@user/dto/update-user.input";
-import { JwtAuthGuard } from "@guards/jwt-auth.guard";
 import { UserService } from "@user/services/user.service";
 import { QueryNames } from "@enums/gql-names.enum";
 import { UserEntity } from "@user/entities/user.entity";
-import { UseGuards } from "@nestjs/common";
 import { Public } from "@decorators/public.decorator";
 
 @Resolver(() => UserEntity)

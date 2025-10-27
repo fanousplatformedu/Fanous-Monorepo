@@ -2,6 +2,8 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ConfigModule } from "@nestjs/config";
 import { JwtAuthGuard } from "@guards/jwt-auth.guard";
+import { TenantModule } from "@tenant/tenant.module";
+import { SchoolModule } from "@school/school.module";
 import { UserModule } from "@user/user.module";
 import { RolesGuard } from "@guards/roles.guard";
 import { AuthModule } from "@auth/auth.module";
@@ -19,6 +21,8 @@ import { join } from "path";
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     UserModule,
+    TenantModule,
+    SchoolModule,
   ],
   controllers: [],
   providers: [

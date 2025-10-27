@@ -17,6 +17,8 @@
       "@app/*": ["src/modules/app/*"],
       "@auth/*": ["src/modules/auth/*"],
       "@user/*": ["src/modules/user/*"],
+      "@tenant/*": ["src/modules/tenant/*"],
+      "@school/*": ["src/modules/school/*"],
 
       "@dtos/*": ["src/common/dto/*"],
       "@entities/*": ["src/common/entities/*"],
