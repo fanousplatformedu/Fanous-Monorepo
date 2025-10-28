@@ -11,6 +11,7 @@
       "@user/*": ["src/modules/user/*"],
       "@tenant/*": ["src/modules/tenant/*"],
       "@school/*": ["src/modules/school/*"],
+      "@questionnaire/*": ["src/modules/questionnaire/*"],
 
       "@dtos/*": ["src/common/dto/*"],
       "@entities/*": ["src/common/entities/*"],

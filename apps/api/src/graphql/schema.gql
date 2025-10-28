@@ -2,6 +2,85 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type QuestionnaireEntity {
+  id: ID!
+  code: String!
+  title: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  tenantId: String!
+  defaultLang: LanguageCode!
+  deletedAt: DateTime
+  description: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum LanguageCode {
+  FA
+  EN
+  AR
+}
+
+type PageResultQuestionnaire {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [QuestionnaireEntity!]!
+}
+
+type AssessmentVersionEntity {
+  id: ID!
+  createdAt: DateTime!
+  tenantId: String!
+  versionNumber: Int!
+  questionnaireId: String!
+  status: VersionStatus!
+  publishedAt: DateTime
+  changelog: String
+  interpretationJson: String
+}
+
+enum VersionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+type QuestionEntity {
+  id: ID!
+  order: Int!
+  text: String!
+  tenantId: String!
+  required: Boolean!
+  questionnaireId: String!
+  type: QuestionType!
+  code: String
+  helpText: String
+  configJson: String
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  SCALE
+  TEXT
+  MATRIX
+}
+
+type OptionEntity {
+  id: ID!
+  order: Int!
+  text: String!
+  value: String!
+  tenantId: String!
+  questionId: String!
+  weight: Float
+}
+
 type TenantSettingsEntity {
   id: ID!
   tenantId: String!
@@ -11,12 +90,6 @@ type TenantSettingsEntity {
   ssoConfigJson: String
   webhookConfigJson: String
   allowedLanguages: [LanguageCode!]
-}
-
-enum LanguageCode {
-  FA
-  EN
-  AR
 }
 
 type SubscriptionEntity {
@@ -29,11 +102,6 @@ type SubscriptionEntity {
   cancelAtPeriodEnd: Boolean!
   status: SubscriptionStatus!
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 enum LicensePlan {
   FREE
@@ -76,6 +144,51 @@ type TenantPageResult {
   total: Int!
   pageSize: Int!
   items: [TenantEntity!]!
+}
+
+type ClassroomEntity {
+  id: ID!
+  year: Int!
+  name: String!
+  updatedAt: DateTime!
+  createdAt: DateTime!
+  gradeId: String!
+  tenantId: String!
+  code: String
+  deletedAt: DateTime
+}
+
+type GradeEntity {
+  id: ID!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  tenantId: String!
+  code: String
+  deletedAt: DateTime
+}
+
+type PageResultGrades {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [GradeEntity!]!
+}
+
+type PageResultClassrooms {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [ClassroomEntity!]!
+}
+
+type EnrollmentEntity {
+  id: ID!
+  startedAt: DateTime!
+  tenantId: String!
+  classroomId: String!
+  studentId: String!
+  endedAt: DateTime
 }
 
 type UserEntity {
@@ -121,9 +234,38 @@ type Query {
   tenantById(id: ID!): TenantEntity!
   tenantBySlug(slug: String!): TenantEntity!
   tenants(input: TenantPageInput!): TenantPageResult!
+  grades(input: GradePageInput!): PageResultGrades!
+  classrooms(input: ClassroomPageInput!): PageResultClassrooms!
+  enrollmentsByClassroom(tenantId: String!, classroomId: String!): [EnrollmentEntity!]!
+  questionnaires(input: QuestionnairePageInput!): PageResultQuestionnaire!
 }
 
 input TenantPageInput {
+  search: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  includeDeleted: Boolean! = false
+}
+
+input GradePageInput {
+  tenantId: String!
+  search: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  includeDeleted: Boolean! = false
+}
+
+input ClassroomPageInput {
+  tenantId: String!
+  search: String
+  gradeId: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  includeDeleted: Boolean! = false
+}
+
+input QuestionnairePageInput {
+  tenantId: String!
   search: String
   page: Int! = 1
   pageSize: Int! = 20
@@ -141,6 +283,28 @@ type Mutation {
   setTenantSettings(input: SetTenantSettingsInput!): TenantSettingsEntity!
   assignLicense(input: AssignLicenseInput!): LicenseEntity!
   createSubscription(input: CreateSubscriptionInput!): SubscriptionEntity!
+  createGrade(input: CreateGradeInput!): GradeEntity!
+  updateGrade(input: UpdateGradeInput!): GradeEntity!
+  archiveGrade(id: ID!, tenantId: String!): Boolean!
+  restoreGrade(id: ID!, tenantId: String!): Boolean!
+  createClassroom(input: CreateClassroomInput!): ClassroomEntity!
+  updateClassroom(input: UpdateClassroomInput!): ClassroomEntity!
+  archiveClassroom(id: ID!, tenantId: String!): Boolean!
+  restoreClassroom(id: ID!, tenantId: String!): Boolean!
+  enrollStudent(input: EnrollStudentInput!): EnrollmentEntity!
+  closeEnrollment(input: CloseEnrollmentInput!): EnrollmentEntity!
+  createQuestionnaire(input: CreateQuestionnaireInput!): QuestionnaireEntity!
+  updateQuestionnaire(input: UpdateQuestionnaireInput!): QuestionnaireEntity!
+  archiveQuestionnaire(id: ID!, tenantId: String!): Boolean!
+  restoreQuestionnaire(id: ID!, tenantId: String!): Boolean!
+  createAssessmentVersion(input: CreateAssessmentVersionInput!): AssessmentVersionEntity!
+  publishVersion(input: PublishVersionInput!): AssessmentVersionEntity!
+  createQuestion(input: CreateQuestionInput!): QuestionEntity!
+  updateQuestion(input: UpdateQuestionInput!): QuestionEntity!
+  reorderQuestions(input: ReorderQuestionsInput!): Boolean!
+  createOption(input: CreateOptionInput!): OptionEntity!
+  updateOption(input: UpdateOptionInput!): OptionEntity!
+  reorderOptions(input: ReorderOptionsInput!): Boolean!
 }
 
 input RequestOtpInput {
@@ -199,4 +363,130 @@ input CreateSubscriptionInput {
   plan: LicensePlan!
   currentPeriodStart: DateTime!
   cancelAtPeriodEnd: Boolean! = false
+}
+
+input CreateGradeInput {
+  name: String!
+  tenantId: String!
+  code: String
+}
+
+input UpdateGradeInput {
+  tenantId: String!
+  id: ID!
+  name: String
+  code: String
+}
+
+input CreateClassroomInput {
+  name: String!
+  gradeId: String!
+  tenantId: String!
+  code: String
+  year: Int!
+}
+
+input UpdateClassroomInput {
+  id: ID!
+  tenantId: String!
+  gradeId: String
+  name: String
+  code: String
+  year: Int
+}
+
+input EnrollStudentInput {
+  tenantId: String!
+  studentId: String!
+  classroomId: String!
+  startedAt: DateTime
+}
+
+input CloseEnrollmentInput {
+  tenantId: String!
+  id: ID!
+  endedAt: DateTime
+}
+
+input CreateQuestionnaireInput {
+  code: String!
+  title: String!
+  tenantId: String!
+  description: String
+  defaultLang: LanguageCode!
+}
+
+input UpdateQuestionnaireInput {
+  tenantId: String!
+  id: ID!
+  code: String
+  title: String
+  description: String
+  defaultLang: LanguageCode
+}
+
+input CreateAssessmentVersionInput {
+  tenantId: String!
+  questionnaireId: ID!
+  changelog: String
+  interpretationJson: String
+}
+
+input PublishVersionInput {
+  tenantId: String!
+  versionId: ID!
+}
+
+input CreateQuestionInput {
+  text: String!
+  tenantId: String!
+  questionnaireId: String!
+  code: String
+  helpText: String
+  type: QuestionType!
+  configJson: String
+  required: Boolean! = true
+  order: Int
+}
+
+input UpdateQuestionInput {
+  tenantId: String!
+  id: ID!
+  type: QuestionType
+  code: String
+  text: String
+  helpText: String
+  order: Int
+  required: Boolean
+  configJson: String
+}
+
+input ReorderQuestionsInput {
+  tenantId: String!
+  itemsJson: String!
+  questionnaireId: String!
+}
+
+input CreateOptionInput {
+  text: String!
+  value: String!
+  tenantId: String!
+  questionId: String!
+  weight: Float
+  order: Int
+}
+
+input UpdateOptionInput {
+  tenantId: String!
+  id: ID!
+  text: String
+  value: String
+  weight: Float
+  order: Int
+}
+
+input ReorderOptionsInput {
+  tenantId: String!
+  itemsJson: String!
+  questionId: String!
 }
