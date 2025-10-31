@@ -1,6 +1,10 @@
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { QuestionnaireModule } from "@modules/questionnaire/questionnaire.module";
+import { RecommendationModule } from "@recommendation/recommendation.module";
+import { QuestionnaireModule } from "@questionnaire/questionnaire.module";
+import { NotificationModule } from "@notification/notification.module";
+import { AssessmentModule } from "@assessment/assessment.module";
 import { GraphQLModule } from "@nestjs/graphql";
+import { ScoringModule } from "@scoring/scoring.module";
 import { ConfigModule } from "@nestjs/config";
 import { JwtAuthGuard } from "@guards/jwt-auth.guard";
 import { TenantModule } from "@tenant/tenant.module";
@@ -24,7 +28,11 @@ import { join } from "path";
     UserModule,
     TenantModule,
     SchoolModule,
+    ScoringModule,
+    AssessmentModule,
+    NotificationModule,
     QuestionnaireModule,
+    RecommendationModule,
   ],
   controllers: [],
   providers: [

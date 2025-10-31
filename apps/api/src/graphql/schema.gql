@@ -2,6 +2,53 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type RecommendationEntity {
+  id: ID!
+  createdAt: DateTime!
+  tenantId: String!
+  resultId: String!
+  targetJson: JSON
+  targetMajorId: String
+  targetCareerId: String
+  type: RecommendationType!
+  explainabilityFactors: JSON
+  confidence: Float
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+enum RecommendationType {
+  CAREER
+  MAJOR
+  LEARNING
+}
+
+type RecommendationPageEntity {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [RecommendationEntity!]!
+}
+
+type GenerateResult {
+  created: Int!
+}
+
+type PreviewPayload {
+  tenantId: String!
+  resultId: String!
+  previewJson: String!
+  assessmentId: String!
+}
+
 type QuestionnaireEntity {
   id: ID!
   code: String!
@@ -13,11 +60,6 @@ type QuestionnaireEntity {
   deletedAt: DateTime
   description: String
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 enum LanguageCode {
   FA
@@ -79,6 +121,150 @@ type OptionEntity {
   tenantId: String!
   questionId: String!
   weight: Float
+}
+
+type NotificationTemplateEntity {
+  id: ID!
+  code: String!
+  createdAt: DateTime!
+  tenantId: String!
+  lang: LanguageCode!
+  body: String
+  channel: NotificationChannel!
+  subject: String
+  bodyJson: JSON
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+type NotificationEntity {
+  id: ID!
+  tenantId: String!
+  createdAt: DateTime!
+  status: NotificationStatus!
+  meta: String
+  channel: NotificationChannel!
+  userId: String
+  payload: String
+  templateId: String
+  sentAt: DateTime
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+  DELIVERED
+  OPENED
+}
+
+type NotificationPageEntity {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [NotificationEntity!]!
+}
+
+type TemplatePageEntity {
+  items: [NotificationTemplateEntity!]!
+  total: Int!
+  page: Int!
+  pageSize: Int!
+}
+
+type SendResult {
+  sent: Int!
+  queued: Int!
+  failed: Int!
+}
+
+type PreviewResult {
+  tenantId: String!
+  templateId: String!
+  body: String
+  subject: String
+  bodyJson: String
+}
+
+type AssessmentEntity {
+  id: ID!
+  startedAt: DateTime!
+  userId: String!
+  tenantId: String!
+  language: LanguageCode!
+  state: AssessmentState!
+  scoredAt: DateTime
+  submittedAt: DateTime
+  versionId: String
+  assignmentId: String
+}
+
+enum AssessmentState {
+  IN_PROGRESS
+  SUBMITTED
+  SCORED
+}
+
+type PageResultAssessments {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [AssessmentEntity!]!
+}
+
+type ResultSnapshotEntity {
+  id: ID!
+  createdAt: DateTime!
+  userId: String!
+  tenantId: String!
+  scoresJson: String!
+  summaryJson: String!
+  assessmentId: String!
+}
+
+type ResponseEntity {
+  id: ID!
+  value: String!
+  createdAt: DateTime!
+  tenantId: String!
+  questionId: String!
+  assessmentId: String!
+}
+
+type ScoreEntity {
+  id: ID!
+  value: Float!
+  createdAt: DateTime!
+  metric: String!
+  tenantId: String!
+  assessmentId: String!
+  meta: String
+  weight: Float
+}
+
+type RecomputeTenantResult {
+  processed: Int!
+  tenantId: String!
+}
+
+type ComputedMetricEntity {
+  key: String!
+  value: Float!
+  raw: Float
+  label: String
+}
+
+type ScoringPreviewEntity {
+  tenantId: String!
+  scoresJson: String!
+  summaryJson: String!
+  assessmentId: String!
+  metrics: [ComputedMetricEntity!]!
 }
 
 type TenantSettingsEntity {
@@ -237,7 +423,19 @@ type Query {
   grades(input: GradePageInput!): PageResultGrades!
   classrooms(input: ClassroomPageInput!): PageResultClassrooms!
   enrollmentsByClassroom(tenantId: String!, classroomId: String!): [EnrollmentEntity!]!
+  previewScoring(input: PreviewScoringInput!): ScoringPreviewEntity!
+  assessments(input: AssessmentsPageInput!): PageResultAssessments!
+  myAssessments(input: AssessmentsByMeInput!): PageResultAssessments!
+  assessmentById(tenantId: String!, assessmentId: ID!): AssessmentEntity!
+  assessmentResult(tenantId: String!, assessmentId: ID!): ResultSnapshotEntity!
+  assessmentScores(tenantId: String!, assessmentId: ID!): [ScoreEntity!]!
+  assessmentResponses(tenantId: String!, assessmentId: ID!): [ResponseEntity!]!
+  notificationTemplates(input: ListNotificationTemplatesInput!): TemplatePageEntity!
+  previewNotification(input: PreviewNotificationInput!): PreviewResult!
+  notifications(input: ListNotificationsInput!): NotificationPageEntity!
   questionnaires(input: QuestionnairePageInput!): PageResultQuestionnaire!
+  previewRecommendations(input: PreviewRecommendationsInput!): PreviewPayload!
+  recommendations(input: ListRecommendationsInput!): RecommendationPageEntity!
 }
 
 input TenantPageInput {
@@ -264,12 +462,71 @@ input ClassroomPageInput {
   includeDeleted: Boolean! = false
 }
 
+input PreviewScoringInput {
+  tenantId: String!
+  assessmentId: String!
+}
+
+input AssessmentsPageInput {
+  tenantId: String!
+  userId: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  state: AssessmentState
+}
+
+input AssessmentsByMeInput {
+  tenantId: String!
+  page: Int! = 1
+  pageSize: Int! = 20
+}
+
+input ListNotificationTemplatesInput {
+  tenantId: String!
+  code: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  lang: String
+  channel: String
+}
+
+input PreviewNotificationInput {
+  tenantId: String!
+  templateId: String!
+  variables: String
+}
+
+input ListNotificationsInput {
+  tenantId: String!
+  userId: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  status: String
+  channel: String
+}
+
 input QuestionnairePageInput {
   tenantId: String!
   search: String
   page: Int! = 1
   pageSize: Int! = 20
   includeDeleted: Boolean! = false
+}
+
+input PreviewRecommendationsInput {
+  tenantId: String!
+  assessmentId: String!
+  types: [RecommendationType!]! = [CAREER, MAJOR]
+  topN: Int! = 10
+}
+
+input ListRecommendationsInput {
+  tenantId: String!
+  resultId: String
+  assessmentId: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  type: RecommendationType
 }
 
 type Mutation {
@@ -293,6 +550,18 @@ type Mutation {
   restoreClassroom(id: ID!, tenantId: String!): Boolean!
   enrollStudent(input: EnrollStudentInput!): EnrollmentEntity!
   closeEnrollment(input: CloseEnrollmentInput!): EnrollmentEntity!
+  runScoringStrict(input: RunScoringStrictInput!): Boolean!
+  recomputeTenantScores(input: RecomputeTenantInput!): RecomputeTenantResult!
+  startAssessment(input: StartAssessmentInput!): AssessmentEntity!
+  saveResponse(input: SaveResponseInput!): ResponseEntity!
+  saveResponsesBulk(input: SaveResponsesBulkInput!): Boolean!
+  submitAssessment(input: SubmitAssessmentInput!): AssessmentEntity!
+  runScoring(input: RunScoringInput!): AssessmentEntity!
+  createNotificationTemplate(input: CreateNotificationTemplateInput!): NotificationTemplateEntity!
+  updateNotificationTemplate(input: UpdateNotificationTemplateInput!): NotificationTemplateEntity!
+  sendNotificationsByTemplate(input: SendTemplateInput!): SendResult!
+  sendAdHocNotification(input: SendAdHocNotificationInput!): SendResult!
+  markNotificationStatus(input: MarkNotificationStatusInput!): Boolean!
   createQuestionnaire(input: CreateQuestionnaireInput!): QuestionnaireEntity!
   updateQuestionnaire(input: UpdateQuestionnaireInput!): QuestionnaireEntity!
   archiveQuestionnaire(id: ID!, tenantId: String!): Boolean!
@@ -305,6 +574,8 @@ type Mutation {
   createOption(input: CreateOptionInput!): OptionEntity!
   updateOption(input: UpdateOptionInput!): OptionEntity!
   reorderOptions(input: ReorderOptionsInput!): Boolean!
+  generateRecommendations(input: GenerateRecommendationsInput!): GenerateResult!
+  deleteRecommendation(input: DeleteRecommendationInput!): Boolean!
 }
 
 input RequestOtpInput {
@@ -408,6 +679,89 @@ input CloseEnrollmentInput {
   endedAt: DateTime
 }
 
+input RunScoringStrictInput {
+  tenantId: String!
+  assessmentId: String!
+  overwrite: Boolean! = true
+}
+
+input RecomputeTenantInput {
+  tenantId: String!
+  batchSize: Int! = 100
+}
+
+input StartAssessmentInput {
+  tenantId: String!
+  versionId: String
+  assignmentId: String
+  language: LanguageCode! = FA
+}
+
+input SaveResponseInput {
+  value: String!
+  tenantId: String!
+  questionId: String!
+  assessmentId: String!
+}
+
+input SaveResponsesBulkInput {
+  tenantId: String!
+  itemsJson: String!
+  assessmentId: String!
+}
+
+input SubmitAssessmentInput {
+  tenantId: String!
+  assessmentId: String!
+}
+
+input RunScoringInput {
+  tenantId: String!
+  assessmentId: String!
+}
+
+input CreateNotificationTemplateInput {
+  code: String!
+  tenantId: String!
+  lang: String!
+  body: String
+  subject: String
+  bodyJson: String
+  channel: String!
+}
+
+input UpdateNotificationTemplateInput {
+  id: String!
+  tenantId: String!
+  body: String
+  subject: String
+  bodyJson: String
+}
+
+input SendTemplateInput {
+  tenantId: String!
+  templateId: String!
+  variables: String
+  audienceJson: String
+  queueOnly: Boolean! = false
+  userIds: [String!]
+}
+
+input SendAdHocNotificationInput {
+  payload: String!
+  tenantId: String!
+  userIds: [String!]!
+  channel: String!
+  queueOnly: Boolean! = false
+}
+
+input MarkNotificationStatusInput {
+  id: String!
+  tenantId: String!
+  meta: String
+  status: String!
+}
+
 input CreateQuestionnaireInput {
   code: String!
   title: String!
@@ -489,4 +843,18 @@ input ReorderOptionsInput {
   tenantId: String!
   itemsJson: String!
   questionId: String!
+}
+
+input GenerateRecommendationsInput {
+  tenantId: String!
+  assessmentId: String!
+  minConfidence: Float! = 0
+  overwrite: Boolean! = true
+  topN: Int! = 10
+  types: [RecommendationType!]! = [CAREER, MAJOR]
+}
+
+input DeleteRecommendationInput {
+  id: String!
+  tenantId: String!
 }
