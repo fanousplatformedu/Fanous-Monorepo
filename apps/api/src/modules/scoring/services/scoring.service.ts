@@ -385,4 +385,17 @@ export class ScoringService {
     }
     return { tenantId, processed };
   }
+
+  async scoreAssessment({
+    tenantId,
+    assessmentId,
+    options,
+  }: {
+    tenantId: string;
+    assessmentId: string;
+    options?: { overwrite?: boolean };
+  }) {
+    const overwrite = options?.overwrite ?? true;
+    return this.runStrict({ tenantId, assessmentId, overwrite });
+  }
 }

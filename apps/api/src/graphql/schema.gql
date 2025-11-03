@@ -267,6 +267,53 @@ type ScoringPreviewEntity {
   metrics: [ComputedMetricEntity!]!
 }
 
+type CareerEntity {
+  id: ID!
+  code: String!
+  title: String!
+  meta: String
+  summary: String
+  skillsCount: Int
+}
+
+type SkillEntity {
+  id: ID!
+  code: String!
+  title: String!
+  meta: String
+  category: String
+}
+
+type MajorEntity {
+  id: ID!
+  code: String!
+  title: String!
+  meta: String
+  summary: String
+  skillsCount: Int
+}
+
+type SkillPageEntity {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [SkillEntity!]!
+}
+
+type CareerPageEntity {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [CareerEntity!]!
+}
+
+type MajorPageEntity {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [MajorEntity!]!
+}
+
 type TenantSettingsEntity {
   id: ID!
   tenantId: String!
@@ -414,71 +461,97 @@ type AuthPayloadEntity {
   avatar: String
 }
 
+type PreviewResultEntity {
+  count: Int!
+  rows: [String!]!
+  headers: [String!]!
+}
+
+type ExportJobEntity {
+  id: ID!
+  createdAt: DateTime!
+  format: ExportFormat!
+  status: ExportStatus!
+  finishedAt: DateTime
+  fileId: String
+  params: JSON
+}
+
+enum ExportFormat {
+  CSV
+  XLSX
+  PDF
+}
+
+enum ExportStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+type ExportPageEntity {
+  page: Int!
+  total: Int!
+  pageSize: Int!
+  items: [ExportJobEntity!]!
+}
+
+type JobsHealthEntity {
+  exportWaiting: Int!
+  scoringWaiting: Int!
+  maintenanceWaiting: Int!
+  notificationWaiting: Int!
+  recommendationWaiting: Int!
+}
+
 type Query {
   healthCheck: String!
   me: UserEntity!
+  jobsHealth: JobsHealthEntity!
+  exportJobs(input: ExportsPageInput!): ExportPageEntity!
+  previewExport(input: PreviewExportInput!): PreviewResultEntity!
+  notificationTemplates(input: ListNotificationTemplatesInput!): TemplatePageEntity!
+  previewNotification(input: PreviewNotificationInput!): PreviewResult!
+  notifications(input: ListNotificationsInput!): NotificationPageEntity!
+  previewScoring(input: PreviewScoringInput!): ScoringPreviewEntity!
+  previewRecommendations(input: PreviewRecommendationsInput!): PreviewPayload!
+  recommendations(input: ListRecommendationsInput!): RecommendationPageEntity!
   tenantById(id: ID!): TenantEntity!
   tenantBySlug(slug: String!): TenantEntity!
   tenants(input: TenantPageInput!): TenantPageResult!
   grades(input: GradePageInput!): PageResultGrades!
   classrooms(input: ClassroomPageInput!): PageResultClassrooms!
   enrollmentsByClassroom(tenantId: String!, classroomId: String!): [EnrollmentEntity!]!
-  previewScoring(input: PreviewScoringInput!): ScoringPreviewEntity!
+  skills(input: LibPageInput!): SkillPageEntity!
+  suggestSkills(input: SuggestSkillsInput!): [SkillEntity!]!
+  careers(input: LibPageInput!): CareerPageEntity!
+  careerSkills(careerId: String!): [SkillEntity!]!
+  majors(input: LibPageInput!): MajorPageEntity!
+  majorSkills(majorId: String!): [SkillEntity!]!
   assessments(input: AssessmentsPageInput!): PageResultAssessments!
   myAssessments(input: AssessmentsByMeInput!): PageResultAssessments!
   assessmentById(tenantId: String!, assessmentId: ID!): AssessmentEntity!
   assessmentResult(tenantId: String!, assessmentId: ID!): ResultSnapshotEntity!
   assessmentScores(tenantId: String!, assessmentId: ID!): [ScoreEntity!]!
   assessmentResponses(tenantId: String!, assessmentId: ID!): [ResponseEntity!]!
-  notificationTemplates(input: ListNotificationTemplatesInput!): TemplatePageEntity!
-  previewNotification(input: PreviewNotificationInput!): PreviewResult!
-  notifications(input: ListNotificationsInput!): NotificationPageEntity!
   questionnaires(input: QuestionnairePageInput!): PageResultQuestionnaire!
-  previewRecommendations(input: PreviewRecommendationsInput!): PreviewPayload!
-  recommendations(input: ListRecommendationsInput!): RecommendationPageEntity!
 }
 
-input TenantPageInput {
-  search: String
-  page: Int! = 1
-  pageSize: Int! = 20
-  includeDeleted: Boolean! = false
-}
-
-input GradePageInput {
-  tenantId: String!
-  search: String
-  page: Int! = 1
-  pageSize: Int! = 20
-  includeDeleted: Boolean! = false
-}
-
-input ClassroomPageInput {
-  tenantId: String!
-  search: String
-  gradeId: String
-  page: Int! = 1
-  pageSize: Int! = 20
-  includeDeleted: Boolean! = false
-}
-
-input PreviewScoringInput {
-  tenantId: String!
-  assessmentId: String!
-}
-
-input AssessmentsPageInput {
-  tenantId: String!
-  userId: String
-  page: Int! = 1
-  pageSize: Int! = 20
-  state: AssessmentState
-}
-
-input AssessmentsByMeInput {
+input ExportsPageInput {
   tenantId: String!
   page: Int! = 1
   pageSize: Int! = 20
+  format: String
+  status: String
+  kind: String
+}
+
+input PreviewExportInput {
+  tenantId: String!
+  params: String
+  limit: Float! = 10
+  kind: String!
 }
 
 input ListNotificationTemplatesInput {
@@ -505,12 +578,9 @@ input ListNotificationsInput {
   channel: String
 }
 
-input QuestionnairePageInput {
+input PreviewScoringInput {
   tenantId: String!
-  search: String
-  page: Int! = 1
-  pageSize: Int! = 20
-  includeDeleted: Boolean! = false
+  assessmentId: String!
 }
 
 input PreviewRecommendationsInput {
@@ -529,10 +599,86 @@ input ListRecommendationsInput {
   type: RecommendationType
 }
 
+input TenantPageInput {
+  search: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  includeDeleted: Boolean! = false
+}
+
+input GradePageInput {
+  tenantId: String!
+  search: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  includeDeleted: Boolean! = false
+}
+
+input ClassroomPageInput {
+  tenantId: String!
+  search: String
+  gradeId: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  includeDeleted: Boolean! = false
+}
+
+input LibPageInput {
+  q: String
+  category: String
+  page: Int! = 1
+  pageSize: Int! = 20
+}
+
+input SuggestSkillsInput {
+  q: String!
+  limit: Float
+  category: String
+}
+
+input AssessmentsPageInput {
+  tenantId: String!
+  userId: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  state: AssessmentState
+}
+
+input AssessmentsByMeInput {
+  tenantId: String!
+  page: Int! = 1
+  pageSize: Int! = 20
+}
+
+input QuestionnairePageInput {
+  tenantId: String!
+  search: String
+  page: Int! = 1
+  pageSize: Int! = 20
+  includeDeleted: Boolean! = false
+}
+
 type Mutation {
   requestOtp(input: RequestOtpInput!): Boolean!
   verifyOtp(input: VerifyOtpInput!): AuthPayloadEntity!
   updateMe(input: UpdateMeInput!): UserEntity!
+  enqueueExportRun(tenantId: String!, jobId: String!, delayMs: Float): Boolean!
+  enqueueNotificationByTemplate(input: EnqueueNotificationByTemplateInput!): Boolean!
+  enqueueNotificationAdHoc(input: EnqueueNotificationAdHocInput!): Boolean!
+  enqueueScoring(input: EnqueueScoringInput!): Boolean!
+  enqueueRecommendation(input: EnqueueRecommendationInput!): Boolean!
+  enqueueMaintenance(input: EnqueueMaintenanceInput!): Boolean!
+  createExportJob(input: CreateExportJobInput!): ExportJobEntity!
+  runExportJob(input: RunExportJobInput!): ExportJobEntity!
+  createNotificationTemplate(input: CreateNotificationTemplateInput!): NotificationTemplateEntity!
+  updateNotificationTemplate(input: UpdateNotificationTemplateInput!): NotificationTemplateEntity!
+  sendNotificationsByTemplate(input: SendTemplateInput!): SendResult!
+  sendAdHocNotification(input: SendAdHocNotificationInput!): SendResult!
+  markNotificationStatus(input: MarkNotificationStatusInput!): Boolean!
+  runScoringStrict(input: RunScoringStrictInput!): Boolean!
+  recomputeTenantScores(input: RecomputeTenantInput!): RecomputeTenantResult!
+  generateRecommendations(input: GenerateRecommendationsInput!): GenerateResult!
+  deleteRecommendation(input: DeleteRecommendationInput!): Boolean!
   createTenant(input: CreateTenantInput!): TenantEntity!
   updateTenant(input: UpdateTenantInput!): TenantEntity!
   archiveTenant(id: ID!): Boolean!
@@ -550,18 +696,23 @@ type Mutation {
   restoreClassroom(id: ID!, tenantId: String!): Boolean!
   enrollStudent(input: EnrollStudentInput!): EnrollmentEntity!
   closeEnrollment(input: CloseEnrollmentInput!): EnrollmentEntity!
-  runScoringStrict(input: RunScoringStrictInput!): Boolean!
-  recomputeTenantScores(input: RecomputeTenantInput!): RecomputeTenantResult!
+  createSkill(input: CreateSkillInput!): SkillEntity!
+  updateSkill(input: UpdateSkillInput!): SkillEntity!
+  removeSkill(id: String!): Boolean!
+  bulkUpsertSkills(input: BulkUpsertSkillsInput!): Boolean!
+  createCareer(input: CreateCareerInput!): CareerEntity!
+  updateCareer(input: UpdateCareerInput!): CareerEntity!
+  removeCareer(id: String!): Boolean!
+  setCareerSkills(input: SetCareerSkillsInput!): Boolean!
+  createMajor(input: CreateMajorInput!): MajorEntity!
+  updateMajor(input: UpdateMajorInput!): MajorEntity!
+  removeMajor(id: String!): Boolean!
+  setMajorSkills(input: SetMajorSkillsInput!): Boolean!
   startAssessment(input: StartAssessmentInput!): AssessmentEntity!
   saveResponse(input: SaveResponseInput!): ResponseEntity!
   saveResponsesBulk(input: SaveResponsesBulkInput!): Boolean!
   submitAssessment(input: SubmitAssessmentInput!): AssessmentEntity!
   runScoring(input: RunScoringInput!): AssessmentEntity!
-  createNotificationTemplate(input: CreateNotificationTemplateInput!): NotificationTemplateEntity!
-  updateNotificationTemplate(input: UpdateNotificationTemplateInput!): NotificationTemplateEntity!
-  sendNotificationsByTemplate(input: SendTemplateInput!): SendResult!
-  sendAdHocNotification(input: SendAdHocNotificationInput!): SendResult!
-  markNotificationStatus(input: MarkNotificationStatusInput!): Boolean!
   createQuestionnaire(input: CreateQuestionnaireInput!): QuestionnaireEntity!
   updateQuestionnaire(input: UpdateQuestionnaireInput!): QuestionnaireEntity!
   archiveQuestionnaire(id: ID!, tenantId: String!): Boolean!
@@ -574,8 +725,6 @@ type Mutation {
   createOption(input: CreateOptionInput!): OptionEntity!
   updateOption(input: UpdateOptionInput!): OptionEntity!
   reorderOptions(input: ReorderOptionsInput!): Boolean!
-  generateRecommendations(input: GenerateRecommendationsInput!): GenerateResult!
-  deleteRecommendation(input: DeleteRecommendationInput!): Boolean!
 }
 
 input RequestOtpInput {
@@ -597,6 +746,123 @@ input UpdateMeInput {
   location: String
   education: String
   occupation: String
+}
+
+input EnqueueNotificationByTemplateInput {
+  tenantId: String!
+  templateId: String!
+  delayMs: Float
+  variables: String
+  audienceJson: String
+  userIds: [String!]
+}
+
+input EnqueueNotificationAdHocInput {
+  payload: String!
+  tenantId: String!
+  userIds: [String!]!
+  delayMs: Float
+  channel: String!
+}
+
+input EnqueueScoringInput {
+  tenantId: String!
+  assessmentId: String!
+  params: String
+  delayMs: Float
+}
+
+input EnqueueRecommendationInput {
+  tenantId: String!
+  userId: String
+  params: String
+  delayMs: Float
+}
+
+input EnqueueMaintenanceInput {
+  tenantId: String!
+  params: String
+  delayMs: Float
+}
+
+input CreateExportJobInput {
+  tenantId: String!
+  format: String!
+  params: String
+  queueOnly: Boolean! = false
+  kind: String!
+}
+
+input RunExportJobInput {
+  id: String!
+  tenantId: String!
+}
+
+input CreateNotificationTemplateInput {
+  code: String!
+  tenantId: String!
+  lang: String!
+  body: String
+  subject: String
+  bodyJson: String
+  channel: String!
+}
+
+input UpdateNotificationTemplateInput {
+  id: String!
+  tenantId: String!
+  body: String
+  subject: String
+  bodyJson: String
+}
+
+input SendTemplateInput {
+  tenantId: String!
+  templateId: String!
+  variables: String
+  audienceJson: String
+  queueOnly: Boolean! = false
+  userIds: [String!]
+}
+
+input SendAdHocNotificationInput {
+  payload: String!
+  tenantId: String!
+  userIds: [String!]!
+  channel: String!
+  queueOnly: Boolean! = false
+}
+
+input MarkNotificationStatusInput {
+  id: String!
+  tenantId: String!
+  meta: String
+  status: String!
+}
+
+input RunScoringStrictInput {
+  tenantId: String!
+  assessmentId: String!
+  overwrite: Boolean! = true
+}
+
+input RecomputeTenantInput {
+  tenantId: String!
+  batchSize: Int! = 100
+}
+
+input GenerateRecommendationsInput {
+  tenantId: String!
+  assessmentId: String!
+  minConfidence: Float! = 0
+  overwrite: Boolean! = true
+  topN: Int! = 10
+  types: [RecommendationType!]! = [CAREER, MAJOR]
+}
+
+input DeleteRecommendationInput {
+  id: String!
+  tenantId: String!
 }
 
 input CreateTenantInput {
@@ -679,15 +945,70 @@ input CloseEnrollmentInput {
   endedAt: DateTime
 }
 
-input RunScoringStrictInput {
-  tenantId: String!
-  assessmentId: String!
-  overwrite: Boolean! = true
+input CreateSkillInput {
+  code: String!
+  title: String!
+  meta: String
+  category: String
 }
 
-input RecomputeTenantInput {
-  tenantId: String!
-  batchSize: Int! = 100
+input UpdateSkillInput {
+  id: String!
+  code: String
+  meta: String
+  title: String
+  category: String
+}
+
+input BulkUpsertSkillsInput {
+  items: [UpsertSkillInput!]!
+}
+
+input UpsertSkillInput {
+  code: String!
+  title: String!
+  meta: String
+  category: String
+}
+
+input CreateCareerInput {
+  code: String!
+  title: String!
+  meta: String
+  summary: String
+}
+
+input UpdateCareerInput {
+  id: String!
+  meta: String
+  code: String
+  title: String
+  summary: String
+}
+
+input SetCareerSkillsInput {
+  careerId: String!
+  mappingJson: String!
+}
+
+input CreateMajorInput {
+  code: String!
+  title: String!
+  meta: String
+  summary: String
+}
+
+input UpdateMajorInput {
+  id: String!
+  code: String
+  meta: String
+  title: String
+  summary: String
+}
+
+input SetMajorSkillsInput {
+  majorId: String!
+  mappingJson: String!
 }
 
 input StartAssessmentInput {
@@ -718,48 +1039,6 @@ input SubmitAssessmentInput {
 input RunScoringInput {
   tenantId: String!
   assessmentId: String!
-}
-
-input CreateNotificationTemplateInput {
-  code: String!
-  tenantId: String!
-  lang: String!
-  body: String
-  subject: String
-  bodyJson: String
-  channel: String!
-}
-
-input UpdateNotificationTemplateInput {
-  id: String!
-  tenantId: String!
-  body: String
-  subject: String
-  bodyJson: String
-}
-
-input SendTemplateInput {
-  tenantId: String!
-  templateId: String!
-  variables: String
-  audienceJson: String
-  queueOnly: Boolean! = false
-  userIds: [String!]
-}
-
-input SendAdHocNotificationInput {
-  payload: String!
-  tenantId: String!
-  userIds: [String!]!
-  channel: String!
-  queueOnly: Boolean! = false
-}
-
-input MarkNotificationStatusInput {
-  id: String!
-  tenantId: String!
-  meta: String
-  status: String!
 }
 
 input CreateQuestionnaireInput {
@@ -843,18 +1122,4 @@ input ReorderOptionsInput {
   tenantId: String!
   itemsJson: String!
   questionId: String!
-}
-
-input GenerateRecommendationsInput {
-  tenantId: String!
-  assessmentId: String!
-  minConfidence: Float! = 0
-  overwrite: Boolean! = true
-  topN: Int! = 10
-  types: [RecommendationType!]! = [CAREER, MAJOR]
-}
-
-input DeleteRecommendationInput {
-  id: String!
-  tenantId: String!
 }

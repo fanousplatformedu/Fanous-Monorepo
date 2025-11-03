@@ -312,6 +312,7 @@ model Consent {
   user   User   @relation(fields: [userId], references: [id])
   tenant Tenant @relation(fields: [tenantId], references: [id])
 
+  @@unique([userId, tenantId, type])
   @@index([tenantId, userId, type, status])
 }
 
