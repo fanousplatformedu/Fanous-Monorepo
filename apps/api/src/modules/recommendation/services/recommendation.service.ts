@@ -399,4 +399,72 @@ export class RecommendationService {
     await this.prisma.recommendation.delete({ where: { id: rec.id } });
     return true as const;
   }
+
+  // src/modules/recommendation/services/recommendation.service.ts
+  async precomputeForUser({
+    tenantId,
+    userId,
+    options,
+  }: {
+    tenantId: string;
+    userId: string;
+    options?: {
+      topN?: number;
+      minConfidence?: number;
+      types?: RecommendationType[];
+      overwrite?: boolean;
+    };
+  }) {
+    // همه assessmentهای سابمیت‌شدهٔ این کاربر در این tenant
+    const assessments = await this.prisma.assessment.findMany({
+      where: { tenantId, userId, submittedAt: { not: null } },
+      select: { id: true },
+    });
+
+    let created = 0;
+    for (const a of assessments) {
+      const res = await this.generate({
+        tenantId,
+        assessmentId: a.id,
+        topN: options?.topN,
+        minConfidence: options?.minConfidence,
+        types: options?.types,
+        overwrite: options?.overwrite ?? true,
+      });
+      created += res.created ?? 0;
+    }
+    return { processed: assessments.length, created };
+  }
+
+  async precomputeForTenant({
+    tenantId,
+    options,
+  }: {
+    tenantId: string;
+    options?: {
+      topN?: number;
+      minConfidence?: number;
+      types?: RecommendationType[];
+      overwrite?: boolean;
+    };
+  }) {
+    const assessments = await this.prisma.assessment.findMany({
+      where: { tenantId, submittedAt: { not: null } },
+      select: { id: true },
+    });
+
+    let created = 0;
+    for (const a of assessments) {
+      const res = await this.generate({
+        tenantId,
+        assessmentId: a.id,
+        topN: options?.topN,
+        minConfidence: options?.minConfidence,
+        types: options?.types,
+        overwrite: options?.overwrite ?? true,
+      });
+      created += res.created ?? 0;
+    }
+    return { processed: assessments.length, created };
+  }
 }
