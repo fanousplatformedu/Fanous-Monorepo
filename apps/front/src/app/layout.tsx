@@ -2,7 +2,8 @@ import { ReactNode } from "react";
 import { Metadata } from "next";
 
 import AppProviders from "@/providers/AppProvider";
-import Header from "@layouts/Header";
+import Footer from "@/components/layouts/Footer";
+import Header from "@/components/layouts/Header";
 
 import "./globals.css";
 
@@ -16,11 +17,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className="min-h-screen antialiased bg-app text-app transition-colors"
+        className="min-h-screen antialiased bg-background text-foreground transition-colors"
       >
         <AppProviders>
           <Header />
           <div className="pt-16">{children}</div>
+          <Footer />
         </AppProviders>
       </body>
     </html>

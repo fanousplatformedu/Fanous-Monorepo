@@ -1,0 +1,40 @@
+{
+  "app": {
+    "name": "Fanous",
+    "tag": "prototype",
+    "subtitle": "Career Guidance Platform"
+  },
+  "nav": {
+    "home": "Home",
+    "login": "Login",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "cta": {
+    "getStarted": "Get Started",
+    "join": "Join",
+    "send": "Send"
+  },
+  "footer": {
+    "desc": "A clean, modern platform for career guidance, learning discovery, and professional growth.",
+    "location": "Europe / Remote",
+    "newsletterTitle": "Fanous Newsletter",
+    "newsletterDesc": "Get product updates and practical articles.",
+    "emailPlaceholder": "Your email",
+    "rights": "All rights reserved.",
+    "builtWith": "Built with",
+    "and": "and"
+  },
+  "cols": {
+    "product": "Product",
+    "resources": "Resources",
+    "legal": "Legal"
+  },
+  "links": {
+    "blog": "Blog",
+    "faq": "FAQ",
+    "support": "Support",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  }
+}

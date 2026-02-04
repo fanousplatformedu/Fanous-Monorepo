@@ -1,8 +1,9 @@
 export type TLanguage = "en" | "fa";
 
-export type TLanguageCtx = {
+export type I18nContextValue = {
+  dir: "rtl" | "ltr";
   language: TLanguage;
-  dir: "ltr" | "rtl";
   toggleLanguage: () => void;
+  t: (key: string) => string;
   setLanguage: (lang: TLanguage) => void;
 };
