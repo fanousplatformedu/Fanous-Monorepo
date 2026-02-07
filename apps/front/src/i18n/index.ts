@@ -1,25 +1,30 @@
 import en from "./en.json";
 import fa from "./fa.json";
 
-export const dictionaries = {
-  en,
-  fa,
-} as const;
+export const dictionaries = { en, fa } as const;
 
 export type Dictionary = typeof en;
-type DictNode = string | { [key: string]: DictNode };
+export type DictValue =
+  | string
+  | number
+  | boolean
+  | null
+  | DictObject
+  | DictValue[];
+export type DictObject = { [key: string]: DictValue };
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
+const isObject = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null;
 
-export const getByKey = (obj: DictNode, key: string): string | undefined => {
+export const getByKey = (obj: unknown, key: string): unknown => {
   const parts = key.split(".");
-  let current: DictNode = obj;
+  let cur: unknown = obj;
   for (const part of parts) {
-    if (!isRecord(current)) return undefined;
-    const next = current[part];
-    if (next === undefined) return undefined;
-    current = next as DictNode;
+    if (!isObject(cur)) return undefined;
+    cur = (cur as Record<string, unknown>)[part];
   }
-  return typeof current === "string" ? current : undefined;
+  return cur;
 };
+
+export const isStringArray = (v: unknown): v is string[] =>
+  Array.isArray(v) && v.every((x) => typeof x === "string");

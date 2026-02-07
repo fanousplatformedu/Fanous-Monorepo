@@ -1,12 +1,12 @@
 "use client";
 
-import { Languages, Menu, Moon, Sun, X } from "lucide-react";
+import { Languages, Menu, X } from "lucide-react";
 import { HeaderMobileMenu } from "@elements/HeaderMobile";
+import { ThemeToggleBtn } from "@elements/ThemeToggleBtn";
 import { headerStyles } from "@/utils/style";
 import { useScrolled } from "@/hooks/useScrolled";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/utils/constant";
-import { useTheme } from "next-themes";
 import { useState } from "react";
 import { NavLink } from "@elements/NavLink";
 import { useI18n } from "@/hooks/useI18n";
@@ -17,9 +17,6 @@ import { cn } from "@/lib/utils";
 const Header = () => {
   const pathname = usePathname();
   const scrolled = useScrolled(10);
-
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
 
   const { toggleLanguage, t } = useI18n();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -63,20 +60,7 @@ const Header = () => {
               <Languages className="h-4.5 w-4.5" />
             </Button>
 
-            <Button
-              size="icon"
-              variant="ghost"
-              className="rounded-full"
-              aria-label="Toggle theme"
-              onClick={() => setTheme(isDark ? "light" : "dark")}
-            >
-              {isDark ? (
-                <Sun className="h-4.5 w-4.5" />
-              ) : (
-                <Moon className="h-4.5 w-4.5" />
-              )}
-            </Button>
-
+            <ThemeToggleBtn />
             <Button
               asChild
               variant="brand"

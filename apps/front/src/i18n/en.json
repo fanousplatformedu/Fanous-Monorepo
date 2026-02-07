@@ -36,5 +36,117 @@
     "support": "Support",
     "privacy": "Privacy",
     "terms": "Terms"
+  },
+  "home": {
+    "hero": {
+      "title": "Guiding Students to Their Brightest Future",
+      "desc": "A comprehensive career guidance platform helping schools, counselors, and students make informed decisions through data-driven assessments and personalized recommendations.",
+      "primaryCta": "Get Started",
+      "secondaryCta": "View Design System",
+      "stats": {
+        "schools": "Schools",
+        "students": "Students",
+        "satisfaction": "Satisfaction"
+      }
+    },
+    "features": {
+      "badge": "Features",
+      "title": "Everything You Need for Career Guidance",
+      "desc": "Powerful tools designed for schools, counselors, students, and parents to work together effectively.",
+      "items": {
+        "assess": {
+          "title": "Data-Driven Assessments",
+          "desc": "Comprehensive questionnaires with intelligent scoring and analysis."
+        },
+        "ai": {
+          "title": "Personalized Recommendations",
+          "desc": "AI-powered career and major suggestions tailored to each student."
+        },
+        "multi": {
+          "title": "Multi-Tenant Platform",
+          "desc": "Separate portals for schools, counselors, students, and parents."
+        },
+        "reports": {
+          "title": "Comprehensive Reports",
+          "desc": "Detailed analytics and insights for informed decision-making."
+        }
+      }
+    },
+    "roles": {
+      "title": "Built for Everyone",
+      "desc": "Tailored experiences for each role in the career guidance journey.",
+      "items": {
+        "students": {
+          "title": "Students",
+          "desc": "Take assessments, view recommendations, and plan your future.",
+          "bullets": [
+            "Interactive questionnaires",
+            "Career recommendations",
+            "Action plans"
+          ]
+        },
+        "counselors": {
+          "title": "Counselors",
+          "desc": "Guide students with data-driven insights and counseling tools.",
+          "bullets": [
+            "Student portfolios",
+            "Session scheduling",
+            "Progress tracking"
+          ]
+        },
+        "admins": {
+          "title": "School Admins",
+          "desc": "Manage users, assignments, and access comprehensive reports.",
+          "bullets": [
+            "User management",
+            "Assignment control",
+            "Analytics dashboard"
+          ]
+        },
+        "parents": {
+          "title": "Parents",
+          "desc": "Stay informed about your child's career exploration journey.",
+          "bullets": [
+            "Child progress",
+            "Recommendations view",
+            "Notification preferences"
+          ]
+        },
+        "teachers": {
+          "title": "Teachers",
+          "desc": "Monitor class progress and support student development.",
+          "bullets": [
+            "Class overview",
+            "Student insights",
+            "Performance reports"
+          ]
+        },
+        "super": {
+          "title": "Super Admin",
+          "desc": "Manage tenants, billing, and platform-wide settings.",
+          "bullets": ["Tenant management", "Billing center", "Global reports"]
+        }
+      }
+    },
+    "trust": {
+      "security": {
+        "title": "Secure & Private",
+        "desc": "Enterprise-grade security protecting student data."
+      },
+      "bilingual": {
+        "title": "Bilingual Support",
+        "desc": "Full support for English and Persian with RTL/LTR."
+      },
+      "wcag": {
+        "title": "WCAG AA Compliant",
+        "desc": "Accessible to all users with high contrast and keyboard navigation."
+      }
+    },
+    "cta": {
+      "title": "Ready to Guide Your Students?",
+      "desc": "Join hundreds of schools using Fanous to help students discover their potential.",
+      "primary": "Start Free Trial",
+      "secondary": "View Demo"
+    }
   }
 }

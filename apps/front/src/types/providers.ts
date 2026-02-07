@@ -4,6 +4,7 @@ export type I18nContextValue = {
   dir: "rtl" | "ltr";
   language: TLanguage;
   toggleLanguage: () => void;
-  t: (key: string) => string;
+  ta: (key: string) => string[];
   setLanguage: (lang: TLanguage) => void;
+  t: (key: string, fallback?: string) => string;
 };

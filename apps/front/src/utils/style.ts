@@ -77,3 +77,79 @@ export const footerStyles = {
     "outline-none focus:ring-2 focus:ring-ring/40",
   newsletterBtn: "h-10 rounded-2xl px-5 font-semibold",
 };
+
+// =============== Home page ===============
+export const homeStyles = {
+  page: "relative",
+
+  container: "mx-auto max-w-7xl px-5 sm:px-6 lg:px-8",
+  sectionPad: "py-16 sm:py-20",
+
+  heroRoot:
+    "relative overflow-hidden text-white " +
+    "bg-[linear-gradient(135deg,rgba(59,130,246,1),rgba(96,165,250,1),rgba(59,130,246,1))]",
+
+  heroOverlay:
+    "pointer-events-none absolute inset-0 " +
+    "bg-[radial-gradient(900px_380px_at_50%_0%,rgba(255,255,255,0.22),transparent_60%)] " +
+    "opacity-100",
+
+  heroGlow1:
+    "pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl " +
+    "bg-[linear-gradient(135deg,rgba(255,255,255,0.22),rgba(255,255,255,0.06))]",
+
+  heroGlow2:
+    "pointer-events-none absolute -bottom-28 -right-20 h-80 w-80 rounded-full blur-3xl " +
+    "bg-[linear-gradient(135deg,rgba(16,185,129,0.20),rgba(255,255,255,0.06))]",
+
+  heroContent: "relative py-20 lg:py-28",
+
+  pill:
+    "inline-flex items-center gap-3 px-5 py-2.5 rounded-full " +
+    "bg-white/10 backdrop-blur-md border border-white/20",
+
+  heroTitle:
+    "text-balance font-semibold tracking-tight " +
+    "text-4xl sm:text-5xl lg:text-6xl",
+
+  heroDesc: "text-white/90 text-base sm:text-lg leading-7 max-w-2xl mx-auto",
+
+  heroActions:
+    "mt-8 flex flex-col sm:flex-row items-center justify-center gap-3",
+
+  heroStatsWrap: "mt-12 grid grid-cols-3 gap-6 sm:gap-10 max-w-2xl mx-auto",
+
+  statCard:
+    "rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md " +
+    "px-3 py-4 sm:px-4 sm:py-5",
+  badge:
+    "inline-flex items-center gap-2 px-4 py-2 rounded-full " +
+    "bg-primary/10 text-primary dark:bg-primary/15",
+
+  h2: "text-balance font-semibold tracking-tight text-2xl sm:text-3xl lg:text-4xl text-foreground",
+  p: "text-muted-foreground max-w-2xl mx-auto leading-7 text-sm sm:text-base",
+  card:
+    "group relative overflow-hidden rounded-3xl border border-border/60 " +
+    "bg-background/60 backdrop-blur-xl shadow-sm transition-all " +
+    "hover:shadow-md hover:-translate-y-0.5",
+
+  cardGlow:
+    "pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 " +
+    "bg-[radial-gradient(550px_220px_at_30%_0%,rgba(59,130,246,0.25),transparent_65%)] " +
+    "group-hover:opacity-100",
+
+  iconBox:
+    "h-12 w-12 rounded-2xl flex items-center justify-center " +
+    "bg-primary/10 text-primary",
+
+  roleChip:
+    "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium " +
+    "bg-muted/60 text-foreground border border-border/60",
+  ctaRoot:
+    "relative overflow-hidden rounded-[2.2rem] text-white " +
+    "bg-[linear-gradient(135deg,rgba(59,130,246,1),rgba(16,185,129,1))]",
+  ctaInner: "relative p-8 sm:p-10",
+  ctaGlow:
+    "pointer-events-none absolute inset-0 " +
+    "bg-[radial-gradient(900px_380px_at_50%_0%,rgba(255,255,255,0.22),transparent_65%)]",
+};

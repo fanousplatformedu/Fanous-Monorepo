@@ -54,3 +54,34 @@ export const MOTION = {
     };
   },
 };
+
+// =========== Home page ===========
+
+export const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+export const fadeUpContainer = (
+  stagger = 0.06,
+  delayChildren = 0.02,
+): Variants => ({
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.55,
+      ease: EASE_OUT,
+      staggerChildren: stagger,
+      delayChildren,
+    },
+  },
+});
+
+export const fadeUpItem = (y = 10, duration = 0.45): Variants => ({
+  hidden: { opacity: 0, y },
+  show: { opacity: 1, y: 0, transition: { duration, ease: EASE_OUT } },
+});
+
+export const scaleIn = (duration = 0.45): Variants => ({
+  hidden: { opacity: 0, scale: 0.98 },
+  show: { opacity: 1, scale: 1, transition: { duration, ease: EASE_OUT } },
+});

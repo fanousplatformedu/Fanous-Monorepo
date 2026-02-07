@@ -1,9 +1,9 @@
+import { AppProviders } from "@/providers/AppProvider";
 import { ReactNode } from "react";
 import { Metadata } from "next";
 
-import AppProviders from "@/providers/AppProvider";
-import Footer from "@/components/layouts/Footer";
-import Header from "@/components/layouts/Header";
+import Footer from "@layouts/Footer";
+import Header from "@layouts/Header";
 
 import "./globals.css";
 
