@@ -13,6 +13,7 @@ import { useI18n } from "@/hooks/useI18n";
 import { Button } from "@ui/button";
 import { Brand } from "@elements/Brand";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const Header = () => {
   const pathname = usePathname();
@@ -66,7 +67,7 @@ const Header = () => {
               variant="brand"
               className="hidden sm:inline-flex font-semibold rounded-2xl px-5 h-10"
             >
-              <a href="/auth/login">{t("cta.getStarted")}</a>
+              <Link href="/sign-in">{t("cta.getStarted")}</Link>
             </Button>
             <Button
               size="icon"

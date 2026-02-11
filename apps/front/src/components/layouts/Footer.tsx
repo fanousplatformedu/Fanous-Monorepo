@@ -27,7 +27,6 @@ const Footer = () => {
           { href: "/", labelKey: "nav.home" },
           { href: "/about", labelKey: "nav.about" },
           { href: "/contact", labelKey: "nav.contact" },
-          { href: "/auth/login", labelKey: "nav.login" },
         ],
       },
       {

@@ -35,7 +35,7 @@ export const navLinkStyles = {
 
 // ================ Footer ===============
 export const footerStyles = {
-  root: "relative mt-16",
+  root: "relative",
   container: "mx-auto max-w-7xl px-5 sm:px-6 lg:px-8",
   topSeparator: "h-px w-full bg-border/60",
   contentPad: "py-14",
@@ -152,4 +152,62 @@ export const homeStyles = {
   ctaGlow:
     "pointer-events-none absolute inset-0 " +
     "bg-[radial-gradient(900px_380px_at_50%_0%,rgba(255,255,255,0.22),transparent_65%)]",
+};
+
+// =============== Auth ===============
+export const authMethodStyles = {
+  container: "w-[80%] space-y-6",
+
+  option:
+    "w-full py-3 rounded-xl border border-white/20 " +
+    "bg-white/5 text-white backdrop-blur-md " +
+    "hover:bg-white/10 transition-all duration-300 " +
+    "cursor-pointer",
+
+  optionActive: "bg-white/20 border-blue-400 ring-2 ring-blue-400/30",
+};
+
+// =============== OTP Input Styles ===============
+export const otpStyles = {
+  wrapper: "flex justify-center gap-4 mb-8",
+
+  input:
+    "w-12 h-12 " +
+    "text-center text-xl font-semibold " +
+    "rounded-lg " +
+    "bg-white/10 " +
+    "border border-white/30 " +
+    "text-white " +
+    "outline-none " +
+    "transition-all duration-300 " +
+    "focus:border-blue-400 focus:ring-2 focus:ring-blue-400/40",
+
+  filled: "border-blue-500 bg-white/20",
+
+  error: "border-red-400 ring-2 ring-red-400/40",
+
+  disabled: "opacity-50 cursor-not-allowed",
+};
+
+// =============== Auth Card Styles ===============
+export const authCardStyles = {
+  wrapper: "w-full max-w-[500px] aspect-square perspective",
+
+  flipContainer:
+    "relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d]",
+
+  flipped: "rotate-y-180",
+
+  cardBase:
+    "absolute inset-0 flex flex-col items-center justify-center p-10 " +
+    "bg-white/10 dark:bg-white/5 backdrop-blur-xl " +
+    "shadow-[0_10px_20px_rgba(42,126,188,0.51)] " +
+    "ring-[10px] ring-blue-300 " +
+    "rounded-xl md:rounded-full " +
+    "[backface-visibility:hidden] " +
+    "transition-all duration-500",
+
+  backSide: "rotate-y-180",
+
+  errorShake: "animate-[shake_0.5s_ease-in-out]",
 };

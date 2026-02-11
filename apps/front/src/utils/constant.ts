@@ -16,7 +16,6 @@ export const Ctx = createContext<TLanguage | null>(null);
 export const NAV_ITEMS: TNavItem[] = [
   { id: "home", href: "/", labelKey: "nav.home" },
   { id: "about", href: "/about", labelKey: "nav.about" },
-  { id: "login", href: "/auth/login", labelKey: "nav.login" },
   { id: "contact", href: "/contact", labelKey: "nav.contact" },
 ];
 
@@ -107,3 +106,8 @@ export const HOME_ROLES = [
     bulletsKey: "home.roles.items.super.bullets",
   },
 ] as const;
+
+// ============= Auth =============
+
+export const OTP_LENGTH = 6;
+export const RESEND_SECONDS = 30;

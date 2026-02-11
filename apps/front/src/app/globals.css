@@ -590,3 +590,83 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Sphere Base Style */
+.sphere {
+  position: absolute;
+  border-radius: 9999px;
+
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.7),
+      rgba(255, 255, 255, 0.15) 40%,
+      rgba(59, 130, 246, 0.9) 75%
+    ),
+    radial-gradient(
+      circle at 70% 75%,
+      rgba(147, 197, 253, 1),
+      rgba(59, 130, 246, 1)
+    );
+
+  box-shadow:
+    inset -25px -25px 50px rgba(0, 0, 0, 0.15),
+    inset 25px 25px 50px rgba(255, 255, 255, 0.3),
+    0 30px 60px rgba(0, 0, 0, 0.25);
+
+  backdrop-filter: blur(8px);
+  transform: translateZ(0);
+  transition: transform 0.5s ease;
+}
+
+/* Floating Animations */
+
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+
+@keyframes floatMedium {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-45px);
+  }
+}
+
+@keyframes floatFast {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-60px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: floatMedium 6s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: floatFast 5s ease-in-out infinite;
+}
+
+.perspective {
+  perspective: 1200px;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
