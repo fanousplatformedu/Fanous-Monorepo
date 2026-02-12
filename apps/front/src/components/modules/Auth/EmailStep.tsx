@@ -30,7 +30,7 @@ const EmailStep = ({ onContinue, onBack }: TEmailStep) => {
     <>
       {/* ========= Title ========= */}
       <h2 className="text-2xl font-semibold text-center mb-10 text-white">
-        {t("auth.welcomeBack")}
+        {t("auth.welcome")}
       </h2>
 
       {/* ========= Form ========= */}
