@@ -4,6 +4,8 @@ export const emailSchema = z.object({
   email: z.string().email("Please enter a valid email"),
 });
 
+export type TFormData = z.infer<typeof emailSchema>;
+
 export const otpSchema = z.object({
   code: z
     .string()

@@ -148,5 +148,32 @@
       "primary": "Start Free Trial",
       "secondary": "View Demo"
     }
+  },
+  "auth": {
+    "emailLabel": "Email",
+    "continue": "Continue",
+    "resendIn": "Resend in",
+    "codeSent": "Code sent to",
+    "resendCode": "Resend Code",
+    "backToCredentials": "Back",
+    "codeSentTo": "Code sent to",
+    "phoneLabel": "Mobile Number",
+    "verifyEmail": "Verify Email",
+    "mobileLabel": "Mobile Number",
+    "backToEmail": "Back to Email",
+    "welcomeBack": "Welcome Back 😀",
+    "enterMobile": "Enter Mobile Number",
+    "emailMethod": "Continue with Email",
+    "emailRequired": "Email is required",
+    "verifyContinue": "Verify & Continue",
+    "chooseMethod": "Choose Login Method",
+    "verifyPhone": "Verify Mobile Number",
+    "verifyMobile": "Verify Mobile Number",
+    "backToMobile": "Back to Mobile Number",
+    "backToMethod": "Back to Method Selection",
+    "phoneMethod": "Continue with Mobile Number",
+    "mobileRequired": "Mobile number is required",
+    "mobileInvalid": "Enter a valid mobile number",
+    "emailInvalid": "Please enter a valid email address"
   }
 }

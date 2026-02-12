@@ -22,3 +22,8 @@ export type TPhoneStep = {
 export type TFormData = {
   phone: string;
 };
+
+export type TEmailStep = {
+  onBack: () => void;
+  onContinue: (email: string) => void;
+};

@@ -2,12 +2,15 @@
 
 import { authMethodStyles } from "@/utils/style";
 import { TAuthMethod } from "@/types/modules";
+import { useI18n } from "@/hooks/useI18n";
 
 const AuthMethodStep = ({ selected, onSelect }: TAuthMethod) => {
+  const { t } = useI18n();
+
   return (
     <>
       <h2 className="text-2xl font-semibold text-center mb-10 text-white">
-        Choose Login Method
+        {t("auth.chooseMethod")}
       </h2>
 
       <div className={authMethodStyles.container}>
@@ -18,7 +21,7 @@ const AuthMethodStep = ({ selected, onSelect }: TAuthMethod) => {
             ${selected === "email" ? authMethodStyles.optionActive : ""}
           `}
         >
-          Continue with Email
+          {t("auth.emailMethod")}
         </button>
 
         <button
@@ -28,7 +31,7 @@ const AuthMethodStep = ({ selected, onSelect }: TAuthMethod) => {
             ${selected === "phone" ? authMethodStyles.optionActive : ""}
           `}
         >
-          Continue with Mobile Number
+          {t("auth.phoneMethod")}
         </button>
       </div>
     </>

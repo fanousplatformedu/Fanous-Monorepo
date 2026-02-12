@@ -1,31 +1,25 @@
 "use client";
 
-import { emailSchema } from "@/schemas/auth.schema";
+import { emailSchema, TFormData } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { TEmailStep } from "@/types/modules";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useI18n } from "@/hooks/useI18n";
 import { Button } from "@ui/button";
-import { z } from "zod";
 
 import FloatingInput from "@ui/FloatingInput";
 
-type FormData = z.infer<typeof emailSchema>;
-
-const EmailStep = ({
-  onContinue,
-  onBack,
-}: {
-  onContinue: (email: string) => void;
-  onBack: () => void;
-}) => {
+const EmailStep = ({ onContinue, onBack }: TEmailStep) => {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<FormData>({
+  const form = useForm<TFormData>({
     resolver: zodResolver(emailSchema),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: TFormData) => {
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
@@ -34,17 +28,19 @@ const EmailStep = ({
 
   return (
     <>
+      {/* ========= Title ========= */}
       <h2 className="text-2xl font-semibold text-center mb-10 text-white">
-        Welcome Back 😀
+        {t("auth.welcomeBack")}
       </h2>
 
+      {/* ========= Form ========= */}
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-10 w-[80%]"
       >
         <FloatingInput
           type="email"
-          label="Email"
+          label={t("auth.emailLabel")}
           error={form.formState.errors.email?.message}
           {...form.register("email")}
         />
@@ -56,15 +52,17 @@ const EmailStep = ({
           variant="brand"
         >
           {loading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
-          Continue
+          {t("auth.continue")}
         </Button>
       </form>
+
+      {/* ========= Back Button ========= */}
       <button
         type="button"
         onClick={onBack}
         className="mt-6 text-sm text-white/60 hover:text-white transition"
       >
-        ← Back to Method Selection
+        ← {t("auth.backToMethod")}
       </button>
     </>
   );
