@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { BadRequestException, HttpException } from "@nestjs/common";
+import { OtpChannel, Role, TenantRole } from "@prisma/client";
 import { hash, verify as verifyHash } from "argon2";
 import { normalizeIranMobile } from "@utils/phoneGenerate";
-import { OtpChannel, Role } from "@prisma/client";
-import { AuthMessageEnum } from "@auth/enum/auth.message.enum";
+import { AuthPayloadEntity } from "@auth/entities/auth-entity";
 import { RequestOtpInput } from "@auth/dto/request-otp.input";
+import { AuthMessageEnum } from "@auth/enum/auth.message.enum";
 import { VerifyOtpInput } from "@auth/dto/verify-otp.input";
 import { PrismaService } from "@prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
@@ -12,24 +13,21 @@ import { JwtService } from "@nestjs/jwt";
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwt: JwtService,
+    private prismaService: PrismaService,
+    private jwtService: JwtService,
   ) {}
 
-  private readonly OTP_EXPIRES_SEC = 120; // 2min
+  private readonly OTP_EXPIRES_SEC = 120;
   private readonly OTP_RATE_LIMIT_PER_HOUR = 5;
 
   private generateNumericCode(len = 6): string {
-    const n = Math.floor(Math.random() * 1_000_000);
+    const max = 10 ** len;
+    const n = Math.floor(Math.random() * max);
     return String(n).padStart(len, "0");
   }
 
   private normalizeIdentifier(channel: OtpChannel, identifier: string): string {
-    if (channel === OtpChannel.EMAIL) {
-      const email = identifier.trim().toLowerCase();
-      return email;
-    }
-
+    if (channel === OtpChannel.EMAIL) return identifier.trim().toLowerCase();
     const norm = normalizeIranMobile(identifier);
     if (!norm.ok) throw new BadRequestException(AuthMessageEnum.INVALID_MOBILE);
     return norm.e164!;
@@ -39,9 +37,9 @@ export class AuthService {
     const channel = input.channel;
     const identifier = this.normalizeIdentifier(channel, input.identifier);
     const tenantId = input.tenantId ?? null;
-
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    const countLastHour = await this.prisma.otpToken.count({
+
+    const countLastHour = await this.prismaService.otpToken.count({
       where: {
         identifier,
         channel,
@@ -50,45 +48,35 @@ export class AuthService {
       },
     });
 
-    if (countLastHour >= this.OTP_RATE_LIMIT_PER_HOUR)
+    if (countLastHour >= this.OTP_RATE_LIMIT_PER_HOUR) {
       throw new HttpException(
         AuthMessageEnum.TOO_MANY_REQUESTS,
         HttpStatus.TOO_MANY_REQUESTS,
       );
+    }
 
     const code = this.generateNumericCode(6);
     const codeHash = await hash(code);
     const expiresAt = new Date(Date.now() + this.OTP_EXPIRES_SEC * 1000);
 
-    await this.prisma.otpToken.create({
-      data: {
-        identifier,
-        channel,
-        codeHash,
-        tenantId,
-        expiresAt,
-      },
+    await this.prismaService.otpToken.create({
+      data: { identifier, channel, codeHash, tenantId, expiresAt },
     });
 
-    // TODO: ارسال SMS/Email واقعی
+    // TODO: replace with provider integrations (SMS/Email)
     console.log(
       `[OTP][DEV] ${channel}=${identifier} code=${code} exp=${this.OTP_EXPIRES_SEC}s`,
     );
   }
 
-  async verifyOtp(input: VerifyOtpInput) {
+  async verifyOtp(input: VerifyOtpInput): Promise<AuthPayloadEntity> {
     const channel = input.channel;
     const identifier = this.normalizeIdentifier(channel, input.identifier);
     const tenantId = input.tenantId ?? null;
     const now = new Date();
 
-    const lastOtp = await this.prisma.otpToken.findFirst({
-      where: {
-        identifier,
-        channel,
-        tenantId,
-        verifiedAt: null,
-      },
+    const lastOtp = await this.prismaService.otpToken.findFirst({
+      where: { identifier, channel, tenantId, verifiedAt: null },
       orderBy: { createdAt: "desc" },
     });
 
@@ -100,43 +88,59 @@ export class AuthService {
     const ok = await verifyHash(lastOtp.codeHash, input.code);
     if (!ok) throw new UnauthorizedException(AuthMessageEnum.INVALID_OTP);
 
-    await this.prisma.otpToken.update({
+    await this.prismaService.otpToken.update({
       where: { id: lastOtp.id },
       data: { verifiedAt: now },
     });
 
-    const where =
+    const user =
       channel === OtpChannel.EMAIL
-        ? { email: identifier }
-        : { phone: identifier };
+        ? await this.prismaService.user.upsert({
+            where: { email: identifier },
+            create: {
+              role: Role.STUDENT,
+              email: identifier,
+              emailVerified: true,
+              phone: null,
+              phoneVerified: false,
+              name: null,
+              password: null,
+            },
+            update: { emailVerified: true },
+          })
+        : await this.prismaService.user.upsert({
+            where: { phone: identifier },
+            create: {
+              role: Role.STUDENT,
+              phone: identifier,
+              phoneVerified: true,
+              email: null,
+              emailVerified: false,
+              name: null,
+              password: null,
+            },
+            update: { phoneVerified: true },
+          });
 
-    let user = await this.prisma.user.findFirst({ where });
-
-    if (!user) {
-      user = await this.prisma.user.create({
-        data: {
-          role: Role.STUDENT,
-          email: channel === OtpChannel.EMAIL ? identifier : null,
-          phone: channel === OtpChannel.PHONE ? identifier : null,
-          password: null,
-          name: null,
-          emailVerified: channel === OtpChannel.EMAIL,
-          phoneVerified: channel === OtpChannel.PHONE,
+    if (tenantId) {
+      await this.prismaService.userTenantRole.upsert({
+        where: {
+          userId_tenantId_role: {
+            userId: user.id,
+            tenantId,
+            role: TenantRole.STUDENT,
+          },
         },
-      });
-    } else {
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: {
-          emailVerified:
-            channel === OtpChannel.EMAIL ? true : user.emailVerified,
-          phoneVerified:
-            channel === OtpChannel.PHONE ? true : user.phoneVerified,
+        create: {
+          userId: user.id,
+          tenantId,
+          role: TenantRole.STUDENT,
         },
+        update: {},
       });
     }
 
-    const accessToken = await this.jwt.signAsync({
+    const accessToken = await this.jwtService.signAsync({
       sub: user.id,
       role: user.role,
     });
@@ -151,7 +155,9 @@ export class AuthService {
   }
 
   async validateJwtUser(userId: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
     if (!user)
       throw new UnauthorizedException(AuthMessageEnum.INVALID_CREDENTIALS);
     if (!user.isActive)

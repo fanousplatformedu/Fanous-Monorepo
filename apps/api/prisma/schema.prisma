@@ -7,65 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//  ============== Enums ================
-enum Role {
-  ADMIN
-  PARENT
-  STUDENT
-  TEACHER
-  COUNSELOR
-  SUPER_ADMIN
-  CONTENT_EDITOR
-}
-
-enum TenantRole {
-  SCHOOL_ADMIN
-  COUNSELOR
-  TEACHER
-  STUDENT
-  PARENT
-  CONTENT_EDITOR
-}
-
-enum LicensePlan {
-  FREE
-  STANDARD
-  PRO
-  ENTERPRISE
-}
-
-enum SubscriptionStatus {
-  ACTIVE
-  PAST_DUE
-  CANCELED
-  TRIALING
-}
-
-enum InvoiceStatus {
-  DUE
-  PAID
-  VOID
-  FAILED
-}
-
+// ========== ENUMS (Global) ===========
 enum VersionStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
 }
 
-enum AssessmentState {
-  IN_PROGRESS
-  SUBMITTED
-  SCORED
-}
-
 enum QuestionType {
+  TEXT
+  SCALE
+  MATRIX
   SINGLE_CHOICE
   MULTIPLE_CHOICE
-  SCALE
-  TEXT
-  MATRIX
 }
 
 enum LanguageCode {
@@ -74,57 +28,17 @@ enum LanguageCode {
   AR
 }
 
-enum NotificationChannel {
-  EMAIL
-  SMS
-  PUSH
-  IN_APP
+// ========= USERS & GLOBAL ROLES ===========
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  CONTENT_EDITOR
+  COUNSELOR
+  TEACHER
+  PARENT
+  STUDENT
 }
 
-enum NotificationStatus {
-  QUEUED
-  SENT
-  FAILED
-  DELIVERED
-  OPENED
-}
-
-enum ExportFormat {
-  CSV
-  XLSX
-  PDF
-}
-
-enum ExportStatus {
-  PENDING
-  PROCESSING
-  READY
-  FAILED
-}
-
-enum ConsentType {
-  PARENTAL
-  PRIVACY
-}
-
-enum ConsentStatus {
-  GIVEN
-  REVOKED
-}
-
-enum ReportStatus {
-  DRAFT
-  READY
-  FAILED
-}
-
-enum RecommendationType {
-  CAREER
-  MAJOR
-  LEARNING
-}
-
-// =============== Users =================
 model User {
   id       String  @id @default(cuid())
   name     String?
@@ -141,31 +55,39 @@ model User {
   bio        String?
   occupation String?
   education  String?
-  joinDate   DateTime @default(now())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isActive   Boolean  @default(true)
-  role       Role     @default(STUDENT)
+
+  joinDate  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
+
+  role Role @default(STUDENT)
 
   coursesEnrolled    Int @default(0)
   certificatesEarned Int @default(0)
   learningHours      Int @default(0)
 
-  tenantRoles        UserTenantRole[]
-  parentLinksChild   ParentLink[]        @relation("ParentToChild")
-  parentLinksParent  ParentLink[]        @relation("ParentToParent")
-  consents           Consent[]
-  enrollments        Enrollment[]
-  assessments        Assessment[]        @relation("AssessmentByUser")
-  counselingSessions CounselingSession[] @relation("CounselorUser")
-  notifications      Notification[]      @relation("NotificationToUser")
-  auditEvents        AuditEvent[]        @relation("AuditByUser")
-  ResultSnapshot     ResultSnapshot[]
-  Report             Report[]
-  CounselingSession  CounselingSession[]
+  tenantRoles UserTenantRole[]
+
+  parentLinksAsParent ParentLink[] @relation("ParentToParent")
+  parentLinksAsChild  ParentLink[] @relation("ParentToChild")
+
+  consents      Consent[]
+  enrollments   Enrollment[]
+  assessments   Assessment[]   @relation("AssessmentByUser")
+  notifications Notification[] @relation("NotificationToUser")
+  auditEvents   AuditEvent[]   @relation("AuditByUser")
+
+  resultSnapshots ResultSnapshot[]
+  reports         Report[]
+
+  // Counseling relations (fix ambiguity)
+  counselingAsCounselor CounselingSession[] @relation("CounselorUser")
+  counselingAsStudent   CounselingSession[] @relation("StudentUser")
+  counselingSessions    CounselingSession[]
 }
 
-//  ============== Auth (OTP)=====================
+// ============ AUTH (OTP) ==========
 enum OtpChannel {
   EMAIL
   PHONE
@@ -176,52 +98,71 @@ model OtpToken {
   identifier String
   channel    OtpChannel
   codeHash   String
-  tenantId   String?
-  tenant     Tenant?    @relation(fields: [tenantId], references: [id])
+
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+
   expiresAt  DateTime
   verifiedAt DateTime?
-  createdAt  DateTime   @default(now())
+  createdAt  DateTime  @default(now())
 
   @@index([identifier, channel])
   @@index([expiresAt])
+  @@index([tenantId])
 }
 
-//  ================== Core & Tenancy ====================
+// =========== TENANCY (Core) ===========
+enum TenantRole {
+  PARENT
+  TEACHER
+  STUDENT
+  COUNSELOR
+  SCHOOL_ADMIN
+  CONTENT_EDITOR
+}
+
 model Tenant {
-  id                String                 @id @default(cuid())
-  name              String
-  slug              String                 @unique
-  createdAt         DateTime               @default(now())
-  updatedAt         DateTime               @updatedAt
-  deletedAt         DateTime?
-  settings          TenantSettings?
-  licenses          License[]
-  subscriptions     Subscription[]
-  invoices          Invoice[]
-  users             UserTenantRole[]
-  grades            Grade[]
-  classrooms        Classroom[]
-  questionnaires    Questionnaire[]
-  assignments       Assignment[]
-  assessments       Assessment[]
-  results           ResultSnapshot[]
-  notifications     Notification[]
-  notifTemplates    NotificationTemplate[]
-  exportJobs        ExportJob[]
-  counseling        CounselingSession[]
-  auditEvents       AuditEvent[]
-  files             FileAsset[]
-  ParentLink        ParentLink[]
-  Consent           Consent[]
-  Enrollment        Enrollment[]
-  AssessmentVersion AssessmentVersion[]
-  Question          Question[]
-  Option            Option[]
-  Response          Response[]
-  Score             Score[]
-  Recommendation    Recommendation[]
-  Report            Report[]
-  otpTokens         OtpToken[]
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  settings TenantSettings?
+
+  // Plans / billing
+  licenses      License[]
+  subscriptions Subscription[]
+  invoices      Invoice[]
+
+  // Access control
+  users UserTenantRole[]
+
+  // School structure
+  grades             Grade[]
+  classrooms         Classroom[]
+  enrollments        Enrollment[]
+  parentLinks        ParentLink[]
+  consents           Consent[]
+  questionnaires     Questionnaire[]
+  assessmentVersions AssessmentVersion[]
+  questions          Question[]
+  options            Option[]
+  assignments        Assignment[]
+  assessments        Assessment[]
+  responses          Response[]
+  scores             Score[]
+  results            ResultSnapshot[]
+  recommendations    Recommendation[]
+  notifications      Notification[]
+  notifTemplates     NotificationTemplate[]
+  exportJobs         ExportJob[]
+  reports            Report[]
+  counseling         CounselingSession[]
+  auditEvents        AuditEvent[]
+  files              FileAsset[]
+  otpTokens          OtpToken[]
 
   @@index([slug])
 }
@@ -242,6 +183,14 @@ model TenantSettings {
   updatedAt DateTime @updatedAt
 }
 
+// =========== LICENSING & BILLING =================
+enum LicensePlan {
+  FREE
+  STANDARD
+  PRO
+  ENTERPRISE
+}
+
 model License {
   id        String      @id @default(cuid())
   tenantId  String
@@ -253,6 +202,13 @@ model License {
   createdAt DateTime    @default(now())
 
   @@index([tenantId])
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
 }
 
 model Subscription {
@@ -269,6 +225,13 @@ model Subscription {
   @@index([tenantId, status])
 }
 
+enum InvoiceStatus {
+  DUE
+  PAID
+  VOID
+  FAILED
+}
+
 model Invoice {
   id          String        @id @default(cuid())
   tenantId    String
@@ -276,15 +239,17 @@ model Invoice {
   amountCents Int
   currency    String        @default("USD")
   status      InvoiceStatus @default(DUE)
-  issuedAt    DateTime      @default(now())
-  dueAt       DateTime?
-  paidAt      DateTime?
-  meta        Json?
+
+  issuedAt DateTime  @default(now())
+  dueAt    DateTime?
+  paidAt   DateTime?
+
+  meta Json?
 
   @@index([tenantId, status])
 }
 
-// ============ RBAC ===============
+// =========== RBAC (User <-> Tenant) ===========
 model UserTenantRole {
   id       String     @id @default(cuid())
   userId   String
@@ -297,6 +262,7 @@ model UserTenantRole {
 
   @@unique([userId, tenantId, role])
   @@index([tenantId, role])
+  @@index([userId])
 }
 
 model ParentLink {
@@ -305,24 +271,40 @@ model ParentLink {
   childId  String
   tenantId String
 
-  parent    User     @relation("ParentToParent", fields: [parentId], references: [id])
-  child     User     @relation("ParentToChild", fields: [childId], references: [id])
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  parent User   @relation("ParentToParent", fields: [parentId], references: [id])
+  child  User   @relation("ParentToChild", fields: [childId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
   createdAt DateTime @default(now())
 
   @@unique([parentId, childId, tenantId])
   @@index([tenantId])
+  @@index([parentId])
+  @@index([childId])
+}
+
+// ========== CONSENT MANAGEMENT =============
+enum ConsentType {
+  PARENTAL
+  PRIVACY
+}
+
+enum ConsentStatus {
+  GIVEN
+  REVOKED
 }
 
 model Consent {
-  id        String        @id @default(cuid())
-  userId    String
-  tenantId  String
-  type      ConsentType
-  status    ConsentStatus
-  data      Json?
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id       String @id @default(cuid())
+  userId   String
+  tenantId String
+
+  type   ConsentType
+  status ConsentStatus
+  data   Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user   User   @relation(fields: [userId], references: [id])
   tenant Tenant @relation(fields: [tenantId], references: [id])
@@ -331,14 +313,15 @@ model Consent {
   @@index([tenantId, userId, type, status])
 }
 
-//  ============ School Structure =================
+// ============= SCHOOL STRUCTURE (Grade/Classroom/Enrollment) ===========
 model Grade {
   id       String @id @default(cuid())
   tenantId String
   tenant   Tenant @relation(fields: [tenantId], references: [id])
 
-  name      String
-  code      String?
+  name String
+  code String?
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -357,9 +340,10 @@ model Classroom {
   gradeId String
   grade   Grade  @relation(fields: [gradeId], references: [id])
 
-  name      String
-  code      String?
-  year      Int
+  name String
+  code String?
+  year Int
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -386,9 +370,10 @@ model Enrollment {
 
   @@unique([tenantId, classroomId, studentId])
   @@index([tenantId, studentId])
+  @@index([classroomId])
 }
 
-//  =========== Questionnaire & Assessment =====================
+// ============= QUESTIONNAIRES / VERSIONS / ASSIGNMENTS / ASSESSMENTS ============
 model Questionnaire {
   id       String @id @default(cuid())
   tenantId String
@@ -403,12 +388,18 @@ model Questionnaire {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  versions   AssessmentVersion[]
-  questions  Question[]
-  Assignment Assignment[]
+  versions    AssessmentVersion[]
+  questions   Question[]
+  assignments Assignment[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
+}
+
+enum AssessmentState {
+  IN_PROGRESS
+  SUBMITTED
+  SCORED
 }
 
 model AssessmentVersion {
@@ -424,10 +415,11 @@ model AssessmentVersion {
   changelog          String?
   interpretationJson Json?
 
-  createdAt   DateTime     @default(now())
+  createdAt   DateTime  @default(now())
   publishedAt DateTime?
-  Assignment  Assignment[]
-  Assessment  Assessment[]
+
+  assignments Assignment[]
+  assessments Assessment[]
 
   @@unique([questionnaireId, versionNumber])
   @@index([tenantId, status])
@@ -449,8 +441,8 @@ model Question {
   required   Boolean      @default(true)
   configJson Json?
 
-  options  Option[]
-  Response Response[]
+  options   Option[]
+  responses Response[]
 
   @@index([tenantId, questionnaireId])
 }
@@ -490,6 +482,7 @@ model Assignment {
   assessments Assessment[]
 
   @@index([tenantId, questionnaireId])
+  @@index([versionId])
 }
 
 model Assessment {
@@ -506,9 +499,10 @@ model Assessment {
   versionId String?
   version   AssessmentVersion? @relation(fields: [versionId], references: [id])
 
-  state       AssessmentState @default(IN_PROGRESS)
-  language    LanguageCode    @default(FA)
-  startedAt   DateTime        @default(now())
+  state    AssessmentState @default(IN_PROGRESS)
+  language LanguageCode    @default(FA)
+
+  startedAt   DateTime  @default(now())
   submittedAt DateTime?
   scoredAt    DateTime?
 
@@ -517,6 +511,8 @@ model Assessment {
   result    ResultSnapshot?
 
   @@index([tenantId, userId, state])
+  @@index([assignmentId])
+  @@index([versionId])
 }
 
 model Response {
@@ -544,10 +540,11 @@ model Score {
   assessmentId String
   assessment   Assessment @relation(fields: [assessmentId], references: [id])
 
-  metric    String
-  value     Float
-  weight    Float?
-  meta      Json?
+  metric String
+  value  Float
+  weight Float?
+  meta   Json?
+
   createdAt DateTime @default(now())
 
   @@unique([assessmentId, metric])
@@ -574,7 +571,7 @@ model ResultSnapshot {
   @@index([tenantId, userId])
 }
 
-//  ================== Library: Career/Major/Skill =========================
+// ============= LIBRARY: Career / Major / Skill =============
 model Career {
   id      String @id @default(cuid())
   code    String @unique
@@ -632,7 +629,13 @@ model MajorSkill {
   @@unique([majorId, skillId])
 }
 
-//  =============== Recommendation =======================
+// ========= RECOMMENDATION =============
+enum RecommendationType {
+  CAREER
+  MAJOR
+  LEARNING
+}
+
 model Recommendation {
   id       String @id @default(cuid())
   tenantId String
@@ -655,52 +658,101 @@ model Recommendation {
   targetMajor  Major?  @relation(fields: [targetMajorId], references: [id])
 
   @@index([tenantId, type])
+  @@index([resultId])
 }
 
-//  =============== Reporting / Export / Notification =======================
+// ============ REPORTING =============
+enum ReportStatus {
+  DRAFT
+  READY
+  FAILED
+}
+
 model Report {
-  id          String       @id @default(cuid())
-  tenantId    String
-  tenant      Tenant       @relation(fields: [tenantId], references: [id])
-  title       String
-  status      ReportStatus @default(DRAFT)
-  params      Json?
-  resultJson  Json?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  title      String
+  status     ReportStatus @default(DRAFT)
+  params     Json?
+  resultJson Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   createdById String?
-  createdBy   User?        @relation(fields: [createdById], references: [id])
+  createdBy   User?   @relation(fields: [createdById], references: [id])
 
   @@index([tenantId, status])
+  @@index([createdById])
+}
+
+// ============== DATA EXPORT ================
+enum ExportFormat {
+  CSV
+  XLSX
+  PDF
+}
+
+enum ExportStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
 }
 
 model ExportJob {
-  id         String       @id @default(cuid())
-  tenantId   String
-  tenant     Tenant       @relation(fields: [tenantId], references: [id])
-  format     ExportFormat
-  status     ExportStatus @default(PENDING)
-  params     Json?
-  fileId     String?
-  file       FileAsset?   @relation(fields: [fileId], references: [id])
-  createdAt  DateTime     @default(now())
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  format ExportFormat
+  status ExportStatus @default(PENDING)
+  params Json?
+
+  fileId String?
+  file   FileAsset? @relation(fields: [fileId], references: [id])
+
+  createdAt  DateTime  @default(now())
   finishedAt DateTime?
 
   @@index([tenantId, status])
+  @@index([fileId])
+}
+
+// ========= NOTIFICATIONS & TEMPLATES ================
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+  DELIVERED
+  OPENED
 }
 
 model NotificationTemplate {
-  id           String              @id @default(cuid())
-  tenantId     String
-  tenant       Tenant              @relation(fields: [tenantId], references: [id])
-  code         String
-  channel      NotificationChannel
-  lang         LanguageCode
-  subject      String?
-  body         String?
-  bodyJson     Json?
-  createdAt    DateTime            @default(now())
-  Notification Notification[]
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  code    String
+  channel NotificationChannel
+  lang    LanguageCode
+
+  subject  String?
+  body     String?
+  bodyJson Json?
+
+  createdAt DateTime @default(now())
+
+  notifications Notification[]
 
   @@unique([tenantId, code, channel, lang])
   @@index([tenantId, code])
@@ -717,35 +769,36 @@ model Notification {
   templateId String?
   template   NotificationTemplate? @relation(fields: [templateId], references: [id])
 
-  channel   NotificationChannel
-  status    NotificationStatus  @default(QUEUED)
-  payload   Json?
-  sentAt    DateTime?
-  meta      Json?
-  createdAt DateTime            @default(now())
+  channel NotificationChannel
+  status  NotificationStatus  @default(QUEUED)
+
+  payload Json?
+  sentAt  DateTime?
+  meta    Json?
+
+  createdAt DateTime @default(now())
 
   @@index([tenantId, channel, status])
+  @@index([userId])
+  @@index([templateId])
 }
 
-//  ============ Counseling / Audit / Files =================
+// =========== COUNSELING / AUDIT / FILES ============ 
 model CounselingSession {
-  id       String @id @default(cuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
+  id          String   @id @default(cuid())
+  tenantId    String
   counselorId String
-  counselor   User   @relation("CounselorUser", fields: [counselorId], references: [id])
-
-  studentId String
-  student   User   @relation(fields: [studentId], references: [id])
-
+  studentId   String
   scheduledAt DateTime
   durationMin Int?
   notes       Json?
   createdAt   DateTime @default(now())
+  userId      String?
 
-  @@index([tenantId, counselorId])
-  @@index([tenantId, studentId])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  counselor User   @relation("CounselorUser", fields: [counselorId], references: [id])
+  student   User   @relation("StudentUser", fields: [studentId], references: [id])
+  user      User?  @relation(fields: [userId], references: [id])
 }
 
 model AuditEvent {
@@ -759,12 +812,15 @@ model AuditEvent {
   ip        String?
   userAgent String?
   action    String
-  entity    String?
-  entityId  String?
-  data      Json?
+
+  entity   String?
+  entityId String?
+  data     Json?
+
   createdAt DateTime @default(now())
 
   @@index([tenantId, action, createdAt])
+  @@index([actorId])
 }
 
 model FileAsset {
@@ -777,8 +833,10 @@ model FileAsset {
   mimeType  String?
   sizeBytes Int?
   meta      Json?
-  createdAt DateTime    @default(now())
-  ExportJob ExportJob[]
+
+  createdAt DateTime @default(now())
+
+  exportJobs ExportJob[]
 
   @@index([tenantId, createdAt])
 }

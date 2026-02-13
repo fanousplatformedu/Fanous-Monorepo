@@ -6,15 +6,12 @@ import { Role } from "@enums/role.enum";
 export class UserEntity {
   @Field(() => ID) id!: string;
   @Field(() => Role) role!: Role;
-
   @Field(() => Boolean) isActive!: boolean;
-  @Field(() => Boolean) phoneVerified!: boolean;
-  @Field(() => Boolean) emailVerified!: boolean;
-
   @Field(() => Int) learningHours!: number;
   @Field(() => Int) coursesEnrolled!: number;
   @Field(() => Int) certificatesEarned!: number;
-
+  @Field(() => Boolean) phoneVerified!: boolean;
+  @Field(() => Boolean) emailVerified!: boolean;
   @Field(() => String, { nullable: true }) bio?: string | null;
   @Field(() => String, { nullable: true }) name?: string | null;
   @Field(() => Date, { nullable: true }) joinDate?: Date | null;

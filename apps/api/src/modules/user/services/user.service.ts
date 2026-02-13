@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { UserMessageEnum } from "@user/enums/user.message.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { UpdateMeInput } from "@user/dto/update-user.input";
-import { UserMessageEnum } from "@user/enums/user.message.enum";
 import { UserEntity } from "@user/entities/user.entity";
 
 @Injectable()
@@ -37,9 +37,7 @@ export class UserService {
       where: { id: userId },
       select: this.meSelect,
     });
-
     if (!user) throw new NotFoundException(UserMessageEnum.USER_NOT_FOUND);
-
     return user;
   }
 
@@ -48,15 +46,12 @@ export class UserService {
       where: { id: userId },
       select: { id: true },
     });
-
     if (!exists) throw new NotFoundException(UserMessageEnum.USER_NOT_FOUND);
-
     const updated = await this.prismaService.user.update({
       where: { id: userId },
       data: { ...input },
       select: this.meSelect,
     });
-
     return updated;
   }
 }

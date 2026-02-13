@@ -24,6 +24,8 @@ import { APP_GUARD } from "@nestjs/core";
 import { Module } from "@nestjs/common";
 import { join } from "path";
 
+import "@enums/register-prisma-enums";
+
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({

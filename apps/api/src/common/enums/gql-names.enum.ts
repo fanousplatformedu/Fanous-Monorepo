@@ -1,17 +1,18 @@
 /* ============== Entities =============== */
 export const enum GqlObjectNames {
   // Auth / User
-  AUTH_PAYLOAD = "AuthPayloadEntity",
   USER = "UserEntity",
+  AUTH_PAYLOAD = "AuthPayloadEntity",
 }
 
 /* =============== DTOs =============== */
 export const enum GqlInputNames {
   // Auth / User
-  CREATE_USER = "CreateUserInput",
-  UPDATE_ME = "UpdateMeInput",
   SIGN_IN = "SignInInput",
-
+  UPDATE_ME = "UpdateMeInput",
+  VERIFY_OTP = "VerifyOtpInput",
+  CREATE_USER = "CreateUserInput",
+  REQUEST_OTP = "RequestOtpInput",
 }
 
 // ================ Query Name ================
@@ -19,8 +20,8 @@ export const QueryNames = {
   // Auth
   SIGN_UP: "signUp",
   SIGN_IN: "signIn",
-  REQUEST_OTP: "requestOtp", 
-  VERIFY_OTP: "verifyOtp", 
+  REQUEST_OTP: "requestOtp",
+  VERIFY_OTP: "verifyOtp",
 
   // User
   ME: "me",
