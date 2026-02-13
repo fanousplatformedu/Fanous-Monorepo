@@ -1,28 +1,28 @@
-import { Resolver, Mutation, Args, Query, Context } from "@nestjs/graphql";
+import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { GqlQueryNames } from "@user/enums/gql-names.enum";
 import { UpdateMeInput } from "@user/dto/update-user.input";
 import { UserService } from "@user/services/user.service";
-import { QueryNames } from "@enums/gql-names.enum";
 import { UserEntity } from "@user/entities/user.entity";
 import { Public } from "@decorators/public.decorator";
 
 @Resolver(() => UserEntity)
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(private userService: UserService) {}
 
   @Public()
-  @Query(() => String, { name: QueryNames.HEALTH_CHECK })
-  healthCheck(): string {
-    return "GraphQL API is up and running!";
+  @Query(() => String, { name: GqlQueryNames.USER_HEALTH_CHECK })
+  userHealthCheck(): string {
+    return "User module is OK";
   }
 
-  @Query(() => UserEntity, { name: QueryNames.ME })
-  async me(@Context() ctx): Promise<UserEntity> {
+  @Query(() => UserEntity, { name: GqlQueryNames.USER_ME })
+  me(@Context() ctx): Promise<UserEntity> {
     const userId: string = ctx.req.user.id;
     return this.userService.me(userId);
   }
 
-  @Mutation(() => UserEntity, { name: QueryNames.UPDATE_ME })
-  async updateMe(
+  @Mutation(() => UserEntity, { name: GqlQueryNames.USER_UPDATE_ME })
+  updateMe(
     @Context() ctx,
     @Args("input") input: UpdateMeInput,
   ): Promise<UserEntity> {

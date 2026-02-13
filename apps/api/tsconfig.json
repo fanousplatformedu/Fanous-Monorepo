@@ -18,6 +18,7 @@
       "@auth/*": ["src/modules/auth/*"],
       "@user/*": ["src/modules/user/*"],
       "@jobs/*": ["src/modules/jobs/*"],
+      "@admin/*": ["src/modules/admin/*"],
       "@audit/*": ["src/modules/audit/*"],
       "@tenant/*": ["src/modules/tenant/*"],
       "@export/*": ["src/modules/export/*"],

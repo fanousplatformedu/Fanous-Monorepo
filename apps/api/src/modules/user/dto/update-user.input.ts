@@ -1,15 +1,48 @@
-import { IsOptional, IsString, IsUrl } from "class-validator";
-import { InputType, Field } from "@nestjs/graphql";
-import { GqlInputNames } from "@enums/gql-names.enum";
+import { IsOptional, IsString, MaxLength, IsUrl } from "class-validator";
+import { Field, InputType } from "@nestjs/graphql";
+import { GqlInputNames } from "@user/enums/gql-names.enum";
 
-@InputType(GqlInputNames.UPDATE_ME)
+@InputType(GqlInputNames.USER_UPDATE_ME_INPUT)
 export class UpdateMeInput {
-  @Field({ nullable: true }) @IsOptional() @IsString() bio?: string;
-  @Field({ nullable: true }) @IsOptional() @IsString() name?: string;
-  @Field({ nullable: true }) @IsOptional() @IsUrl() website?: string;
-  @Field({ nullable: true }) @IsOptional() @IsString() phone?: string;
-  @Field({ nullable: true }) @IsOptional() @IsString() avatar?: string;
-  @Field({ nullable: true }) @IsOptional() @IsString() location?: string;
-  @Field({ nullable: true }) @IsOptional() @IsString() education?: string;
-  @Field({ nullable: true }) @IsOptional() @IsString() occupation?: string;
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  name?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  bio?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  location?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsUrl()
+  @MaxLength(200)
+  website?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  education?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  occupation?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsUrl()
+  @MaxLength(300)
+  avatar?: string;
 }

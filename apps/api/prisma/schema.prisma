@@ -30,48 +30,80 @@ enum LanguageCode {
 
 // ========= USERS & GLOBAL ROLES ===========
 enum Role {
-  SUPER_ADMIN
   ADMIN
-  CONTENT_EDITOR
-  COUNSELOR
-  TEACHER
-  PARENT
+  PENDING
   STUDENT
+  PARENT
+  TEACHER
+  COUNSELOR
+  SUPER_ADMIN
+  CONTENT_EDITOR
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OtpChannel {
+  EMAIL
+  PHONE
+}
+
+model School {
+  id       String  @id @default(cuid())
+  name     String
+  slug     String  @unique
+  isActive Boolean @default(true)
+
+  users     User[]
+  approvals RoleApprovalRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model User {
-  id       String  @id @default(cuid())
-  name     String?
-  email    String? @unique
-  password String?
-  avatar   String?
-  phone    String? @unique
+  id         String  @id @default(cuid())
+  name       String?
+  email      String? @unique
+  phone      String? @unique
+  password   String?
+  avatar     String?
+  bio        String?
+  location   String?
+  website    String?
+  education  String?
+  occupation String?
 
   emailVerified Boolean @default(false)
   phoneVerified Boolean @default(false)
-
-  location   String?
-  website    String?
-  bio        String?
-  occupation String?
-  education  String?
 
   joinDate  DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
 
-  role Role @default(STUDENT)
+  schoolId String?
+  school   School? @relation(fields: [schoolId], references: [id])
+
+  role           Role      @default(PENDING)
+  desiredRole    Role?
+  roleApprovedAt DateTime?
+
+  roleApprovedById  String?
+  roleApprovedBy    User?   @relation("RoleApprovedBy", fields: [roleApprovedById], references: [id])
+  roleApprovedUsers User[]  @relation("RoleApprovedBy")
+
+  approvals         RoleApprovalRequest[] @relation("RoleApprovalUser")
+  approvalsReviewed RoleApprovalRequest[] @relation("RoleApprovalReviewedBy")
+
+  refreshTokens RefreshToken[]
 
   coursesEnrolled    Int @default(0)
   certificatesEarned Int @default(0)
   learningHours      Int @default(0)
-}
-
-// ============ AUTH (OTP) ==========
-enum OtpChannel {
-  EMAIL
-  PHONE
 }
 
 model OtpToken {
@@ -79,14 +111,46 @@ model OtpToken {
   identifier String
   channel    OtpChannel
   codeHash   String
-
-  tenantId String?
-
+  tenantId   String?
   expiresAt  DateTime
   verifiedAt DateTime?
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime   @default(now())
 
   @@index([identifier, channel])
   @@index([expiresAt])
   @@index([tenantId])
+}
+
+model RoleApprovalRequest {
+  id            String    @id @default(cuid())
+  note          String?
+  userId        String
+  reviewedAt    DateTime?
+  reviewedById  String?
+  requestedRole Role
+
+  user       User  @relation("RoleApprovalUser", fields: [userId], references: [id])
+  reviewedBy User? @relation("RoleApprovalReviewedBy", fields: [reviewedById], references: [id])
+
+  status    ApprovalStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  school    School?        @relation(fields: [schoolId], references: [id])
+  schoolId  String?
+
+  @@index([status])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tokenHash String
+  revokedAt DateTime?
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }

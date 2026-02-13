@@ -1,21 +1,19 @@
-export enum AuthMessageEnum {
-  // Authentication & Authorization
-  INVALID_TOKEN = "Invalid token",
-  TOKEN_EXPIRED = "Token has expired",
-  INVALID_CREDENTIALS = "Invalid credentials",
-  UNAUTHORIZED = "Unauthorized access",
-  FORBIDDEN = "Access denied",
-
-  // OTP & Rate Limiting
-  INVALID_OTP = "Invalid OTP code",
+export enum AuthErrorEnum {
   OTP_EXPIRED = "OTP has expired",
-  OTP_NOT_FOUND = "OTP not found or expired",
-  TOO_MANY_REQUESTS = "Too many requests. Please try again later.",
+  INVALID_OTP = "Invalid OTP code",
+  USER_INACTIVE = "User is inactive.",
+  SCHOOL_REQUIRED = "SCHOOL_REQUIRED",
+  UNAUTHORIZED = "Unauthorized access.",
+  SCHOOL_NOT_FOUND = "SCHOOL_NOT_FOUND",
+  ROLE_NOT_APPROVED = "ROLE_NOT_APPROVED",
+  INVALID_EMAIL = "Invalid email address.",
   INVALID_MOBILE = "Invalid mobile number.",
-
-  // General
-  BAD_REQUEST = "Invalid request parameters",
-  INTERNAL_ERROR = "Internal server error",
-  OPERATION_FAILED = "Operation failed",
-  NOT_FOUND = "Resource not found",
+  OTP_NOT_FOUND = "OTP not found or expired",
+  INVALID_REFRESH_TOKEN = "Invalid refresh token.",
+  REFRESH_TOKEN_EXPIRED = "Refresh token expired.",
+  ROLE_APPROVAL_REQUIRED = "ROLE_APPROVAL_REQUIRED",
+  ROLE_NOT_ALLOWED = "Selected role is not allowed.",
+  REGISTER_REQUEST_EXISTS = "REGISTER_REQUEST_EXISTS",
+  TOO_MANY_REQUESTS = "Too many requests. Please try again later.",
+  OTP_COOLDOWN_ACTIVE = "OTP already sent. Please wait until it expires.",
 }

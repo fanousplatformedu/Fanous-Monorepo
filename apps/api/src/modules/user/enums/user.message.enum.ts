@@ -1,7 +1,6 @@
-export enum UserMessageEnum {
-  // User
+export enum UserErrorEnum {
   USER_NOT_FOUND = "User not found",
-  USER_INACTIVE = "User account is inactive",
-  USER_ALREADY_EXISTS = "User already exists",
-  INVALID_ROLE = "Role mismatch for this login page",
+  USER_INACTIVE = "User is inactive",
+  INVALID_INPUT = "Invalid input",
+  FORBIDDEN_UPDATE = "You are not allowed to update this field",
 }

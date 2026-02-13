@@ -2,35 +2,48 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type UserEntity {
-  id: ID!
-  role: Role!
+type SchoolMini {
+  id: String!
+  name: String!
+  slug: String!
   isActive: Boolean!
-  learningHours: Int!
-  coursesEnrolled: Int!
-  certificatesEarned: Int!
-  phoneVerified: Boolean!
+}
+
+type User {
+  role: Role!
+  id: String!
+  joinDate: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  isActive: Boolean!
+  learningHours: Float!
   emailVerified: Boolean!
+  phoneVerified: Boolean!
+  coursesEnrolled: Float!
+  certificatesEarned: Float!
   bio: String
   name: String
-  joinDate: DateTime
   email: String
   phone: String
   avatar: String
   website: String
+  desiredRole: Role
   location: String
   education: String
   occupation: String
+  roleApprovedAt: DateTime
+  school: SchoolMini
 }
 
 enum Role {
-  SUPER_ADMIN
   ADMIN
-  CONTENT_EDITOR
-  COUNSELOR
-  TEACHER
-  PARENT
+  PENDING
   STUDENT
+  PARENT
+  TEACHER
+  COUNSELOR
+  SUPER_ADMIN
+  CONTENT_EDITOR
 }
 
 """
@@ -38,28 +51,78 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type AuthPayloadEntity {
-  id: ID!
-  accessToken: String!
+type RoleApprovalRequest {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  requestedRole: Role!
+  user: User!
+  status: ApprovalStatus!
+  note: String
+  reviewedAt: DateTime
+  reviewedBy: User
+  school: SchoolMini
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+type PagedRoleApprovalRequests {
+  total: Float!
+  items: [RoleApprovalRequest!]!
+}
+
+type AuthRegisterStatus {
+  ok: Boolean!
+  userId: String!
+  desiredRole: Role!
+}
+
+type AuthPayload {
   role: Role!
+  id: String!
+  accessToken: String!
+  refreshToken: String!
   name: String
   avatar: String
 }
 
 type Query {
-  healthCheck: String!
-  me: UserEntity!
+  userHealthCheck: String!
+  me: User!
+  adminListRoleApprovals(input: AdminListRoleApprovalsInput!): PagedRoleApprovalRequests!
+  adminGetRoleApproval(requestId: String!): RoleApprovalRequest!
+  adminListSchools: [SchoolMini!]!
+}
+
+input AdminListRoleApprovalsInput {
+  status: ApprovalStatus
+  requestedRole: Role
+  q: String
+  page: Float = 1
+  limit: Float = 20
 }
 
 type Mutation {
-  requestOtp(input: RequestOtpInput!): Boolean!
-  verifyOtp(input: VerifyOtpInput!): AuthPayloadEntity!
-  updateMe(input: UpdateMeInput!): UserEntity!
+  authRegisterRequest(input: AuthRegisterRequestInput!): AuthRegisterStatus!
+  authRequestOtp(input: AuthRequestOtpInput!): Boolean!
+  authVerifyOtp(input: AuthVerifyOtpInput!): AuthPayload!
+  authRefreshToken(input: AuthRefreshTokenInput!): AuthPayload!
+  authLogout(refreshToken: String!): Boolean!
+  updateMe(input: UserUpdateMeInput!): User!
+  adminApproveRole(input: AdminReviewRoleRequestInput!): RoleApprovalRequest!
+  adminRejectRole(input: AdminReviewRoleRequestInput!): RoleApprovalRequest!
+  adminAssignSchoolAdmin(input: AdminAssignSchoolAdminInput!): User!
 }
 
-input RequestOtpInput {
+input AuthRegisterRequestInput {
+  desiredRole: Role!
   identifier: String!
   channel: OtpChannel!
+  name: String
   tenantId: String
 }
 
@@ -68,20 +131,39 @@ enum OtpChannel {
   PHONE
 }
 
-input VerifyOtpInput {
+input AuthRequestOtpInput {
   identifier: String!
-  code: String!
   channel: OtpChannel!
   tenantId: String
 }
 
-input UpdateMeInput {
-  bio: String
+input AuthVerifyOtpInput {
+  code: String!
+  identifier: String!
+  channel: OtpChannel!
+  tenantId: String
+}
+
+input AuthRefreshTokenInput {
+  refreshToken: String!
+}
+
+input UserUpdateMeInput {
   name: String
-  website: String
-  phone: String
-  avatar: String
+  bio: String
   location: String
+  website: String
   education: String
   occupation: String
+  avatar: String
+}
+
+input AdminReviewRoleRequestInput {
+  requestId: String!
+  note: String
+}
+
+input AdminAssignSchoolAdminInput {
+  userId: String!
+  schoolId: String!
 }

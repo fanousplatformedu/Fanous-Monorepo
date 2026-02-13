@@ -1,5 +1,6 @@
+import { Role, ApprovalStatus, OtpChannel } from "@prisma/client";
 import { registerEnumType } from "@nestjs/graphql";
-import { Role, OtpChannel } from "@prisma/client";
 
 registerEnumType(Role, { name: "Role" });
+registerEnumType(ApprovalStatus, { name: "ApprovalStatus" });
 registerEnumType(OtpChannel, { name: "OtpChannel" });
