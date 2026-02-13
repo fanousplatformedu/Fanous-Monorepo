@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { BadRequestException, HttpException } from "@nestjs/common";
-import { OtpChannel, Role, TenantRole } from "@prisma/client";
 import { hash, verify as verifyHash } from "argon2";
 import { normalizeIranMobile } from "@utils/phoneGenerate";
 import { AuthPayloadEntity } from "@auth/entities/auth-entity";
+import { OtpChannel, Role } from "@prisma/client";
 import { RequestOtpInput } from "@auth/dto/request-otp.input";
 import { AuthMessageEnum } from "@auth/enum/auth.message.enum";
 import { VerifyOtpInput } from "@auth/dto/verify-otp.input";
@@ -121,25 +121,6 @@ export class AuthService {
             },
             update: { phoneVerified: true },
           });
-
-    if (tenantId) {
-      await this.prismaService.userTenantRole.upsert({
-        where: {
-          userId_tenantId_role: {
-            userId: user.id,
-            tenantId,
-            role: TenantRole.STUDENT,
-          },
-        },
-        create: {
-          userId: user.id,
-          tenantId,
-          role: TenantRole.STUDENT,
-        },
-        update: {},
-      });
-    }
-
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
       role: user.role,
