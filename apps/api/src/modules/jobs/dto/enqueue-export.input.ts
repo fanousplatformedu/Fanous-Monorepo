@@ -3,9 +3,13 @@ import { ExportFormat } from "@prisma/client";
 
 @InputType("EnqueueExportInput")
 export class EnqueueExportInput {
-  @Field() tenantId: string;
-  @Field(() => String) format: ExportFormat;
+  @Field(() => String) tenantId!: string;
+  @Field(() => String) format!: ExportFormat;
   @Field({ nullable: true }) params?: string;
   @Field({ nullable: true }) delayMs?: number;
-  @Field() kind: "USERS" | "ASSESSMENTS" | "RESULTS" | "RECOMMENDATIONS";
+  @Field(() => String) kind!:
+    | "USERS"
+    | "ASSESSMENTS"
+    | "RESULTS"
+    | "RECOMMENDATIONS";
 }

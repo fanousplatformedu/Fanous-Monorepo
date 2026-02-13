@@ -17,16 +17,16 @@ export class UserResolver {
 
   @Query(() => UserEntity, { name: QueryNames.ME })
   async me(@Context() ctx): Promise<UserEntity> {
-    const userId = ctx.req.user.id;
+    const userId: string = ctx.req.user.id;
     return this.userService.me(userId);
   }
 
   @Mutation(() => UserEntity, { name: QueryNames.UPDATE_ME })
   async updateMe(
     @Context() ctx,
-    @Args("input") input: UpdateMeInput
+    @Args("input") input: UpdateMeInput,
   ): Promise<UserEntity> {
-    const userId = ctx.req.user.id;
+    const userId: string = ctx.req.user.id;
     return this.userService.updateMe(userId, input);
   }
 }

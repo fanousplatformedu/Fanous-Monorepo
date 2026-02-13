@@ -5,11 +5,11 @@ import { LicenseEntity } from "@tenant/entities/license.entity";
 
 @ObjectType()
 export class TenantEntity {
-  @Field(() => ID) id: string;
-  @Field(() => String) name: string;
-  @Field(() => String) slug: string;
-  @Field(() => Date) createdAt: Date;
-  @Field(() => Date) updatedAt: Date;
+  @Field(() => ID) id!: string;
+  @Field(() => String) name!: string;
+  @Field(() => String) slug!: string;
+  @Field(() => Date) createdAt!: Date;
+  @Field(() => Date) updatedAt!: Date;
   @Field(() => Date, { nullable: true }) deletedAt?: Date | null;
   @Field(() => TenantSettingsEntity, { nullable: true })
   settings?: TenantSettingsEntity | null;

@@ -3,8 +3,8 @@ import { AssessmentBriefEntity } from "@parent-portal/entities/assessment-brief.
 
 @ObjectType()
 export class AssessmentPageEntity {
-  @Field(() => Int) page: number;
-  @Field(() => Int) total: number;
-  @Field(() => Int) pageSize: number;
-  @Field(() => [AssessmentBriefEntity]) items: AssessmentBriefEntity[];
+  @Field(() => Int) page!: number;
+  @Field(() => Int) total!: number;
+  @Field(() => Int) pageSize!: number;
+  @Field(() => [AssessmentBriefEntity]) items!: AssessmentBriefEntity[];
 }

@@ -2,8 +2,8 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType("SaveResponsesBulkInput")
 export class SaveResponsesBulkInput {
-  @Field() tenantId: string;
-  @Field() itemsJson: string;
-  @Field() assessmentId: string;
+  @Field(() => String) tenantId!: string;
+  @Field(() => String) itemsJson!: string;
+  @Field(() => String) assessmentId!: string;
   // [{"questionId":"...","value":{...}}, ...]
 }

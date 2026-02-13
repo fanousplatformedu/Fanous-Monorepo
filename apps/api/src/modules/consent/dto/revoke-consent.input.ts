@@ -3,7 +3,7 @@ import { ConsentType } from "@consent/enums/consent.enums";
 
 @InputType("RevokeConsentInput")
 export class RevokeConsentInput {
-  @Field() tenantId: string;
+  @Field(() => String) tenantId!: string;
   @Field({ nullable: true }) userId?: string;
-  @Field(() => ConsentType) type: ConsentType;
+  @Field(() => ConsentType) type!: ConsentType;
 }

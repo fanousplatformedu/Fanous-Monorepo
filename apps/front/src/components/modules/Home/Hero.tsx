@@ -57,7 +57,7 @@ const HeroSection = () => {
               variant="brand"
               className="h-11 rounded-2xl px-6 font-semibold"
             >
-              <Link href="/signin" className="gap-2">
+              <Link href="/sign-in" className="gap-2">
                 {t("home.hero.primaryCta")}
                 <ArrowRight
                   className={cn(

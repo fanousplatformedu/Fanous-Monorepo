@@ -1,95 +1,62 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { UserMessageEnum } from "@user/enums/user.message.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { UpdateMeInput } from "@user/dto/update-user.input";
+import { UserMessageEnum } from "@user/enums/user.message.enum";
+import { UserEntity } from "@user/entities/user.entity";
 
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
 
-  async me(userId: string): Promise<{
-    id: string;
-    bio: string | null;
-    role: any;
-    name: string;
-    email: string;
-    phone: string | null;
-    avatar: string | null;
-    website: string | null;
-    location: string | null;
-    education: string | null;
-    occupation: string | null;
-    learningHours: number;
-    coursesEnrolled: number;
-    certificatesEarned: number;
-  }> {
+  private readonly meSelect = {
+    id: true,
+    role: true,
+    isActive: true,
+    emailVerified: true,
+    phoneVerified: true,
+
+    name: true,
+    email: true,
+    phone: true,
+    avatar: true,
+
+    bio: true,
+    joinDate: true,
+    website: true,
+    location: true,
+    education: true,
+    occupation: true,
+
+    learningHours: true,
+    coursesEnrolled: true,
+    certificatesEarned: true,
+  } as const;
+
+  async me(userId: string): Promise<UserEntity> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        bio: true,
-        role: true,
-        name: true,
-        email: true,
-        phone: true,
-        avatar: true,
-        website: true,
-        location: true,
-        education: true,
-        occupation: true,
-        learningHours: true,
-        coursesEnrolled: true,
-        certificatesEarned: true,
-      },
+      select: this.meSelect,
     });
 
     if (!user) throw new NotFoundException(UserMessageEnum.USER_NOT_FOUND);
+
     return user;
   }
 
-  async updateMe(
-    userId: string,
-    input: UpdateMeInput
-  ): Promise<{
-    id: string;
-    bio: string | null;
-    role: any;
-    name: string;
-    email: string;
-    phone: string | null;
-    avatar: string | null;
-    website: string | null;
-    location: string | null;
-    education: string | null;
-    occupation: string | null;
-    learningHours: number;
-    coursesEnrolled: number;
-    certificatesEarned: number;
-  }> {
+  async updateMe(userId: string, input: UpdateMeInput): Promise<UserEntity> {
     const exists = await this.prismaService.user.findUnique({
       where: { id: userId },
       select: { id: true },
     });
+
     if (!exists) throw new NotFoundException(UserMessageEnum.USER_NOT_FOUND);
-    return this.prismaService.user.update({
+
+    const updated = await this.prismaService.user.update({
       where: { id: userId },
       data: { ...input },
-      select: {
-        id: true,
-        bio: true,
-        role: true,
-        name: true,
-        email: true,
-        phone: true,
-        avatar: true,
-        website: true,
-        location: true,
-        education: true,
-        occupation: true,
-        learningHours: true,
-        coursesEnrolled: true,
-        certificatesEarned: true,
-      },
+      select: this.meSelect,
     });
+
+    return updated;
   }
 }

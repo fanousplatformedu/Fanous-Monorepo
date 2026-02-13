@@ -2,7 +2,7 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType("SetBrandingInput")
 export class SetBrandingInput {
-  @Field() tenantId: string;
+  @Field(() => String) tenantId!: string;
   @Field({ nullable: true }) appName?: string;
   @Field({ nullable: true }) darkMode?: boolean;
   @Field({ nullable: true }) textColor?: string;

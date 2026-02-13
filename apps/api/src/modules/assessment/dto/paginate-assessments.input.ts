@@ -3,7 +3,7 @@ import { AssessmentState } from "@assessment/enums/assessment.enums";
 
 @InputType("AssessmentsPageInput")
 export class AssessmentsPageInput {
-  @Field() tenantId: string;
+  @Field(() => String) tenantId!: string;
   @Field({ nullable: true }) userId?: string;
   @Field(() => Int, { defaultValue: 1 }) page = 1;
   @Field(() => Int, { defaultValue: 20 }) pageSize = 20;

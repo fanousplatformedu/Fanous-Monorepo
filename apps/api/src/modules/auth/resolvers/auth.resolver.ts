@@ -13,16 +13,15 @@ export class AuthResolver {
   @Public()
   @Mutation(() => Boolean, { name: QueryNames.REQUEST_OTP })
   async requestOtp(@Args("input") input: RequestOtpInput): Promise<boolean> {
-    const ok = await this.authService.requestOtp(input);
-    return ok; // true
+    await this.authService.requestOtp(input);
+    return true;
   }
 
   @Public()
   @Mutation(() => AuthPayloadEntity, { name: QueryNames.VERIFY_OTP })
   async verifyOtp(
-    @Args("input") input: VerifyOtpInput
+    @Args("input") input: VerifyOtpInput,
   ): Promise<AuthPayloadEntity> {
-    const payload = await this.authService.verifyOtp(input);
-    return payload;
+    return this.authService.verifyOtp(input);
   }
 }

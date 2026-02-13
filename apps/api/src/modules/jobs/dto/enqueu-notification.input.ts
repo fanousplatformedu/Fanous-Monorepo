@@ -3,8 +3,8 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType("EnqueueNotificationByTemplateInput")
 export class EnqueueNotificationByTemplateInput {
-  @Field() tenantId: string;
-  @Field() templateId: string;
+  @Field(() => String) tenantId!: string;
+  @Field(() => String) templateId!: string;
   @Field({ nullable: true }) delayMs?: number;
   @Field({ nullable: true }) variables?: string;
   @Field({ nullable: true }) audienceJson?: string;
@@ -13,9 +13,9 @@ export class EnqueueNotificationByTemplateInput {
 
 @InputType("EnqueueNotificationAdHocInput")
 export class EnqueueNotificationAdHocInput {
-  @Field() payload: string;
-  @Field() tenantId: string;
-  @Field(() => [String]) userIds: string[];
+  @Field(() => String) payload!: string;
+  @Field(() => String) tenantId!: string;
+  @Field(() => [String]) userIds!: string[];
   @Field({ nullable: true }) delayMs?: number;
-  @Field(() => String) channel: NotificationChannel;
+  @Field(() => String) channel!: NotificationChannel;
 }

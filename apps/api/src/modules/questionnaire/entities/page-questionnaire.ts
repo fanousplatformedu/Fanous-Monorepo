@@ -3,8 +3,8 @@ import { QuestionnaireEntity } from "@questionnaire/entities/questionnaire.entit
 
 @ObjectType()
 export class PageResultQuestionnaire {
-  @Field(() => Int) page: number;
-  @Field(() => Int) total: number;
-  @Field(() => Int) pageSize: number;
-  @Field(() => [QuestionnaireEntity]) items: QuestionnaireEntity[];
+  @Field(() => Int) page!: number;
+  @Field(() => Int) total!: number;
+  @Field(() => Int) pageSize!: number;
+  @Field(() => [QuestionnaireEntity]) items!: QuestionnaireEntity[];
 }

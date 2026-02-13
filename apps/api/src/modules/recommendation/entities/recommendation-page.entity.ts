@@ -3,8 +3,8 @@ import { RecommendationEntity } from "@recommendation/entities/recommendation.en
 
 @ObjectType()
 export class RecommendationPageEntity {
-  @Field(() => Int) page: number;
-  @Field(() => Int) total: number;
-  @Field(() => Int) pageSize: number;
-  @Field(() => [RecommendationEntity]) items: RecommendationEntity[];
+  @Field(() => Int) page!: number;
+  @Field(() => Int) total!: number;
+  @Field(() => Int) pageSize!: number;
+  @Field(() => [RecommendationEntity]) items!: RecommendationEntity[];
 }

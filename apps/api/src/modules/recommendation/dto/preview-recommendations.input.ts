@@ -3,8 +3,8 @@ import { RecommendationType } from "@recommendation/enums/recommendation.enums";
 
 @InputType("PreviewRecommendationsInput")
 export class PreviewRecommendationsInput {
-  @Field() tenantId: string;
-  @Field() assessmentId: string;
+  @Field(() => String) tenantId!: string;
+  @Field(() => String) assessmentId!: string;
   @Field(() => [RecommendationType], {
     defaultValue: [RecommendationType.CAREER, RecommendationType.MAJOR],
   })

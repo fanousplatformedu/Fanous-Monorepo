@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args, Context } from "@nestjs/graphql";
+import { ParentPortalRecommendationEntity } from "@parent-portal/entities/recommendation.entity";
 import { UpdateNotificationPrefsInput } from "@parent-portal/dto/update-notif-prefs.input";
 import { ChildRecommendationsInput } from "@parent-portal/dto/child-recommendations.input";
 import { NotificationPageEntity } from "@parent-portal/entities/notif-page.entity";
-import { RecommendationEntity } from "@parent-portal/entities/recommendation.entity";
 import { AssessmentPageEntity } from "@parent-portal/entities/assessment-page.entity";
 import { ParentPortalService } from "@parent-portal/services/parent-portal.service";
 import { ChildSummaryEntity } from "@parent-portal/entities/child-summary.entity";
@@ -32,7 +32,7 @@ export class ParentPortalResolver {
   childSummary(
     @Args("tenantId") tenantId: string,
     @Args("childUserId") childUserId: string,
-    @Context() ctx
+    @Context() ctx,
   ) {
     return this.parentService.childSummary(tenantId, childUserId, ctx.req.user);
   }
@@ -44,7 +44,7 @@ export class ParentPortalResolver {
     @Args("tenantId") tenantId: string,
     @Args("childUserId") childUserId: string,
     @Args("input") input: ParentPageInput,
-    @Context() ctx
+    @Context() ctx,
   ) {
     const page = Math.max(1, input.page ?? 1);
     const pageSize = Math.min(100, Math.max(1, input.pageSize ?? 20));
@@ -53,23 +53,25 @@ export class ParentPortalResolver {
       childUserId,
       page,
       pageSize,
-      ctx.req.user
+      ctx.req.user,
     );
   }
 
   // ---- Recommendations
   @Roles(Role.PARENT)
-  @Query(() => [RecommendationEntity], { name: "childRecommendations" })
+  @Query(() => [ParentPortalRecommendationEntity], {
+    name: "childRecommendations",
+  })
   childRecommendations(
     @Args("input") input: ChildRecommendationsInput,
-    @Context() ctx
+    @Context() ctx,
   ) {
     return this.parentService.childRecommendations(
       input.tenantId,
       input.childUserId,
       input.type,
       input.limit ?? 20,
-      ctx.req.user
+      ctx.req.user,
     );
   }
 
@@ -79,12 +81,12 @@ export class ParentPortalResolver {
   childConsents(
     @Args("tenantId") tenantId: string,
     @Args("childUserId") childUserId: string,
-    @Context() ctx
+    @Context() ctx,
   ) {
     return this.parentService.childConsents(
       tenantId,
       childUserId,
-      ctx.req.user
+      ctx.req.user,
     );
   }
 
@@ -101,7 +103,7 @@ export class ParentPortalResolver {
     @Args("tenantId") tenantId: string,
     @Args("childUserId") childUserId: string,
     @Args("input") input: ParentPageInput,
-    @Context() ctx
+    @Context() ctx,
   ) {
     const page = Math.max(1, input.page ?? 1);
     const pageSize = Math.min(100, Math.max(1, input.pageSize ?? 20));
@@ -110,7 +112,7 @@ export class ParentPortalResolver {
       childUserId,
       page,
       pageSize,
-      ctx.req.user
+      ctx.req.user,
     );
   }
 
@@ -132,7 +134,7 @@ export class ParentPortalResolver {
   @Mutation(() => Boolean, { name: "updateNotificationPrefs" })
   updateNotificationPrefs(
     @Args("input") input: UpdateNotificationPrefsInput,
-    @Context() ctx
+    @Context() ctx,
   ) {
     return this.parentService.updateNotificationPrefs(input, ctx.req.user);
   }

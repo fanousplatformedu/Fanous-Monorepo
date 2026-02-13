@@ -2,7 +2,7 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType("UpdateCounselingSessionNotesInput")
 export class UpdateCounselingSessionNotesInput {
-  @Field() id: string;
-  @Field() tenantId: string;
+  @Field(() => String) id!: string;
+  @Field(() => String) tenantId!: string;
   @Field({ nullable: true }) notes?: string;
 }

@@ -5,7 +5,15 @@ import { Role } from "@prisma/client";
 
 @InputType(GqlInputNames.SIGN_IN)
 export class SignInInput {
-  @Field(() => Role) role: Role;
-  @Field() @IsEmail() email: string;
-  @Field() @IsString() @MinLength(6) password: string;
+  @Field(() => Role)
+  role!: Role;
+
+  @Field()
+  @IsEmail()
+  email!: string;
+
+  @Field()
+  @IsString()
+  @MinLength(6)
+  password!: string;
 }

@@ -4,24 +4,24 @@ import { InvoiceEntity } from "@billing/entities/invoice.entity";
 
 @ObjectType("Subscription")
 export class SubscriptionEntity {
-  @Field() createdAt: Date;
-  @Field() tenantId: string;
-  @Field(() => ID) id: string;
-  @Field() currentPeriodEnd: Date;
-  @Field() currentPeriodStart: Date;
-  @Field() cancelAtPeriodEnd: boolean;
-  @Field(() => LicensePlan) plan: LicensePlan;
-  @Field(() => SubscriptionStatus) status: SubscriptionStatus;
+  @Field(() => ID) id!: string;
+  @Field(() => Date) createdAt!: Date;
+  @Field(() => String) tenantId!: string;
+  @Field(() => Date) currentPeriodEnd!: Date;
+  @Field(() => LicensePlan) plan!: LicensePlan;
+  @Field(() => Date) currentPeriodStart!: Date;
+  @Field(() => Boolean) cancelAtPeriodEnd!: boolean;
+  @Field(() => SubscriptionStatus) status!: SubscriptionStatus;
 }
 
 @ObjectType("UpdateSubscriptionResult")
 export class UpdateSubscriptionResult {
-  @Field(() => SubscriptionEntity) subscription: SubscriptionEntity;
+  @Field(() => SubscriptionEntity) subscription!: SubscriptionEntity;
   @Field(() => InvoiceEntity, { nullable: true })
   prorationInvoice?: InvoiceEntity | null;
 }
 
 @ObjectType("CancelSubscriptionResult")
 export class CancelSubscriptionResult {
-  @Field(() => SubscriptionEntity) subscription: SubscriptionEntity;
+  @Field(() => SubscriptionEntity) subscription!: SubscriptionEntity;
 }

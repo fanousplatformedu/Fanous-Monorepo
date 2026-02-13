@@ -1,13 +1,19 @@
-import { ObjectType, Field, ID, Int } from "@nestjs/graphql";
+import { Int, GraphQLISODateTime } from "@nestjs/graphql";
+import { ObjectType, Field, ID } from "@nestjs/graphql";
+
+import GraphQLJSON from "graphql-type-json";
 
 @ObjectType("FileAsset")
 export class FileAssetEntity {
-  @Field() key: string;
-  @Field() createdAt: Date;
-  @Field() tenantId: string;
-  @Field(() => ID) id: string;
-  @Field({ nullable: true }) url?: string | null;
-  @Field({ nullable: true }) meta?: string | null;
-  @Field({ nullable: true }) mimeType?: string | null;
+  @Field(() => ID) id!: string;
+  @Field(() => String) key!: string;
+  @Field(() => String) tenantId!: string;
+  @Field(() => GraphQLISODateTime) createdAt!: Date;
+  @Field(() => String, { nullable: true }) url?: string | null;
   @Field(() => Int, { nullable: true }) sizeBytes?: number | null;
+  @Field(() => String, { nullable: true }) mimeType?: string | null;
+  @Field(() => GraphQLJSON, { nullable: true }) meta?: Record<
+    string,
+    any
+  > | null;
 }

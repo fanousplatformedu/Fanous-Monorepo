@@ -7,12 +7,12 @@ registerEnumType(NotificationStatus, { name: "NotificationStatus" });
 
 @ObjectType()
 export class NotificationEntity {
-  @Field(() => ID) id: string;
-  @Field(() => String) tenantId: string;
-  @Field(() => GraphQLISODateTime) createdAt: Date;
-  @Field(() => NotificationStatus) status: NotificationStatus;
+  @Field(() => ID) id!: string;
+  @Field(() => String) tenantId!: string;
+  @Field(() => GraphQLISODateTime) createdAt!: Date;
+  @Field(() => NotificationStatus) status!: NotificationStatus;
   @Field(() => String, { nullable: true }) meta?: string | null;
-  @Field(() => NotificationChannel) channel: NotificationChannel;
+  @Field(() => NotificationChannel) channel!: NotificationChannel;
   @Field(() => String, { nullable: true }) userId?: string | null;
   @Field(() => String, { nullable: true }) payload?: string | null;
   @Field(() => String, { nullable: true }) templateId?: string | null;

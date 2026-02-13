@@ -2,6 +2,6 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType("RunScoringInput")
 export class RunScoringInput {
-  @Field() tenantId: string;
-  @Field() assessmentId: string;
+  @Field(() => String) tenantId!: string;
+  @Field(() => String) assessmentId!: string;
 }

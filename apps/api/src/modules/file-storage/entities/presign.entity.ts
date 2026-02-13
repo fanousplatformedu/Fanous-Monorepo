@@ -2,10 +2,10 @@ import { ObjectType, Field, Int } from "@nestjs/graphql";
 
 @ObjectType("PresignedUpload")
 export class PresignedUploadEntity {
-  @Field() key: string;
-  @Field() url: string;
-  @Field() fileId: string;
-  @Field(() => Int) expiresInSec: number;
-  @Field({ nullable: true }) requiredContentType?: string | null;
+  @Field(() => String) key!: string;
+  @Field(() => String) url!: string;
+  @Field(() => String) fileId!: string;
+  @Field(() => Int) expiresInSec!: number;
   @Field(() => Int, { nullable: true }) maxSizeBytes?: number | null;
+  @Field(() => String, { nullable: true }) requiredContentType?: string | null;
 }

@@ -2,9 +2,9 @@ import { ObjectType, Field, ID, Int } from "@nestjs/graphql";
 
 @ObjectType()
 export class CareerEntity {
-  @Field(() => ID) id: string;
-  @Field(() => String) code: string;
-  @Field(() => String) title: string;
+  @Field(() => ID) id!: string;
+  @Field(() => String) code!: string;
+  @Field(() => String) title!: string;
   @Field(() => String, { nullable: true }) meta?: string | null;
   @Field(() => String, { nullable: true }) summary?: string | null;
   @Field(() => Int, { nullable: true }) skillsCount?: number | null;

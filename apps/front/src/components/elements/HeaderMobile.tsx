@@ -56,7 +56,7 @@ export const HeaderMobileMenu = ({
               transitionDelay: open ? `${items.length * 70 + 40}ms` : "0ms",
             }}
           >
-            <Link href="/auth/login">{t("cta.getStarted")}</Link>
+            <Link href="/sign-in">{t("cta.getStarted")}</Link>
           </Button>
         </div>
       </div>

@@ -1,8 +1,20 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsNotEmpty } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { OtpChannel } from "@prisma/client";
 
 @InputType("RequestOtpInput")
 export class RequestOtpInput {
-  @Field() @IsNotEmpty() mobile: string;
-  @Field() @IsNotEmpty() fullName: string;
+  @Field(() => OtpChannel)
+  @IsEnum(OtpChannel)
+  channel!: OtpChannel;
+
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  identifier!: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  tenantId?: string;
 }

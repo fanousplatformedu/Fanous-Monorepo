@@ -7,12 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/**
- * =========================
- * Enums
- * =========================
- */
-
+//  ============== Enums ================
 enum Role {
   ADMIN
   PARENT
@@ -129,12 +124,69 @@ enum RecommendationType {
   LEARNING
 }
 
-/**
- * =========================
- * Core & Tenancy
- * =========================
- */
+// =============== Users =================
+model User {
+  id       String  @id @default(cuid())
+  name     String?
+  email    String? @unique
+  password String?
+  avatar   String?
+  phone    String? @unique
 
+  emailVerified Boolean @default(false)
+  phoneVerified Boolean @default(false)
+
+  location   String?
+  website    String?
+  bio        String?
+  occupation String?
+  education  String?
+  joinDate   DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isActive   Boolean  @default(true)
+  role       Role     @default(STUDENT)
+
+  coursesEnrolled    Int @default(0)
+  certificatesEarned Int @default(0)
+  learningHours      Int @default(0)
+
+  tenantRoles        UserTenantRole[]
+  parentLinksChild   ParentLink[]        @relation("ParentToChild")
+  parentLinksParent  ParentLink[]        @relation("ParentToParent")
+  consents           Consent[]
+  enrollments        Enrollment[]
+  assessments        Assessment[]        @relation("AssessmentByUser")
+  counselingSessions CounselingSession[] @relation("CounselorUser")
+  notifications      Notification[]      @relation("NotificationToUser")
+  auditEvents        AuditEvent[]        @relation("AuditByUser")
+  ResultSnapshot     ResultSnapshot[]
+  Report             Report[]
+  CounselingSession  CounselingSession[]
+}
+
+//  ============== Auth (OTP)=====================
+enum OtpChannel {
+  EMAIL
+  PHONE
+}
+
+model OtpToken {
+  id         String     @id @default(cuid())
+  identifier String
+  channel    OtpChannel
+  codeHash   String
+  tenantId   String?
+  tenant     Tenant?    @relation(fields: [tenantId], references: [id])
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime   @default(now())
+
+  @@index([identifier, channel])
+  @@index([expiresAt])
+}
+
+//  ================== Core & Tenancy ====================
 model Tenant {
   id                String                 @id @default(cuid())
   name              String
@@ -169,6 +221,7 @@ model Tenant {
   Score             Score[]
   Recommendation    Recommendation[]
   Report            Report[]
+  otpTokens         OtpToken[]
 
   @@index([slug])
 }
@@ -231,48 +284,7 @@ model Invoice {
   @@index([tenantId, status])
 }
 
-/**
- * =========================
- * Users & RBAC
- * =========================
- */
-
-model User {
-  id         String   @id @default(cuid())
-  name       String
-  email      String   @unique
-  password   String
-  avatar     String?
-  phone      String?  @unique
-  location   String?
-  website    String?
-  bio        String?
-  occupation String?
-  education  String?
-  joinDate   DateTime @default(now())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isActive   Boolean  @default(true)
-  role       Role     @default(STUDENT)
-
-  coursesEnrolled    Int @default(0)
-  certificatesEarned Int @default(0)
-  learningHours      Int @default(0)
-
-  tenantRoles        UserTenantRole[]
-  parentLinksChild   ParentLink[]        @relation("ParentToChild")
-  parentLinksParent  ParentLink[]        @relation("ParentToParent")
-  consents           Consent[]
-  enrollments        Enrollment[]
-  assessments        Assessment[]        @relation("AssessmentByUser")
-  counselingSessions CounselingSession[] @relation("CounselorUser")
-  notifications      Notification[]      @relation("NotificationToUser")
-  auditEvents        AuditEvent[]        @relation("AuditByUser")
-  ResultSnapshot     ResultSnapshot[]
-  Report             Report[]
-  CounselingSession  CounselingSession[]
-}
-
+// ============ RBAC ===============
 model UserTenantRole {
   id       String     @id @default(cuid())
   userId   String
@@ -319,12 +331,7 @@ model Consent {
   @@index([tenantId, userId, type, status])
 }
 
-/**
- * =========================
- * School Structure
- * =========================
- */
-
+//  ============ School Structure =================
 model Grade {
   id       String @id @default(cuid())
   tenantId String
@@ -381,12 +388,7 @@ model Enrollment {
   @@index([tenantId, studentId])
 }
 
-/**
- * =========================
- * Questionnaire & Assessment
- * =========================
- */
-
+//  =========== Questionnaire & Assessment =====================
 model Questionnaire {
   id       String @id @default(cuid())
   tenantId String
@@ -572,12 +574,7 @@ model ResultSnapshot {
   @@index([tenantId, userId])
 }
 
-/**
- * =========================
- * Library: Career/Major/Skill
- * =========================
- */
-
+//  ================== Library: Career/Major/Skill =========================
 model Career {
   id      String @id @default(cuid())
   code    String @unique
@@ -635,12 +632,7 @@ model MajorSkill {
   @@unique([majorId, skillId])
 }
 
-/**
- * =========================
- * Recommendation
- * =========================
- */
-
+//  =============== Recommendation =======================
 model Recommendation {
   id       String @id @default(cuid())
   tenantId String
@@ -665,12 +657,7 @@ model Recommendation {
   @@index([tenantId, type])
 }
 
-/**
- * =========================
- * Reporting / Export / Notifications
- * =========================
- */
-
+//  =============== Reporting / Export / Notification =======================
 model Report {
   id          String       @id @default(cuid())
   tenantId    String
@@ -740,12 +727,7 @@ model Notification {
   @@index([tenantId, channel, status])
 }
 
-/**
- * =========================
- * Counseling / Audit / Files
- * =========================
- */
-
+//  ============ Counseling / Audit / Files =================
 model CounselingSession {
   id       String @id @default(cuid())
   tenantId String
@@ -799,22 +781,4 @@ model FileAsset {
   ExportJob ExportJob[]
 
   @@index([tenantId, createdAt])
-}
-
-/**
- * =========================
- * Auth (OTP) — from current codebase
- * =========================
- */
-
-model OtpRequest {
-  id         String    @id @default(cuid())
-  mobile     String
-  fullName   String
-  codeHash   String
-  expiresAt  DateTime
-  verifiedAt DateTime?
-  createdAt  DateTime  @default(now())
-
-  @@index([mobile, createdAt])
 }

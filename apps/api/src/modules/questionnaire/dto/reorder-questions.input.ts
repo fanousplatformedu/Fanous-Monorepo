@@ -2,7 +2,7 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType("ReorderQuestionsInput")
 export class ReorderQuestionsInput {
-  @Field() tenantId: string;
-  @Field() itemsJson: string;
-  @Field() questionnaireId: string;
+  @Field(() => String) tenantId!: string;
+  @Field(() => String) itemsJson!: string;
+  @Field(() => String) questionnaireId!: string;
 }

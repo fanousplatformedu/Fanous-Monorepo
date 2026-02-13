@@ -3,15 +3,15 @@ import { InputType, Field, ID } from "@nestjs/graphql";
 
 @InputType("CreateTenantInput")
 export class CreateTenantInput {
-  @Field() @IsNotEmpty() name: string;
+  @Field() @IsNotEmpty() name!: string;
   @Field()
   @Matches(/^[a-z0-9-]+$/, { message: "Slug must be lowercase kebab-case" })
-  slug: string;
+  slug!: string;
 }
 
 @InputType("UpdateTenantInput")
 export class UpdateTenantInput {
-  @Field(() => ID) id: string;
+  @Field(() => ID) id!: string;
   @Field({ nullable: true })
   @IsOptional()
   @Matches(/^[a-z0-9-]+$/)

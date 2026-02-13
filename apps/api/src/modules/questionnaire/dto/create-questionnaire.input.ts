@@ -4,17 +4,17 @@ import { LanguageCode } from "@questionnaire/enums/questionnaire.enums";
 
 @InputType("CreateQuestionnaireInput")
 export class CreateQuestionnaireInput {
-  @Field() @IsNotEmpty() code: string;
-  @Field() @IsNotEmpty() title: string;
-  @Field() @IsNotEmpty() tenantId: string;
   @Field({ nullable: true }) description?: string;
-  @Field(() => LanguageCode) defaultLang: LanguageCode;
+  @Field(() => String) @IsNotEmpty() code!: string;
+  @Field(() => String) @IsNotEmpty() title!: string;
+  @Field(() => String) @IsNotEmpty() tenantId!: string;
+  @Field(() => LanguageCode) defaultLang!: LanguageCode;
 }
 
 @InputType("UpdateQuestionnaireInput")
 export class UpdateQuestionnaireInput {
-  @Field() tenantId: string;
-  @Field(() => ID) id: string;
+  @Field(() => ID) id!: string;
+  @Field(() => String) tenantId!: string;
   @Field({ nullable: true }) @IsOptional() code?: string;
   @Field({ nullable: true }) @IsOptional() title?: string;
   @Field({ nullable: true }) @IsOptional() description?: string;
