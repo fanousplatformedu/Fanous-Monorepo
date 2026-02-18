@@ -7,16 +7,10 @@ import { SchoolRole } from "@prisma/client";
 @InputType(MembershipGqlInputNames.REGISTER_REQUEST_INPUT)
 export class RegisterRequestInput {
   @Field() @IsUUID() schoolId!: string;
+  @Field() @IsString() @IsNotEmpty() identifier!: string;
+  @Field(() => ProfileInput, { nullable: true }) profile?: ProfileInput;
   @Field(() => String, {
     description: "STUDENT | PARENT | TEACHER | COUNSELOR",
   })
   role!: SchoolRole;
-
-  @Field({ description: "email Or phone" })
-  @IsString()
-  @IsNotEmpty()
-  identifier!: string;
-
-  @Field(() => ProfileInput, { nullable: true })
-  profile?: ProfileInput;
 }

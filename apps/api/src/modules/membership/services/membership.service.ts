@@ -1,4 +1,4 @@
-import { SchoolRole, MembershipStatus } from "@prisma/client";
+import { MembershipStatus, SchoolRole } from "@prisma/client";
 import { ListPendingRequestsInput } from "@membership/dtos/list-pending.input";
 import { ApproveMembershipInput } from "@membership/dtos/approve-membership.input";
 import { RejectMembershipInput } from "@membership/dtos/reject-membership.input";
@@ -7,7 +7,7 @@ import { isEmail, isPhone } from "@utils/function-helper";
 import { MembershipCodes } from "@membership/enums/membership-codes.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
-import { AppError } from "@common/types/app-error";
+import { AppError } from "@ctypes/app-error";
 
 @Injectable()
 export class MembershipService {
@@ -16,6 +16,7 @@ export class MembershipService {
   private async requireSchoolActive(schoolId: string) {
     const school = await this.prismaService.school.findUnique({
       where: { id: schoolId },
+      select: { id: true, isActive: true },
     });
     if (!school) throw new AppError(MembershipCodes.SCHOOL_NOT_FOUND as any);
     if (!school.isActive)
@@ -35,6 +36,37 @@ export class MembershipService {
   private ensureRoleAllowedForRegister(role: SchoolRole) {
     if (role === SchoolRole.SCHOOL_ADMIN)
       throw new AppError(MembershipCodes.ROLE_INVALID as any);
+  }
+
+  private async requireSchoolAdminForSchool(
+    adminUserId: string,
+    schoolId: string,
+  ) {
+    if (!adminUserId)
+      throw new AppError(
+        MembershipCodes.UNAUTHORIZED as any,
+        "UNAUTHORIZED",
+        401,
+      );
+
+    const adminMembership =
+      await this.prismaService.userSchoolMembership.findFirst({
+        where: {
+          userId: adminUserId,
+          schoolId,
+          status: MembershipStatus.APPROVED,
+          role: SchoolRole.SCHOOL_ADMIN,
+        },
+        select: { id: true },
+      });
+
+    if (!adminMembership) {
+      throw new AppError(
+        MembershipCodes.ONLY_ADMIN_CAN_REVIEW as any,
+        "ONLY_ADMIN_CAN_REVIEW",
+        403,
+      );
+    }
     return true;
   }
 
@@ -51,7 +83,9 @@ export class MembershipService {
             ...(norm.phone ? [{ phone: norm.phone }] : []),
           ],
         },
+        select: { id: true },
       });
+
       if (!user) {
         user = await tx.user.create({
           data: {
@@ -59,56 +93,113 @@ export class MembershipService {
             phone: norm.phone ?? undefined,
             isActive: true,
           },
+          select: { id: true },
         });
       }
 
-      const exists = await tx.userSchoolMembership.findFirst({
+      const existing = await tx.userSchoolMembership.findUnique({
         where: {
-          userId: user.id,
-          schoolId: input.schoolId,
-          role: input.role,
+          userId_schoolId: { userId: user.id, schoolId: input.schoolId },
         },
+        include: { user: true },
       });
 
-      if (exists) {
-        throw new AppError(
-          MembershipCodes.MEMBERSHIP_EXISTS as any,
-          MembershipCodes.MEMBERSHIP_EXISTS,
-          400,
-          {
-            status: exists.status,
+      if (existing) {
+        if (
+          existing.status === MembershipStatus.PENDING ||
+          existing.status === MembershipStatus.APPROVED
+        ) {
+          throw new AppError(
+            MembershipCodes.MEMBERSHIP_EXISTS as any,
+            MembershipCodes.MEMBERSHIP_EXISTS,
+            400,
+            { status: existing.status },
+          );
+        }
+
+        if (existing.status === MembershipStatus.SUSPENDED) {
+          throw new AppError(
+            MembershipCodes.FORBIDDEN as any,
+            "MEMBERSHIP_SUSPENDED",
+            403,
+            { status: existing.status },
+          );
+        }
+
+        const updated = await tx.userSchoolMembership.update({
+          where: { id: existing.id },
+          data: {
+            status: MembershipStatus.PENDING,
+            requestedRole: input.role,
+            role: input.role,
+            reviewedById: null,
+            reviewedAt: null,
+            reviewNote: null,
+            firstName: profile.firstName ?? undefined,
+            lastName: profile.lastName ?? undefined,
+            nationalId: profile.nationalId ?? undefined,
+            grade: profile.grade ?? undefined,
           },
-        );
+          include: { user: true },
+        });
+
+        return updated;
       }
 
       const membership = await tx.userSchoolMembership.create({
         data: {
           userId: user.id,
           schoolId: input.schoolId,
+          requestedRole: input.role,
           role: input.role,
           status: MembershipStatus.PENDING,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          nationalId: profile.nationalId,
-          grade: profile.grade,
+          firstName: profile.firstName ?? undefined,
+          lastName: profile.lastName ?? undefined,
+          nationalId: profile.nationalId ?? undefined,
+          grade: profile.grade ?? undefined,
         },
-        include: {
-          user: true,
-        },
+        include: { user: true },
       });
+
       return membership;
     });
   }
 
   async me(userId: string) {
+    if (!userId)
+      throw new AppError(
+        MembershipCodes.UNAUTHORIZED as any,
+        "UNAUTHORIZED",
+        401,
+      );
+
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
+      select: {
+        id: true,
+        isActive: true,
+        email: true,
+        phone: true,
+        globalRole: true,
+      },
     });
-    if (!user) throw new AppError(MembershipCodes.UNAUTHORIZED as any);
+
+    if (!user)
+      throw new AppError(
+        MembershipCodes.UNAUTHORIZED as any,
+        "UNAUTHORIZED",
+        401,
+      );
     return user;
   }
 
   async myMemberships(userId: string, schoolId: string) {
+    if (!userId)
+      throw new AppError(
+        MembershipCodes.UNAUTHORIZED as any,
+        "UNAUTHORIZED",
+        401,
+      );
     await this.requireSchoolActive(schoolId);
     return this.prismaService.userSchoolMembership.findMany({
       where: { userId, schoolId },
@@ -117,8 +208,12 @@ export class MembershipService {
     });
   }
 
-  async listPendingRequests(input: ListPendingRequestsInput) {
+  async listPendingRequests(
+    adminUserId: string,
+    input: ListPendingRequestsInput,
+  ) {
     await this.requireSchoolActive(input.schoolId);
+    await this.requireSchoolAdminForSchool(adminUserId, input.schoolId);
     const take = input.take ?? 20;
     const skip = input.skip ?? 0;
     const where = {
@@ -139,6 +234,12 @@ export class MembershipService {
   }
 
   async approveMembership(adminUserId: string, input: ApproveMembershipInput) {
+    if (!adminUserId)
+      throw new AppError(
+        MembershipCodes.UNAUTHORIZED as any,
+        "UNAUTHORIZED",
+        401,
+      );
     const membership = await this.prismaService.userSchoolMembership.findUnique(
       {
         where: { id: input.membershipId },
@@ -147,34 +248,50 @@ export class MembershipService {
     );
     if (!membership)
       throw new AppError(MembershipCodes.MEMBERSHIP_NOT_FOUND as any);
-    if (membership.status !== MembershipStatus.PENDING)
-      throw new AppError(MembershipCodes.ONLY_PENDING_CAN_BE_REVIEWED as any);
     if (!membership.school.isActive)
       throw new AppError(MembershipCodes.SCHOOL_INACTIVE as any);
+    await this.requireSchoolAdminForSchool(adminUserId, membership.schoolId);
+    if (membership.status !== MembershipStatus.PENDING)
+      throw new AppError(MembershipCodes.ONLY_PENDING_CAN_BE_REVIEWED as any);
+    const finalRole = input.finalRole ?? membership.requestedRole;
+    if (finalRole === SchoolRole.SCHOOL_ADMIN)
+      throw new AppError(MembershipCodes.ROLE_INVALID as any);
     return this.prismaService.userSchoolMembership.update({
       where: { id: membership.id },
       data: {
         status: MembershipStatus.APPROVED,
+        role: finalRole,
         reviewedById: adminUserId,
         reviewedAt: new Date(),
+        reviewNote: null,
       },
       include: { user: true },
     });
   }
 
   async rejectMembership(adminUserId: string, input: RejectMembershipInput) {
+    if (!adminUserId)
+      throw new AppError(
+        MembershipCodes.UNAUTHORIZED as any,
+        "UNAUTHORIZED",
+        401,
+      );
+
     const membership = await this.prismaService.userSchoolMembership.findUnique(
       {
         where: { id: input.membershipId },
         include: { user: true, school: true },
       },
     );
+
     if (!membership)
       throw new AppError(MembershipCodes.MEMBERSHIP_NOT_FOUND as any);
-    if (membership.status !== MembershipStatus.PENDING)
-      throw new AppError(MembershipCodes.ONLY_PENDING_CAN_BE_REVIEWED as any);
     if (!membership.school.isActive)
       throw new AppError(MembershipCodes.SCHOOL_INACTIVE as any);
+
+    await this.requireSchoolAdminForSchool(adminUserId, membership.schoolId);
+    if (membership.status !== MembershipStatus.PENDING)
+      throw new AppError(MembershipCodes.ONLY_PENDING_CAN_BE_REVIEWED as any);
 
     return this.prismaService.userSchoolMembership.update({
       where: { id: membership.id },
@@ -182,6 +299,7 @@ export class MembershipService {
         status: MembershipStatus.REJECTED,
         reviewedById: adminUserId,
         reviewedAt: new Date(),
+        reviewNote: input.reason ?? undefined,
       },
       include: { user: true },
     });

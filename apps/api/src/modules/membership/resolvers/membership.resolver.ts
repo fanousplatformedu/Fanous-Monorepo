@@ -1,8 +1,8 @@
 import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { MembershipGqlMutationNames } from "@modules/membership/enums/gql-names.enum";
+import { MembershipGqlMutationNames } from "@membership/enums/gql-names.enum";
 import { PendingRequestsPageEntity } from "@membership/entities/pending-requests-page.entity";
 import { ListPendingRequestsInput } from "@membership/dtos/list-pending.input";
-import { MembershipGqlQueryNames } from "@modules/membership/enums/gql-names.enum";
+import { MembershipGqlQueryNames } from "@membership/enums/gql-names.enum";
 import { ApproveMembershipInput } from "@membership/dtos/approve-membership.input";
 import { RejectMembershipInput } from "@membership/dtos/reject-membership.input";
 import { RegisterRequestInput } from "@membership/dtos/register-request.input";
@@ -54,11 +54,17 @@ export class MembershipResolver {
   @Query(() => PendingRequestsPageEntity, {
     name: MembershipGqlQueryNames.PENDING_REQUESTS,
   })
-  async pendingRequests(@Args("input") input: ListPendingRequestsInput) {
-    return this.membershipService.listPendingRequests(input);
+  async pendingRequests(
+    @Args("input") input: ListPendingRequestsInput,
+    @Context() ctx: any,
+  ) {
+    const adminUserId = ctx.req.user?.id;
+    return this.membershipService.listPendingRequests(adminUserId, input);
   }
 
   @Roles(SchoolRole.SCHOOL_ADMIN)
+  @UseGuards(SchoolScopeGuard)
+  @SchoolScope({ requireActive: true })
   @Mutation(() => MembershipEntity, {
     name: MembershipGqlMutationNames.APPROVE_MEMBERSHIP,
   })
@@ -71,6 +77,8 @@ export class MembershipResolver {
   }
 
   @Roles(SchoolRole.SCHOOL_ADMIN)
+  @UseGuards(SchoolScopeGuard)
+  @SchoolScope({ requireActive: true })
   @Mutation(() => MembershipEntity, {
     name: MembershipGqlMutationNames.REJECT_MEMBERSHIP,
   })
