@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsOptional, IsString, IsUUID, IsIn } from "class-validator";
 import { MembershipStatus, SchoolRole } from "@prisma/client";
 import { SchoolAdminGqlInputNames } from "@schoolAdmin/enums/gql-names.enum";
 import { Field, InputType, Int } from "@nestjs/graphql";
@@ -11,11 +11,15 @@ export class ListMembershipRequestsInput {
   @Field(() => Int, { nullable: true }) @IsOptional() take?: number;
   @Field(() => Int, { nullable: true }) @IsOptional() skip?: number;
   @Field({ nullable: true }) @IsOptional() @IsString() from?: string;
-
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsEnum(MembershipStatus)
   status?: MembershipStatus;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsEnum(SchoolRole)
+  requestedRole?: SchoolRole;
 
   @Field(() => String, { nullable: true })
   @IsOptional()

@@ -1,7 +1,7 @@
+import { MembershipStatus, SchoolRole } from "@prisma/client";
 import { ListMembershipRequestsInput } from "@schoolAdmin/dtos/list-requests.input";
 import { ReviewMembershipInput } from "@schoolAdmin/dtos/review-membership.input";
 import { SchoolAdminMessages } from "@schoolAdmin/enums/school-admin-message.enum";
-import { MembershipStatus } from "@prisma/client";
 import { SchoolAdminCodes } from "@schoolAdmin/enums/school-admin-codes.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
@@ -10,10 +10,10 @@ import { AppError } from "@ctypes/app-error";
 @Injectable()
 export class SchoolAdminService {
   constructor(private prismaService: PrismaService) {}
-
   private async requireActiveSchool(schoolId: string) {
     const school = await this.prismaService.school.findUnique({
       where: { id: schoolId },
+      select: { id: true, isActive: true },
     });
     if (!school) throw new AppError(SchoolAdminCodes.SCHOOL_NOT_FOUND as any);
     if (!school.isActive)
@@ -28,9 +28,16 @@ export class SchoolAdminService {
   }
 
   async listMembershipRequests(
+    adminUserId: string,
     adminSchoolId: string,
     input: ListMembershipRequestsInput,
   ) {
+    if (!adminUserId)
+      throw new AppError(
+        SchoolAdminCodes.UNAUTHORIZED as any,
+        "UNAUTHORIZED",
+        401,
+      );
     if (adminSchoolId !== input.schoolId)
       throw new AppError(SchoolAdminCodes.FORBIDDEN as any);
     await this.requireActiveSchool(input.schoolId);
@@ -38,6 +45,7 @@ export class SchoolAdminService {
     const skip = input.skip ?? 0;
     const where: any = { schoolId: input.schoolId };
     if (input.status) where.status = input.status;
+    if (input.requestedRole) where.requestedRole = input.requestedRole;
     if (input.role) where.role = input.role;
     const from = this.toDateOrNull(input.from);
     const to = this.toDateOrNull(input.to);
@@ -74,6 +82,7 @@ export class SchoolAdminService {
       items: items.map((m) => ({
         id: m.id,
         schoolId: m.schoolId,
+        requestedRole: (m as any).requestedRole ?? m.role,
         role: m.role,
         status: m.status,
         userId: m.userId,
@@ -85,6 +94,7 @@ export class SchoolAdminService {
         grade: m.grade ?? undefined,
         reviewedById: m.reviewedById ?? undefined,
         reviewedAt: m.reviewedAt ?? undefined,
+        reviewNote: (m as any).reviewNote ?? undefined,
         createdAt: m.createdAt,
       })),
     };
@@ -95,6 +105,13 @@ export class SchoolAdminService {
     adminSchoolId: string,
     input: ReviewMembershipInput,
   ) {
+    if (!adminUserId)
+      throw new AppError(
+        SchoolAdminCodes.UNAUTHORIZED as any,
+        "UNAUTHORIZED",
+        401,
+      );
+
     const membership = await this.prismaService.userSchoolMembership.findUnique(
       {
         where: { id: input.membershipId },
@@ -108,21 +125,35 @@ export class SchoolAdminService {
       throw new AppError(SchoolAdminCodes.FORBIDDEN as any);
     if (!membership.school.isActive)
       throw new AppError(SchoolAdminCodes.SCHOOL_INACTIVE as any);
-    if (membership.status !== MembershipStatus.PENDING) {
+    if (membership.status !== MembershipStatus.PENDING)
       throw new AppError(SchoolAdminCodes.ONLY_PENDING_CAN_BE_REVIEWED as any);
-    }
-
     const nextStatus =
       input.action === "APPROVE"
         ? MembershipStatus.APPROVED
         : MembershipStatus.REJECTED;
 
+    let nextRole = membership.role;
+    if (input.action === "APPROVE") {
+      const requestedRole =
+        (membership as any).requestedRole ?? membership.role;
+      nextRole = input.finalRole ?? requestedRole;
+      if (nextRole === SchoolRole.SCHOOL_ADMIN) {
+        throw new AppError(
+          SchoolAdminCodes.FORBIDDEN as any,
+          "CANNOT_ASSIGN_ADMIN_ROLE",
+          403,
+        );
+      }
+    }
+
     const updated = await this.prismaService.userSchoolMembership.update({
       where: { id: membership.id },
       data: {
         status: nextStatus,
+        role: nextRole,
         reviewedById: adminUserId,
         reviewedAt: new Date(),
+        reviewNote: input.reason ?? undefined,
       },
       include: { user: true },
     });
@@ -135,6 +166,7 @@ export class SchoolAdminService {
       membership: {
         id: updated.id,
         schoolId: updated.schoolId,
+        requestedRole: (updated as any).requestedRole ?? updated.role,
         role: updated.role,
         status: updated.status,
         userId: updated.userId,
@@ -146,6 +178,7 @@ export class SchoolAdminService {
         grade: updated.grade ?? undefined,
         reviewedById: updated.reviewedById ?? undefined,
         reviewedAt: updated.reviewedAt ?? undefined,
+        reviewNote: (updated as any).reviewNote ?? undefined,
         createdAt: updated.createdAt,
       },
     };
