@@ -5,7 +5,7 @@ import { GetSchoolInput } from "@school/dtos/get-school.input";
 import { PrismaService } from "@prisma/prisma.service";
 import { SchoolCodes } from "@school/enums/school-codes.enum";
 import { Injectable } from "@nestjs/common";
-import { AppError } from "@common/types/app-error";
+import { AppError } from "@ctypes/app-error";
 
 @Injectable()
 export class SchoolService {

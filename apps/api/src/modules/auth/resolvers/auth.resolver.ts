@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { RequestOtpResultEntity } from "@auth/entities/request-otp-result.entity";
 import { RequestLoginOtpInput } from "@auth/dtos/request-login-otp.input";
-import { VerifyLoginOtpInput } from "@auth/dtos/verify-login-oto.input";
+import { VerifyLoginOtpInput } from "@modules/auth/dtos/verify-login-otp.input";
 import { LogoutResultEntity } from "@auth/entities/logout-result.entity";
 import { AuthPayloadEntity } from "@auth/entities/auth-payload.entity";
 import { RefreshTokenInput } from "@auth/dtos/refresh-token.input";

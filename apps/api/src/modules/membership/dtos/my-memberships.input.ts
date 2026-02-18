@@ -1,4 +1,4 @@
-import { MembershipGqlInputNames } from "@modules/membership/enums/gql-names.enum";
+import { MembershipGqlInputNames } from "@membership/enums/gql-names.enum";
 import { Field, InputType } from "@nestjs/graphql";
 import { IsUUID } from "class-validator";
 

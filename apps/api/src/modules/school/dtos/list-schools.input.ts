@@ -5,26 +5,8 @@ import { IsString, Max, Min } from "class-validator";
 
 @InputType(SchoolGqlInputNames.LIST_SCHOOL_INPUT)
 export class ListSchoolsInput {
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  take?: number;
-
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  skip?: number;
-
-  @Field({ nullable: true, description: "search on name or code" })
-  @IsOptional()
-  @IsString()
-  q?: string;
-
-  @Field({ nullable: true, description: "just activated" })
-  @IsOptional()
-  @IsBoolean()
-  onlyActive?: boolean;
+  @Field({ nullable: true }) @IsOptional() @IsString() q?: string;
+  @Field(() => Int, { nullable: true }) @IsOptional() @IsInt() take?: number;
+  @Field(() => Int, { nullable: true }) @IsOptional() @IsInt() skip?: number;
+  @Field({ nullable: true }) @IsOptional() @IsBoolean() onlyActive?: boolean;
 }

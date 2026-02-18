@@ -1,4 +1,4 @@
-import { MembershipGqlEntityNames } from "@modules/membership/enums/gql-names.enum";
+import { MembershipGqlEntityNames } from "@membership/enums/gql-names.enum";
 import { Field, ObjectType } from "@nestjs/graphql";
 import { GlobalRole } from "@prisma/client";
 

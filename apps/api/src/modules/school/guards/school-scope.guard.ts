@@ -6,7 +6,7 @@ import { PrismaService } from "@prisma/prisma.service";
 import { SchoolCodes } from "@school/enums/school-codes.enum";
 import { GlobalRole } from "@prisma/client";
 import { Reflector } from "@nestjs/core";
-import { AppError } from "@common/types/app-error";
+import { AppError } from "@ctypes/app-error";
 
 @Injectable()
 export class SchoolScopeGuard implements CanActivate {

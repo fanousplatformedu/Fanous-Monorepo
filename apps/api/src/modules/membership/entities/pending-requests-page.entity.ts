@@ -1,4 +1,4 @@
-import { MembershipGqlEntityNames } from "@modules/membership/enums/gql-names.enum";
+import { MembershipGqlEntityNames } from "@membership/enums/gql-names.enum";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { MembershipEntity } from "@membership/entities/membership.entity";
 

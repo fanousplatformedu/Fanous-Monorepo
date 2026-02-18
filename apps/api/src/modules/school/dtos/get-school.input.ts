@@ -5,8 +5,5 @@ import { Field, InputType } from "@nestjs/graphql";
 @InputType(SchoolGqlInputNames.GET_SCHOOL_INPUT)
 export class GetSchoolInput {
   @Field({ nullable: true }) @IsOptional() @IsUUID() id?: string;
-  @Field({ nullable: true, description: "or with school code" })
-  @IsOptional()
-  @IsString()
-  code?: string;
+  @Field({ nullable: true }) @IsOptional() @IsString() code?: string;
 }

@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsUUID } from "class-validator";
-import { MembershipGqlInputNames } from "@modules/membership/enums/gql-names.enum";
+import { MembershipGqlInputNames } from "@membership/enums/gql-names.enum";
 import { Field, InputType } from "@nestjs/graphql";
 
 @InputType(MembershipGqlInputNames.REJECT_MEMBERSHIP_INPUT)
