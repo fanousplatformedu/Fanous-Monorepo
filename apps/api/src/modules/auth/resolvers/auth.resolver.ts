@@ -1,46 +1,66 @@
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
-import { AuthRegisterRequestInput } from "@auth/dto/register-request.input";
-import { AuthRegisterStatusEntity } from "@auth/entities/register-status.entity";
-import { AuthRefreshTokenInput } from "@auth/dto/refresh-token.input";
-import { AuthRequestOtpInput } from "@auth/dto/request-otp.input";
-import { AuthVerifyOtpInput } from "@auth/dto/verify-otp.input";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { RequestOtpResultEntity } from "@auth/entities/request-otp-result.entity";
+import { RequestLoginOtpInput } from "@auth/dtos/request-login-otp.input";
+import { VerifyLoginOtpInput } from "@auth/dtos/verify-login-oto.input";
+import { LogoutResultEntity } from "@auth/entities/logout-result.entity";
 import { AuthPayloadEntity } from "@auth/entities/auth-payload.entity";
-import { GqlQueryNames } from "@auth/enum/gql-names.enum";
+import { RefreshTokenInput } from "@auth/dtos/refresh-token.input";
+import { GqlMutationNames } from "@auth/enums/gql-names.enum";
+import { AuthMessages } from "@auth/enums/auth-message.enum";
 import { AuthService } from "@auth/services/auth.service";
+import { LogoutInput } from "@auth/dtos/logout.input";
 import { Public } from "@decorators/public.decorator";
 
 @Resolver()
 export class AuthResolver {
-  constructor(private authService: AuthService) {}
+  constructor(private auth: AuthService) {}
 
   @Public()
-  @Mutation(() => AuthRegisterStatusEntity, {
-    name: GqlQueryNames.AUTH_REGISTER_REQUEST,
+  @Query(() => String, { name: "healthCheck" })
+  healthCheck(): string {
+    return "ok";
+  }
+
+  @Public()
+  @Mutation(() => RequestOtpResultEntity, {
+    name: GqlMutationNames.REQUEST_LOGIN_OTP,
   })
-  authRegisterRequest(@Args("input") input: AuthRegisterRequestInput) {
-    return this.authService.registerRequest(input);
+  async requestLoginOtp(
+    @Args("input") input: RequestLoginOtpInput,
+  ): Promise<RequestOtpResultEntity> {
+    const { resendAfter } = await this.auth.requestLoginOtp(
+      input.schoolId,
+      input.identifier,
+    );
+    return { message: AuthMessages.OTP_SENT, resendAfter };
   }
 
   @Public()
-  @Mutation(() => Boolean, { name: GqlQueryNames.AUTH_REQUEST_OTP })
-  authRequestOtp(@Args("input") input: AuthRequestOtpInput) {
-    return this.authService.requestOtp(input).then(() => true);
+  @Mutation(() => AuthPayloadEntity, {
+    name: GqlMutationNames.VERIFY_LOGIN_OTP,
+  })
+  async verifyLoginOtp(
+    @Args("input") input: VerifyLoginOtpInput,
+  ): Promise<AuthPayloadEntity> {
+    return this.auth.verifyLoginOtp(
+      input.schoolId,
+      input.identifier,
+      input.code,
+    );
   }
 
   @Public()
-  @Mutation(() => AuthPayloadEntity, { name: GqlQueryNames.AUTH_VERIFY_OTP })
-  authVerifyOtp(@Args("input") input: AuthVerifyOtpInput) {
-    return this.authService.verifyOtp(input);
+  @Mutation(() => AuthPayloadEntity, { name: GqlMutationNames.REFRESH_TOKEN })
+  async refreshToken(
+    @Args("input") input: RefreshTokenInput,
+  ): Promise<AuthPayloadEntity> {
+    return this.auth.rotateRefreshToken(input.schoolId, input.refreshToken);
   }
 
   @Public()
-  @Mutation(() => AuthPayloadEntity, { name: GqlQueryNames.AUTH_REFRESH_TOKEN })
-  authRefreshToken(@Args("input") input: AuthRefreshTokenInput) {
-    return this.authService.refresh(input.refreshToken);
-  }
-
-  @Mutation(() => Boolean, { name: GqlQueryNames.AUTH_LOGOUT })
-  authLogout(@Args("refreshToken") refreshToken: string) {
-    return this.authService.logout(refreshToken).then(() => true);
+  @Mutation(() => LogoutResultEntity, { name: GqlMutationNames.LOGOUT })
+  async logout(@Args("input") input: LogoutInput): Promise<LogoutResultEntity> {
+    await this.auth.logout(input.schoolId, input.refreshToken);
+    return { message: AuthMessages.LOGOUT_OK };
   }
 }

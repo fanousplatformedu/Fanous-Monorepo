@@ -1,315 +1,253 @@
-import { BadRequestException, HttpException, HttpStatus } from "@nestjs/common";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { ApprovalStatus, OtpChannel, Role } from "@prisma/client";
-import { hash, verify as verifyHash } from "argon2";
-import { AuthRegisterRequestInput } from "@auth/dto/register-request.input";
-import { AuthRegisterStatusEntity } from "@auth/entities/register-status.entity";
-import { randomBytes, createHash } from "crypto";
-import { normalizeIdentifier } from "@utils/identifier";
-import { AuthRequestOtpInput } from "@auth/dto/request-otp.input";
-import { AuthVerifyOtpInput } from "@auth/dto/verify-otp.input";
-import { AuthPayloadEntity } from "@auth/entities/auth-payload.entity";
-import { AuthErrorEnum } from "@auth/enum/auth.message.enum";
+import { ForbiddenException, Injectable } from "@nestjs/common";
+import { MembershipStatus, TokenType } from "@prisma/client";
+import { parseAccessTtlToSeconds } from "@utils/function-helper";
+import { UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "@prisma/prisma.service";
+import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { OtpService } from "@auth/services/oto.service";
+import { JwtPayload } from "@auth/types/jwt-payload.type";
+import { AuthCodes } from "@auth/enums/auth-errors.enum";
+import { nanoid } from "nanoid";
+
+import * as argon2 from "argon2";
 
 @Injectable()
 export class AuthService {
   constructor(
     private prismaService: PrismaService,
+    private configService: ConfigService,
     private jwtService: JwtService,
+    private otpService: OtpService,
   ) {}
 
-  private readonly OTP_EXPIRES_SEC = 120;
-  private readonly OTP_RATE_LIMIT_PER_HOUR = 5;
-
-  private readonly ACCESS_EXPIRES = "15m";
-  private readonly REFRESH_DAYS = 30;
-  private readonly REFRESH_PEPPER =
-    process.env.REFRESH_TOKEN_PEPPER || "dev_pepper_change_me";
-
-  private readonly ALLOWED_REGISTER_ROLES = new Set<Role>([
-    Role.STUDENT,
-    Role.PARENT,
-    Role.TEACHER,
-    Role.COUNSELOR,
-  ]);
-
-  private throw429(message: string, retryAfterSeconds?: number): never {
-    throw new HttpException(
-      { message, ...(retryAfterSeconds ? { retryAfterSeconds } : {}) },
-      HttpStatus.TOO_MANY_REQUESTS,
-    );
+  private accessTtl() {
+    return this.configService.get<string>("ACCESS_TOKEN_TTL") ?? "15m";
+  }
+  private refreshDays() {
+    return Number(this.configService.get("REFRESH_TOKEN_TTL_DAYS") ?? 30);
   }
 
-  private hashRefreshToken(token: string) {
-    return createHash("sha256")
-      .update(`${this.REFRESH_PEPPER}:${token}`)
-      .digest("hex");
-  }
-
-  async registerRequest(
-    input: AuthRegisterRequestInput,
-  ): Promise<AuthRegisterStatusEntity> {
-    if (!this.ALLOWED_REGISTER_ROLES.has(input.desiredRole))
-      throw new BadRequestException(AuthErrorEnum.ROLE_NOT_ALLOWED);
-    const channel = input.channel;
-    const identifier = normalizeIdentifier(channel, input.identifier);
-    const schoolId = input.tenantId;
-    if (!schoolId) throw new BadRequestException(AuthErrorEnum.SCHOOL_REQUIRED);
+  async requestLoginOtp(schoolId: string, identifier: string) {
     const school = await this.prismaService.school.findUnique({
       where: { id: schoolId },
-      select: { id: true, isActive: true },
     });
-    if (!school || !school.isActive)
-      throw new BadRequestException(AuthErrorEnum.SCHOOL_NOT_FOUND);
-    const user =
-      channel === OtpChannel.EMAIL
-        ? await this.prismaService.user.upsert({
-            where: { email: identifier },
-            create: {
-              email: identifier,
-              emailVerified: false,
-              phone: null,
-              phoneVerified: false,
-              role: Role.PENDING,
-              desiredRole: input.desiredRole,
-              name: input.name ?? null,
-              schoolId,
-            },
-            update: {
-              desiredRole: input.desiredRole,
-              ...(input.name ? { name: input.name } : {}),
-              schoolId,
-            },
-          })
-        : await this.prismaService.user.upsert({
-            where: { phone: identifier },
-            create: {
-              email: null,
-              phone: identifier,
-              role: Role.PENDING,
-              phoneVerified: false,
-              emailVerified: false,
-              name: input.name ?? null,
-              desiredRole: input.desiredRole,
-              schoolId,
-            },
-            update: {
-              desiredRole: input.desiredRole,
-              ...(input.name ? { name: input.name } : {}),
-              schoolId,
-            },
-          });
-    const existingPending =
-      await this.prismaService.roleApprovalRequest.findFirst({
-        where: {
-          userId: user.id,
-          schoolId,
-          status: ApprovalStatus.PENDING,
-        },
-        select: { id: true },
-      });
-
-    if (!existingPending) {
-      await this.prismaService.roleApprovalRequest.create({
-        data: {
-          userId: user.id,
-          requestedRole: input.desiredRole,
-          status: ApprovalStatus.PENDING,
-          schoolId,
-          note: null,
-        },
-      });
-    }
-    await this.requestOtp({
-      channel,
-      identifier: input.identifier,
-      tenantId: schoolId,
-    });
-    return { ok: true, userId: user.id, desiredRole: input.desiredRole };
-  }
-
-  async requestOtp(input: AuthRequestOtpInput): Promise<void> {
-    const channel = input.channel;
-    const identifier = normalizeIdentifier(channel, input.identifier);
-    const tenantId = input.tenantId ?? null;
-    const now = new Date();
-
-    const activeOtp = await this.prismaService.otpToken.findFirst({
-      where: {
-        identifier,
-        channel,
-        tenantId,
-        verifiedAt: null,
-        expiresAt: { gt: now },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    if (activeOtp) {
-      const retryAfterSeconds = Math.max(
-        1,
-        Math.ceil((activeOtp.expiresAt.getTime() - now.getTime()) / 1000),
-      );
-      this.throw429(AuthErrorEnum.OTP_COOLDOWN_ACTIVE, retryAfterSeconds);
-    }
-
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    const countLastHour = await this.prismaService.otpToken.count({
-      where: { identifier, channel, tenantId, createdAt: { gt: oneHourAgo } },
-    });
-    if (countLastHour >= this.OTP_RATE_LIMIT_PER_HOUR)
-      this.throw429(AuthErrorEnum.TOO_MANY_REQUESTS, 3600);
-
-    const code = this.generateNumericCode(6);
-    const codeHash = await hash(code);
-    const expiresAt = new Date(Date.now() + this.OTP_EXPIRES_SEC * 1000);
-
-    await this.prismaService.otpToken.create({
-      data: { identifier, channel, codeHash, tenantId, expiresAt },
-    });
-
-    console.log(
-      `[OTP][DEV] ${channel}=${identifier} code=${code} exp=${this.OTP_EXPIRES_SEC}s`,
-    );
-  }
-
-  async verifyOtp(input: AuthVerifyOtpInput): Promise<AuthPayloadEntity> {
-    const channel = input.channel;
-    const identifier = normalizeIdentifier(channel, input.identifier);
-    const schoolId = input.tenantId ?? null;
-    const now = new Date();
-    const otp = await this.prismaService.otpToken.findFirst({
-      where: {
-        identifier,
-        channel,
-        tenantId: schoolId,
-        verifiedAt: null,
-        expiresAt: { gt: now },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    if (!otp) throw new UnauthorizedException(AuthErrorEnum.OTP_NOT_FOUND);
-    const ok = await verifyHash(otp.codeHash, input.code);
-    if (!ok) throw new UnauthorizedException(AuthErrorEnum.INVALID_OTP);
-    await this.prismaService.otpToken.update({
-      where: { id: otp.id },
-      data: { verifiedAt: now },
-    });
+    if (!school) throw new ForbiddenException(AuthCodes.SCHOOL_NOT_FOUND);
+    if (!school.isActive)
+      throw new ForbiddenException(AuthCodes.SCHOOL_INACTIVE);
 
     const user = await this.prismaService.user.findFirst({
-      where:
-        channel === OtpChannel.EMAIL
-          ? { email: identifier }
-          : { phone: identifier },
-      select: {
-        id: true,
-        role: true,
-        isActive: true,
-        schoolId: true,
-        emailVerified: true,
-        phoneVerified: true,
-      },
-    });
-    if (!user) throw new UnauthorizedException(AuthErrorEnum.UNAUTHORIZED);
-    if (!user.isActive)
-      throw new UnauthorizedException(AuthErrorEnum.USER_INACTIVE);
-    await this.prismaService.user.update({
-      where: { id: user.id },
-      data:
-        channel === OtpChannel.EMAIL
-          ? { emailVerified: true }
-          : { phoneVerified: true },
-    });
-    if (user.role === Role.PENDING)
-      throw new UnauthorizedException(AuthErrorEnum.ROLE_NOT_APPROVED);
-    return this.issueTokens(user.id);
-  }
-
-  async refresh(refreshTokenPlain: string): Promise<AuthPayloadEntity> {
-    const now = new Date();
-    const tokenHash = this.hashRefreshToken(refreshTokenPlain);
-
-    const token = await this.prismaService.refreshToken.findFirst({
       where: {
-        tokenHash,
-        revokedAt: null,
-        expiresAt: { gt: now },
-      },
-      select: { id: true, userId: true },
-    });
-
-    if (!token)
-      throw new UnauthorizedException(AuthErrorEnum.INVALID_REFRESH_TOKEN);
-
-    await this.prismaService.refreshToken.update({
-      where: { id: token.id },
-      data: { revokedAt: now },
-    });
-    return this.issueTokens(token.userId);
-  }
-
-  async logout(refreshTokenPlain: string): Promise<void> {
-    const tokenHash = this.hashRefreshToken(refreshTokenPlain);
-    await this.prismaService.refreshToken.updateMany({
-      where: { tokenHash, revokedAt: null },
-      data: { revokedAt: new Date() },
-    });
-  }
-
-  private generateNumericCode(len = 6): string {
-    const max = 10 ** len;
-    const n = Math.floor(Math.random() * max);
-    return String(n).padStart(len, "0");
-  }
-
-  private async issueTokens(userId: string): Promise<AuthPayloadEntity> {
-    const u = await this.prismaService.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        role: true,
-        name: true,
-        avatar: true,
-        isActive: true,
+        OR: [
+          { email: identifier.trim().toLowerCase() },
+          { phone: identifier.trim().replace(/\s/g, "") },
+        ],
       },
     });
 
-    if (!u || !u.isActive)
-      throw new UnauthorizedException(AuthErrorEnum.UNAUTHORIZED);
-
-    const accessToken = await this.jwtService.signAsync(
-      { sub: u.id, role: u.role },
-      { expiresIn: this.ACCESS_EXPIRES },
-    );
-
-    const refreshPlain = randomBytes(48).toString("hex");
-    const refreshHash = this.hashRefreshToken(refreshPlain);
-    const expiresAt = new Date(
-      Date.now() + this.REFRESH_DAYS * 24 * 60 * 60 * 1000,
-    );
-
-    await this.prismaService.refreshToken.create({
-      data: { userId: u.id, tokenHash: refreshHash, expiresAt },
+    if (!user) throw new ForbiddenException(AuthCodes.USER_NOT_FOUND);
+    const membership = await this.prismaService.userSchoolMembership.findFirst({
+      where: { userId: user.id, schoolId, status: MembershipStatus.APPROVED },
     });
 
-    return {
-      accessToken,
-      id: u.id,
-      role: u.role,
-      name: u.name ?? undefined,
-      refreshToken: refreshPlain,
-      avatar: u.avatar ?? undefined,
-    };
+    if (!membership) {
+      const any = await this.prismaService.userSchoolMembership.findFirst({
+        where: { userId: user.id, schoolId },
+      });
+      if (!any) throw new ForbiddenException(AuthCodes.MEMBERSHIP_NOT_FOUND);
+      throw new ForbiddenException(AuthCodes.ROLE_NOT_APPROVED);
+    }
+
+    const { resendAfter, devCode } = await this.otpService.createLoginOtp({
+      schoolId,
+      userId: user.id,
+      identifier,
+    });
+    return { resendAfter, devCode };
   }
 
-  async validateJwtUser(userId: string) {
+  async verifyLoginOtp(schoolId: string, identifier: string, code: string) {
+    const school = await this.prismaService.school.findUnique({
+      where: { id: schoolId },
+    });
+    if (!school) throw new ForbiddenException(AuthCodes.SCHOOL_NOT_FOUND);
+    if (!school.isActive)
+      throw new ForbiddenException(AuthCodes.SCHOOL_INACTIVE);
+
+    const { userId } = await this.otpService.verifyLoginOtp({
+      schoolId,
+      identifier,
+      code,
+    });
+
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
     if (!user || !user.isActive)
-      throw new UnauthorizedException(AuthErrorEnum.UNAUTHORIZED);
-    return user;
+      throw new UnauthorizedException(AuthCodes.UNAUTHORIZED);
+    const membership = await this.prismaService.userSchoolMembership.findFirst({
+      where: { userId, schoolId, status: MembershipStatus.APPROVED },
+    });
+    if (!membership) throw new ForbiddenException(AuthCodes.ROLE_NOT_APPROVED);
+    const { accessToken, expiresIn } = await this.issueAccessToken({
+      userId,
+      schoolId,
+      globalRole: user.globalRole,
+      schoolRole: membership.role,
+    });
+    const { refreshToken } = await this.issueRefreshToken({
+      userId,
+      schoolId,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+      expiresIn,
+      me: {
+        id: user.id,
+        email: user.email ?? undefined,
+        phone: user.phone ?? undefined,
+        globalRole: user.globalRole,
+        schoolRole: membership.role,
+        schoolId,
+      },
+    };
+  }
+
+  async refreshToken(schoolId: string, refreshToken: string) {
+    const tokenHash = await argon2.hash(refreshToken);
+    throw new Error(
+      "Use SHA256 hashing implementation below (see auth.service.ts section 'SHA256 refresh').",
+    );
+  }
+
+  // ========== Access token ============
+  private async issueAccessToken(payload: {
+    userId: string;
+    schoolId: string;
+    globalRole: any;
+    schoolRole: any;
+  }) {
+    const jwtPayload: JwtPayload = {
+      sub: payload.userId,
+      schoolId: payload.schoolId,
+      globalRole: payload.globalRole,
+      schoolRole: payload.schoolRole,
+    };
+
+    const accessToken = await this.jwtService.signAsync(jwtPayload, {
+      secret: this.configService.get<string>("JWT_SECRET"),
+      expiresIn: this.accessTtl(),
+    });
+
+    return {
+      accessToken,
+      expiresIn: parseAccessTtlToSeconds(this.accessTtl()),
+    };
+  }
+
+  // =========== Refresh token =============
+  private refreshExpiryDate() {
+    const days = this.refreshDays();
+    return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+  }
+
+  private sha256(input: string) {
+    const crypto = require("crypto") as typeof import("crypto");
+    return crypto.createHash("sha256").update(input).digest("hex");
+  }
+
+  private async issueRefreshToken(params: {
+    userId: string;
+    schoolId: string;
+  }) {
+    const refreshToken = nanoid(64);
+    const tokenHash = this.sha256(refreshToken);
+    await this.prismaService.userSession.create({
+      data: {
+        userId: params.userId,
+        schoolId: params.schoolId,
+        tokenType: TokenType.REFRESH,
+        tokenHash,
+        expiresAt: this.refreshExpiryDate(),
+      },
+    });
+    return { refreshToken };
+  }
+
+  async rotateRefreshToken(schoolId: string, refreshToken: string) {
+    const tokenHash = this.sha256(refreshToken);
+    const session = await this.prismaService.userSession.findFirst({
+      where: { schoolId, tokenHash, revokedAt: null },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!session) throw new UnauthorizedException(AuthCodes.REFRESH_INVALID);
+    if (session.expiresAt < new Date())
+      throw new UnauthorizedException(AuthCodes.REFRESH_EXPIRED);
+
+    // ========== revoke old ==========
+    await this.prismaService.userSession.update({
+      where: { id: session.id },
+      data: { revokedAt: new Date() },
+    });
+
+    const user = await this.prismaService.user.findUnique({
+      where: { id: session.userId },
+    });
+    if (!user || !user.isActive)
+      throw new UnauthorizedException(AuthCodes.UNAUTHORIZED);
+    const membership = await this.prismaService.userSchoolMembership.findFirst({
+      where: {
+        userId: session.userId,
+        schoolId,
+        status: MembershipStatus.APPROVED,
+      },
+    });
+    if (!membership) throw new ForbiddenException(AuthCodes.ROLE_NOT_APPROVED);
+
+    const { accessToken, expiresIn } = await this.issueAccessToken({
+      userId: session.userId,
+      schoolId,
+      globalRole: user.globalRole,
+      schoolRole: membership.role,
+    });
+
+    const { refreshToken: newRefreshToken } = await this.issueRefreshToken({
+      userId: session.userId,
+      schoolId,
+    });
+
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+      expiresIn,
+      me: {
+        id: user.id,
+        email: user.email ?? undefined,
+        phone: user.phone ?? undefined,
+        globalRole: user.globalRole,
+        schoolRole: membership.role,
+        schoolId,
+      },
+    };
+  }
+
+  async logout(schoolId: string, refreshToken: string) {
+    const tokenHash = this.sha256(refreshToken);
+
+    const session = await this.prismaService.userSession.findFirst({
+      where: { schoolId, tokenHash, revokedAt: null },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (session) {
+      await this.prismaService.userSession.update({
+        where: { id: session.id },
+        data: { revokedAt: new Date() },
+      });
+    }
+    return true;
   }
 }

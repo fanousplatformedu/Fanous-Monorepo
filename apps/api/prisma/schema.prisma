@@ -7,150 +7,148 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ========== ENUMS (Global) ===========
-enum VersionStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
+enum GlobalRole {
+  SUPER_ADMIN
+  USER
 }
 
-enum QuestionType {
-  TEXT
-  SCALE
-  MATRIX
-  SINGLE_CHOICE
-  MULTIPLE_CHOICE
-}
-
-enum LanguageCode {
-  FA
-  EN
-  AR
-}
-
-// ========= USERS & GLOBAL ROLES ===========
-enum Role {
-  ADMIN
-  PENDING
+enum SchoolRole {
+  SCHOOL_ADMIN
   STUDENT
   PARENT
   TEACHER
   COUNSELOR
-  SUPER_ADMIN
-  CONTENT_EDITOR
 }
 
-enum ApprovalStatus {
+enum MembershipStatus {
   PENDING
   APPROVED
   REJECTED
+  SUSPENDED
+}
+
+enum OtpPurpose {
+  LOGIN
 }
 
 enum OtpChannel {
   EMAIL
-  PHONE
+  SMS
+}
+
+enum TokenType {
+  REFRESH
 }
 
 model School {
   id       String  @id @default(cuid())
+  code     String  @unique
   name     String
-  slug     String  @unique
   isActive Boolean @default(true)
-
-  users     User[]
-  approvals RoleApprovalRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  memberships UserSchoolMembership[]
+  otpRequests OtpRequest[]
+  sessions    UserSession[]
 }
 
 model User {
-  id         String  @id @default(cuid())
-  name       String?
-  email      String? @unique
-  phone      String? @unique
-  password   String?
-  avatar     String?
-  bio        String?
-  location   String?
-  website    String?
-  education  String?
-  occupation String?
+  id           String  @id @default(cuid())
+  email        String? @unique
+  phone        String? @unique
+  passwordHash String?
 
-  emailVerified Boolean @default(false)
-  phoneVerified Boolean @default(false)
+  globalRole GlobalRole @default(USER)
+  isActive   Boolean    @default(true)
 
-  joinDate  DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  isActive  Boolean  @default(true)
 
-  schoolId String?
-  school   School? @relation(fields: [schoolId], references: [id])
+  memberships UserSchoolMembership[]
+  otpRequests OtpRequest[]
+  sessions    UserSession[]
 
-  role           Role      @default(PENDING)
-  desiredRole    Role?
-  roleApprovedAt DateTime?
-
-  roleApprovedById  String?
-  roleApprovedBy    User?   @relation("RoleApprovedBy", fields: [roleApprovedById], references: [id])
-  roleApprovedUsers User[]  @relation("RoleApprovedBy")
-
-  approvals         RoleApprovalRequest[] @relation("RoleApprovalUser")
-  approvalsReviewed RoleApprovalRequest[] @relation("RoleApprovalReviewedBy")
-
-  refreshTokens RefreshToken[]
-
-  coursesEnrolled    Int @default(0)
-  certificatesEarned Int @default(0)
-  learningHours      Int @default(0)
+  reviewedMemberships UserSchoolMembership[] @relation("ReviewedMemberships")
 }
 
-model OtpToken {
-  id         String     @id @default(cuid())
-  identifier String
-  channel    OtpChannel
-  codeHash   String
-  tenantId   String?
-  expiresAt  DateTime
-  verifiedAt DateTime?
-  createdAt  DateTime   @default(now())
+model UserSchoolMembership {
+  id String @id @default(cuid())
 
-  @@index([identifier, channel])
-  @@index([expiresAt])
-  @@index([tenantId])
-}
+  userId   String
+  schoolId String
 
-model RoleApprovalRequest {
-  id            String    @id @default(cuid())
-  note          String?
-  userId        String
-  reviewedAt    DateTime?
-  reviewedById  String?
-  requestedRole Role
+  role   SchoolRole
+  status MembershipStatus @default(PENDING)
 
-  user       User  @relation("RoleApprovalUser", fields: [userId], references: [id])
-  reviewedBy User? @relation("RoleApprovalReviewedBy", fields: [reviewedById], references: [id])
+  reviewedById String?
+  reviewedAt   DateTime?
 
-  status    ApprovalStatus @default(PENDING)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  school    School?        @relation(fields: [schoolId], references: [id])
-  schoolId  String?
+  firstName  String?
+  lastName   String?
+  nationalId String?
+  grade      String?
 
-  @@index([status])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: userId, references: [id], onDelete: Cascade)
+  school School @relation(fields: schoolId, references: [id], onDelete: Cascade)
+
+  reviewedBy User? @relation("ReviewedMemberships", fields: reviewedById, references: [id], onDelete: SetNull)
+
+  @@unique([userId, schoolId, role])
+  @@index([schoolId, status])
   @@index([userId])
 }
 
-model RefreshToken {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
+model OtpRequest {
+  id String @id @default(cuid())
+
+  schoolId String
+  userId   String?
+
+  purpose OtpPurpose
+  channel OtpChannel
+
+  email String?
+  phone String?
+
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int       @default(0)
+
+  resendAfter DateTime?
+  createdAt   DateTime  @default(now())
+
+  school School @relation(fields: schoolId, references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: userId, references: [id], onDelete: SetNull)
+
+  @@index([schoolId, purpose])
+  @@index([email])
+  @@index([phone])
+}
+
+model UserSession {
+  id String @id @default(cuid())
+
+  userId   String
+  schoolId String
+
+  tokenType TokenType @default(REFRESH)
   tokenHash String
+
   revokedAt DateTime?
   expiresAt DateTime
-  createdAt DateTime  @default(now())
 
-  @@index([userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: userId, references: [id], onDelete: Cascade)
+  school School @relation(fields: schoolId, references: [id], onDelete: Cascade)
+
+  @@index([userId, schoolId])
   @@index([expiresAt])
 }

@@ -1,31 +1,47 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
-import { ExecutionContext, CanActivate } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { ROLES_KEY, RolesPolicy, RoleValue } from "@decorators/roles.decorator";
+import { isGlobalRole, isSchoolRole } from "@utils/function-helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { IS_PUBLIC_KEY } from "@decorators/public.decorator";
+import { GlobalRole } from "@prisma/client";
 import { Reflector } from "@nestjs/core";
-import { ROLES_KEY } from "@decorators/roles.decorator";
+import { AuthCodes } from "@auth/enums/auth-errors.enum";
+import { AppError } from "@ctypes/app-error";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
+
   canActivate(context: ExecutionContext): boolean {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+    const policy = this.reflector.getAllAndOverride<RolesPolicy>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) return true;
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
-      ROLES_KEY,
-      [context.getHandler(), context.getClass()]
-    );
-    if (!requiredRoles || requiredRoles.length === 0) return true;
+    if (!policy || !policy.roles?.length) return true;
+    const req = this.getRequest(context);
+    const user = req.user;
+    if (!user) throw new AppError(AuthCodes.UNAUTHORIZED);
+    const checks = policy.roles.map((r) => this.matchRole(user, r));
+    if ((policy.mode ?? "ANY") === "ALL") {
+      if (checks.every(Boolean)) return true;
+      throw new AppError(AuthCodes.UNAUTHORIZED, AuthCodes.UNAUTHORIZED, 403, {
+        required: policy.roles,
+      });
+    }
+    if (checks.some(Boolean)) return true;
+    throw new AppError(AuthCodes.UNAUTHORIZED, AuthCodes.UNAUTHORIZED, 403, {
+      required: policy.roles,
+    });
+  }
+
+  private matchRole(user: any, required: RoleValue): boolean {
+    if (user.globalRole === GlobalRole.SUPER_ADMIN) return true;
+    if (isGlobalRole(required)) return user.globalRole === required;
+    if (isSchoolRole(required)) return user.schoolRole === required;
+    return false;
+  }
+
+  private getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);
-    const user = ctx.getContext().req?.user;
-    const allowed = requiredRoles.map((r) => String(r).toUpperCase());
-    const userRole = String(user?.role ?? "").toUpperCase();
-    const ok = allowed.includes(userRole);
-    if (!ok)
-      throw new ForbiddenException("Access denied: insufficient permissions");
-    return true;
+    return ctx.getContext().req;
   }
 }

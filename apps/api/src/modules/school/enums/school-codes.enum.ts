@@ -1,0 +1,10 @@
+export const SchoolCodes = {
+  FORBIDDEN: "FORBIDDEN",
+  UNAUTHORIZED: "UNAUTHORIZED",
+  INVALID_INPUT: "INVALID_INPUT",
+  SCHOOL_INACTIVE: "SCHOOL_INACTIVE",
+  SCHOOL_NOT_FOUND: "SCHOOL_NOT_FOUND",
+  SCHOOL_CODE_EXISTS: "SCHOOL_CODE_EXISTS",
+};
+
+export type SchoolCode = (typeof SchoolCodes)[keyof typeof SchoolCodes];

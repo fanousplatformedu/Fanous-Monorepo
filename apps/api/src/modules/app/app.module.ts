@@ -1,30 +1,42 @@
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { SchoolAdminModule } from "@schoolAdmin/schoolAdmin.module";
+import { MembershipModule } from "@membership/membership.module";
+import { SuperAdminModule } from "@superAdmin/super-admin.module";
 import { GraphQLModule } from "@nestjs/graphql";
-import { ConfigModule } from "@nestjs/config";
+import { PrismaModule } from "@prisma/prisma.module";
 import { JwtAuthGuard } from "@guards/jwt-auth.guard";
-import { AdminModule } from "@admin/admin.module";
-import { UserModule } from "@user/user.module";
-import { RolesGuard } from "@guards/roles.guard";
+import { SchoolModule } from "@school/school.module";
 import { AuthModule } from "@auth/auth.module";
+import { RolesGuard } from "@guards/roles.guard";
 import { APP_GUARD } from "@nestjs/core";
 import { Module } from "@nestjs/common";
 import { join } from "path";
 
-import "@enums/register-prisma.enum";
-
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), "src/graphql/schema.gql"),
-      context: ({ req, res }) => ({ req, res }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      expandVariables: true,
     }),
-    ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
-    UserModule,
-    AdminModule,
+    PrismaModule,
+    SchoolModule,
+    MembershipModule,
+    SuperAdminModule,
+    SchoolAdminModule,
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        autoSchemaFile: join(process.cwd(), "src/graphql/schema.gql"),
+        sortSchema: true,
+        playground: config.get("NODE_ENV") !== "production",
+        context: ({ req, res }) => ({ req, res }),
+      }),
+    }),
   ],
-  controllers: [],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
