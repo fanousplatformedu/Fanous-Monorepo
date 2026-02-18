@@ -4,7 +4,5 @@ import { IsUUID } from "class-validator";
 
 @InputType(AdminGqlInputNames.REMOVE_SCHOOL_ADMIN_INPUT)
 export class RemoveSchoolAdminInput {
-  @Field()
-  @IsUUID()
-  membershipId!: string;
+  @Field() @IsUUID() membershipId!: string;
 }

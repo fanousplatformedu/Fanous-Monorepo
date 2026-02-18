@@ -10,6 +10,8 @@ import { SchoolAdminEntity } from "@superAdmin/entities/school-admin.entity";
 import { AdminMessages } from "@superAdmin/enums/admin-message.enum";
 import { AdminService } from "@superAdmin/services/admin.service";
 import { GlobalRole } from "@prisma/client";
+import { AdminCodes } from "@superAdmin/enums/admin-codes.enum";
+import { AppError } from "@ctypes/app-error";
 import { Roles } from "@decorators/roles.decorator";
 
 @Resolver()
@@ -25,11 +27,12 @@ export class AdminResolver {
     @Context() ctx: any,
   ) {
     const superAdminId = ctx.req.user?.id;
+    if (!superAdminId)
+      throw new AppError(AdminCodes.UNAUTHORIZED as any, "UNAUTHORIZED", 401);
     const { membership } = await this.adminService.assignSchoolAdmin(
       superAdminId,
       input,
     );
-
     const admin: SchoolAdminEntity = {
       membershipId: membership.id,
       schoolId: membership.schoolId,
@@ -44,7 +47,6 @@ export class AdminResolver {
       reviewedAt: membership.reviewedAt ?? undefined,
       createdAt: membership.createdAt,
     };
-
     return { message: AdminMessages.ADMIN_ASSIGNED, admin };
   }
 
@@ -57,11 +59,12 @@ export class AdminResolver {
     @Context() ctx: any,
   ) {
     const superAdminId = ctx.req.user?.id;
+    if (!superAdminId)
+      throw new AppError(AdminCodes.UNAUTHORIZED as any, "UNAUTHORIZED", 401);
     const membership = await this.adminService.removeSchoolAdmin(
       superAdminId,
       input,
     );
-
     return {
       membershipId: membership.id,
       schoolId: membership.schoolId,
@@ -84,7 +87,6 @@ export class AdminResolver {
   })
   async schoolAdmins(@Args("input") input: ListSchoolAdminsInput) {
     const { items, total } = await this.adminService.listSchoolAdmins(input);
-
     return {
       total,
       items: items.map((m) => ({

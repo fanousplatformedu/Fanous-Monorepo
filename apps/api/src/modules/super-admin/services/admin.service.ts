@@ -1,6 +1,6 @@
 import { MembershipStatus, SchoolRole } from "@prisma/client";
-import { AssignSchoolAdminInput } from "@superAdmin/dtos/assign-school.input";
 import { RemoveSchoolAdminInput } from "@superAdmin/dtos/remove-school.input";
+import { AssignSchoolAdminInput } from "@superAdmin/dtos/assign-school.input";
 import { ListSchoolAdminsInput } from "@superAdmin/dtos/list-school.input";
 import { isEmail, isPhone } from "@utils/function-helper";
 import { PrismaService } from "@prisma/prisma.service";
@@ -21,11 +21,13 @@ export class AdminService {
     throw new AppError(AdminCodes.IDENTIFIER_INVALID as any);
   }
 
-  private async requireSchoolExists(schoolId: string) {
+  private async requireSchoolActive(schoolId: string) {
     const school = await this.prismaService.school.findUnique({
       where: { id: schoolId },
+      select: { id: true, isActive: true },
     });
     if (!school) throw new AppError(AdminCodes.SCHOOL_NOT_FOUND as any);
+    if (!school.isActive) throw new AppError(AdminCodes.SCHOOL_INACTIVE as any);
     return school;
   }
 
@@ -33,7 +35,9 @@ export class AdminService {
     superAdminUserId: string,
     input: AssignSchoolAdminInput,
   ) {
-    const school = await this.requireSchoolExists(input.schoolId);
+    if (!superAdminUserId)
+      throw new AppError(AdminCodes.UNAUTHORIZED as any, "UNAUTHORIZED", 401);
+    await this.requireSchoolActive(input.schoolId);
     const norm = this.normalizeIdentifier(input.identifier);
     return this.prismaService.$transaction(async (tx) => {
       let user = await tx.user.findFirst({
@@ -43,6 +47,7 @@ export class AdminService {
             ...(norm.phone ? [{ phone: norm.phone }] : []),
           ],
         },
+        select: { id: true, email: true, phone: true, isActive: true },
       });
 
       if (!user) {
@@ -52,17 +57,37 @@ export class AdminService {
             phone: norm.phone ?? undefined,
             isActive: true,
           },
+          select: { id: true, email: true, phone: true, isActive: true },
         });
+      } else {
+        if (!user.isActive)
+          throw new AppError(AdminCodes.USER_NOT_FOUND as any);
       }
+      const existing = await tx.userSchoolMembership.findUnique({
+        where: {
+          userId_schoolId: { userId: user.id, schoolId: input.schoolId },
+        },
+        include: { user: true },
+      });
+      if (existing && existing.role !== SchoolRole.SCHOOL_ADMIN) {
+        throw new AppError(
+          AdminCodes.ALREADY_ADMIN as any,
+          "USER_ALREADY_MEMBER_IN_SCHOOL",
+          400,
+          {
+            currentRole: existing.role,
+            status: existing.status,
+          },
+        );
+      }
+
       const membership = await tx.userSchoolMembership.upsert({
         where: {
-          userId_schoolId_role: {
-            userId: user.id,
-            schoolId: input.schoolId,
-            role: SchoolRole.SCHOOL_ADMIN,
-          },
+          userId_schoolId: { userId: user.id, schoolId: input.schoolId },
         },
         update: {
+          requestedRole: SchoolRole.SCHOOL_ADMIN,
+          role: SchoolRole.SCHOOL_ADMIN,
           status: MembershipStatus.APPROVED,
           reviewedById: superAdminUserId,
           reviewedAt: new Date(),
@@ -72,6 +97,7 @@ export class AdminService {
         create: {
           userId: user.id,
           schoolId: input.schoolId,
+          requestedRole: SchoolRole.SCHOOL_ADMIN,
           role: SchoolRole.SCHOOL_ADMIN,
           status: MembershipStatus.APPROVED,
           reviewedById: superAdminUserId,
@@ -81,11 +107,7 @@ export class AdminService {
         },
         include: { user: true },
       });
-
-      return {
-        membership,
-        user,
-      };
+      return { membership, user };
     });
   }
 
@@ -93,12 +115,15 @@ export class AdminService {
     superAdminUserId: string,
     input: RemoveSchoolAdminInput,
   ) {
+    if (!superAdminUserId)
+      throw new AppError(AdminCodes.UNAUTHORIZED as any, "UNAUTHORIZED", 401);
     const membership = await this.prismaService.userSchoolMembership.findUnique(
       {
         where: { id: input.membershipId },
         include: { user: true, school: true },
       },
     );
+
     if (!membership) throw new AppError(AdminCodes.MEMBERSHIP_NOT_FOUND as any);
     if (membership.role !== SchoolRole.SCHOOL_ADMIN)
       throw new AppError(AdminCodes.MEMBERSHIP_NOT_FOUND as any);
@@ -115,7 +140,7 @@ export class AdminService {
   }
 
   async listSchoolAdmins(input: ListSchoolAdminsInput) {
-    await this.requireSchoolExists(input.schoolId);
+    await this.requireSchoolActive(input.schoolId);
     const take = input.take ?? 20;
     const skip = input.skip ?? 0;
     const where = {

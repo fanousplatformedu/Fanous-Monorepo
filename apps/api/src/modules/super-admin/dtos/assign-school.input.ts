@@ -1,6 +1,6 @@
-import { IsString, IsUUID, Length } from "class-validator";
 import { IsNotEmpty, IsOptional } from "class-validator";
 import { AdminGqlInputNames } from "@superAdmin/enums/gql-names.enum";
+import { IsString, IsUUID } from "class-validator";
 import { Field, InputType } from "@nestjs/graphql";
 
 @InputType(AdminGqlInputNames.ASSIGN_SCHOOL_ADMIN_INPUT)
