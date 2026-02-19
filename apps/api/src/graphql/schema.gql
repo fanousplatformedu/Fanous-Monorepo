@@ -75,7 +75,6 @@ input ListSchoolsInput {
 }
 
 input LogoutInput {
-  refreshToken: String!
   schoolId: String!
 }
 
@@ -84,7 +83,7 @@ type LogoutResult {
 }
 
 input LogoutSuperAdminInput {
-  refreshToken: String!
+  clientMutationId: String
 }
 
 type Me {
@@ -192,11 +191,10 @@ type Query {
 }
 
 input RefreshSuperAdminInput {
-  refreshToken: String!
+  clientMutationId: String
 }
 
 input RefreshTokenInput {
-  refreshToken: String!
   schoolId: String!
 }
 

@@ -1,4 +1,5 @@
 import { GlobalRole, SchoolRole } from "@prisma/client";
+import { ExtractJwt } from "passport-jwt";
 import { RoleValue } from "@decorators/roles.decorator";
 
 // =============== Auth ===============
@@ -24,3 +25,16 @@ export const isGlobalRole = (r: RoleValue): r is GlobalRole =>
 
 export const isSchoolRole = (r: RoleValue): r is SchoolRole =>
   Object.values(SchoolRole).includes(r as SchoolRole);
+
+// ========= Cookie Header ==========
+export const cookieOrHeaderJwtExtractor = (req: any): string | null => {
+  // ========= Authorization Bearer ===========
+  const headerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+  if (headerToken) return headerToken;
+  // ========= Cookie ==========
+  const sk = req?.cookies?.["sk_at"];
+  if (sk) return sk;
+  const sa = req?.cookies?.["sa_at"];
+  if (sa) return sa;
+  return null;
+};

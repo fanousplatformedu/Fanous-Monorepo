@@ -1,11 +1,12 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { ExtractJwt, Strategy } from "passport-jwt";
+import { cookieOrHeaderJwtExtractor } from "@utils/function-helper";
 import { PassportStrategy } from "@nestjs/passport";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "@prisma/prisma.service";
 import { JwtPayload } from "@auth/types/jwt-payload.type";
 import { GlobalRole } from "@prisma/client";
 import { AuthCodes } from "@auth/enums/auth-errors.enum";
+import { Strategy } from "passport-jwt";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly prismaService: PrismaService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: cookieOrHeaderJwtExtractor,
       secretOrKey: configService.getOrThrow<string>("JWT_SECRET"),
     });
   }
@@ -25,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
     if (!user || !user.isActive)
       throw new UnauthorizedException(AuthCodes.UNAUTHORIZED);
-    if (payload.globalRole === GlobalRole.SUPER_ADMIN) {
+    if (payload.globalRole === GlobalRole.SUPER_ADMIN)
       return {
         id: user.id,
         email: user.email,
@@ -34,7 +35,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         schoolId: payload.schoolId ?? null,
         schoolRole: payload.schoolRole ?? null,
       };
-    }
 
     if (!payload.schoolId || !payload.schoolRole)
       throw new UnauthorizedException(AuthCodes.UNAUTHORIZED);

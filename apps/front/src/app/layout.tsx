@@ -1,3 +1,4 @@
+import { QueryProvider } from "@/providers/QueryProvider";
 import { AppProviders } from "@/providers/AppProvider";
 import { ReactNode } from "react";
 import { Metadata } from "next";
@@ -19,11 +20,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         suppressHydrationWarning
         className="min-h-screen antialiased bg-background text-foreground transition-colors"
       >
-        <AppProviders>
-          <Header />
-          <div className="pt-16">{children}</div>
-          <Footer />
-        </AppProviders>
+        <QueryProvider>
+          <AppProviders>
+            <Header />
+            <div className="pt-16">{children}</div>
+            <Footer />
+          </AppProviders>
+        </QueryProvider>
       </body>
     </html>
   );

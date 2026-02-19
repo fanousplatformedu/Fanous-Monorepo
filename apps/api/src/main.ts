@@ -4,11 +4,14 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "@app/app.module";
 import { isString } from "@utils/to-string";
 
+import cookieParser from "cookie-parser";
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 
   app.useGlobalPipes(new ValidationPipe());
+  app.use(cookieParser());
 
   const PORT = parseInt(process.env.PORT ?? "5700", 10);
   const selfOrigin = `http://localhost:${PORT}`;

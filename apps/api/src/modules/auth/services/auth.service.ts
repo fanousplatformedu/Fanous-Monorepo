@@ -20,6 +20,71 @@ export class AuthService {
     private otpService: OtpService,
   ) {}
 
+  // ============= cookie helpers ============
+  private isProd() {
+    return (
+      (this.configService.get("NODE_ENV") ?? process.env.NODE_ENV) ===
+      "production"
+    );
+  }
+
+  private cookieCommon() {
+    return {
+      httpOnly: true,
+      secure: this.isProd(),
+      sameSite: "lax" as const,
+      path: "/",
+    };
+  }
+
+  private cookieAccessOptions() {
+    return {
+      ...this.cookieCommon(),
+      maxAge: parseAccessTtlToSeconds(this.accessTtl()),
+    };
+  }
+
+  private cookieRefreshOptions() {
+    return {
+      ...this.cookieCommon(),
+      maxAge: this.refreshDays() * 24 * 60 * 60,
+    };
+  }
+
+  getCookie(req: any, name: string) {
+    const v = req?.cookies?.[name];
+    if (!v || typeof v !== "string") {
+      throw new UnauthorizedException(AuthCodes.UNAUTHORIZED);
+    }
+    return v;
+  }
+
+  setSchoolAuthCookies(
+    res: any,
+    tokens: { accessToken: string; refreshToken: string },
+  ) {
+    res.cookie("sk_at", tokens.accessToken, this.cookieAccessOptions());
+    res.cookie("sk_rt", tokens.refreshToken, this.cookieRefreshOptions());
+  }
+
+  clearSchoolAuthCookies(res: any) {
+    res.clearCookie("sk_at", { path: "/" });
+    res.clearCookie("sk_rt", { path: "/" });
+  }
+
+  setSuperAdminAuthCookies(
+    res: any,
+    tokens: { accessToken: string; refreshToken: string },
+  ) {
+    res.cookie("sa_at", tokens.accessToken, this.cookieAccessOptions());
+    res.cookie("sa_rt", tokens.refreshToken, this.cookieRefreshOptions());
+  }
+
+  clearSuperAdminAuthCookies(res: any) {
+    res.clearCookie("sa_at", { path: "/" });
+    res.clearCookie("sa_rt", { path: "/" });
+  }
+
   private accessTtl() {
     return this.configService.get<string>("ACCESS_TOKEN_TTL") ?? "15m";
   }
@@ -38,9 +103,7 @@ export class AuthService {
     return crypto.createHash("sha256").update(input).digest("hex");
   }
 
-  // =========================
-  //  A) SCHOOL LOGIN (OTP)
-  // =========================
+  // ============ A) SCHOOL LOGIN ===============
   async requestLoginOtp(schoolId: string, identifier: string) {
     const school = await this.prismaService.school.findUnique({
       where: { id: schoolId },
@@ -48,7 +111,6 @@ export class AuthService {
     if (!school) throw new ForbiddenException(AuthCodes.SCHOOL_NOT_FOUND);
     if (!school.isActive)
       throw new ForbiddenException(AuthCodes.SCHOOL_INACTIVE);
-
     const user = await this.prismaService.user.findFirst({
       where: {
         OR: [
@@ -57,18 +119,12 @@ export class AuthService {
         ],
       },
     });
-
     if (!user) throw new ForbiddenException(AuthCodes.USER_NOT_FOUND);
-
-    // super admin is NOT allowed to use school OTP flow (keep boundaries clean)
-    if (user.globalRole === GlobalRole.SUPER_ADMIN) {
+    if (user.globalRole === GlobalRole.SUPER_ADMIN)
       throw new ForbiddenException(AuthCodes.SUPER_ADMIN_ONLY);
-    }
-
     const membership = await this.prismaService.userSchoolMembership.findFirst({
       where: { userId: user.id, schoolId, status: MembershipStatus.APPROVED },
     });
-
     if (!membership) {
       const any = await this.prismaService.userSchoolMembership.findFirst({
         where: { userId: user.id, schoolId },
@@ -76,13 +132,11 @@ export class AuthService {
       if (!any) throw new ForbiddenException(AuthCodes.MEMBERSHIP_NOT_FOUND);
       throw new ForbiddenException(AuthCodes.ROLE_NOT_APPROVED);
     }
-
     const { resendAfter, devCode } = await this.otpService.createLoginOtp({
       schoolId,
       userId: user.id,
       identifier,
     });
-
     return { resendAfter, devCode };
   }
 
@@ -93,40 +147,32 @@ export class AuthService {
     if (!school) throw new ForbiddenException(AuthCodes.SCHOOL_NOT_FOUND);
     if (!school.isActive)
       throw new ForbiddenException(AuthCodes.SCHOOL_INACTIVE);
-
     const { userId } = await this.otpService.verifyLoginOtp({
       schoolId,
       identifier,
       code,
     });
-
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
     if (!user || !user.isActive)
       throw new UnauthorizedException(AuthCodes.UNAUTHORIZED);
-
-    if (user.globalRole === GlobalRole.SUPER_ADMIN) {
+    if (user.globalRole === GlobalRole.SUPER_ADMIN)
       throw new ForbiddenException(AuthCodes.SUPER_ADMIN_ONLY);
-    }
-
     const membership = await this.prismaService.userSchoolMembership.findFirst({
       where: { userId, schoolId, status: MembershipStatus.APPROVED },
     });
     if (!membership) throw new ForbiddenException(AuthCodes.ROLE_NOT_APPROVED);
-
     const { accessToken, expiresIn } = await this.issueSchoolAccessToken({
       userId,
       schoolId,
       globalRole: user.globalRole,
       schoolRole: membership.role,
     });
-
     const { refreshToken } = await this.issueRefreshToken({
       userId,
       schoolId,
     });
-
     return {
       accessToken,
       refreshToken,
@@ -142,33 +188,26 @@ export class AuthService {
     };
   }
 
-  async rotateRefreshToken(schoolId: string, refreshToken: string) {
-    const tokenHash = this.sha256(refreshToken);
-
+  async rotateRefreshToken(schoolId: string, refreshTokenRaw: string) {
+    const tokenHash = this.sha256(refreshTokenRaw);
     const session = await this.prismaService.userSession.findFirst({
       where: { schoolId, tokenHash, revokedAt: null },
       orderBy: { createdAt: "desc" },
     });
-
     if (!session) throw new UnauthorizedException(AuthCodes.REFRESH_INVALID);
     if (session.expiresAt < new Date())
       throw new UnauthorizedException(AuthCodes.REFRESH_EXPIRED);
-
     await this.prismaService.userSession.update({
       where: { id: session.id },
       data: { revokedAt: new Date() },
     });
-
     const user = await this.prismaService.user.findUnique({
       where: { id: session.userId },
     });
     if (!user || !user.isActive)
       throw new UnauthorizedException(AuthCodes.UNAUTHORIZED);
-
-    if (user.globalRole === GlobalRole.SUPER_ADMIN) {
+    if (user.globalRole === GlobalRole.SUPER_ADMIN)
       throw new ForbiddenException(AuthCodes.SUPER_ADMIN_ONLY);
-    }
-
     const membership = await this.prismaService.userSchoolMembership.findFirst({
       where: {
         userId: session.userId,
@@ -177,19 +216,16 @@ export class AuthService {
       },
     });
     if (!membership) throw new ForbiddenException(AuthCodes.ROLE_NOT_APPROVED);
-
     const { accessToken, expiresIn } = await this.issueSchoolAccessToken({
       userId: session.userId,
       schoolId,
       globalRole: user.globalRole,
       schoolRole: membership.role,
     });
-
     const { refreshToken: newRefreshToken } = await this.issueRefreshToken({
       userId: session.userId,
       schoolId,
     });
-
     return {
       accessToken,
       refreshToken: newRefreshToken,
@@ -205,26 +241,21 @@ export class AuthService {
     };
   }
 
-  async logout(schoolId: string, refreshToken: string) {
-    const tokenHash = this.sha256(refreshToken);
-
+  async logout(schoolId: string, refreshTokenRaw: string) {
+    const tokenHash = this.sha256(refreshTokenRaw);
     const session = await this.prismaService.userSession.findFirst({
       where: { schoolId, tokenHash, revokedAt: null },
       orderBy: { createdAt: "desc" },
     });
-
-    if (session) {
+    if (session)
       await this.prismaService.userSession.update({
         where: { id: session.id },
         data: { revokedAt: new Date() },
       });
-    }
     return true;
   }
 
-  // =========================
-  //  B) SUPER ADMIN LOGIN (PASSWORD)
-  // =========================
+  // =========== B) SUPER ADMIN LOGIN ===============
   async signInSuperAdmin(email: string, password: string) {
     const e = email.trim().toLowerCase();
 
@@ -270,23 +301,19 @@ export class AuthService {
     };
   }
 
-  async rotateSuperAdminRefreshToken(refreshToken: string) {
-    const tokenHash = this.sha256(refreshToken);
-
+  async rotateSuperAdminRefreshToken(refreshTokenRaw: string) {
+    const tokenHash = this.sha256(refreshTokenRaw);
     const session = await this.prismaService.userSession.findFirst({
       where: { schoolId: null, tokenHash, revokedAt: null },
       orderBy: { createdAt: "desc" },
     });
-
     if (!session) throw new UnauthorizedException(AuthCodes.REFRESH_INVALID);
     if (session.expiresAt < new Date())
       throw new UnauthorizedException(AuthCodes.REFRESH_EXPIRED);
-
     await this.prismaService.userSession.update({
       where: { id: session.id },
       data: { revokedAt: new Date() },
     });
-
     const user = await this.prismaService.user.findUnique({
       where: { id: session.userId },
     });
@@ -294,17 +321,14 @@ export class AuthService {
       throw new UnauthorizedException(AuthCodes.UNAUTHORIZED);
     if (user.globalRole !== GlobalRole.SUPER_ADMIN)
       throw new ForbiddenException(AuthCodes.SUPER_ADMIN_ONLY);
-
     const { accessToken, expiresIn } = await this.issueSuperAdminAccessToken({
       userId: user.id,
       globalRole: user.globalRole,
     });
-
     const { refreshToken: newRefreshToken } = await this.issueRefreshToken({
       userId: user.id,
       schoolId: null,
     });
-
     return {
       accessToken,
       refreshToken: newRefreshToken,
@@ -320,26 +344,21 @@ export class AuthService {
     };
   }
 
-  async logoutSuperAdmin(refreshToken: string) {
-    const tokenHash = this.sha256(refreshToken);
-
+  async logoutSuperAdmin(refreshTokenRaw: string) {
+    const tokenHash = this.sha256(refreshTokenRaw);
     const session = await this.prismaService.userSession.findFirst({
       where: { schoolId: null, tokenHash, revokedAt: null },
       orderBy: { createdAt: "desc" },
     });
-
-    if (session) {
+    if (session)
       await this.prismaService.userSession.update({
         where: { id: session.id },
         data: { revokedAt: new Date() },
       });
-    }
     return true;
   }
 
-  // =========================
-  //  Token issuance helpers
-  // =========================
+  // ========== Token issuance helpers ============
   private async issueSchoolAccessToken(payload: {
     userId: string;
     schoolId: string;
