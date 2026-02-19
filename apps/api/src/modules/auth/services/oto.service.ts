@@ -95,7 +95,8 @@ export class OtpService {
         resendAfter,
       },
     });
-
+    if (process.env.NODE_ENV !== "production")
+      console.log("[DEV OTP]", { schoolId, userId, identifier, code });
     return { resendAfter, devCode: code };
   }
 

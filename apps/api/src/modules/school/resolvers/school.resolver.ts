@@ -1,4 +1,4 @@
-import { Args, Query, Mutation, Resolver } from "@nestjs/graphql";
+import { Args, Context, Query, Mutation, Resolver } from "@nestjs/graphql";
 import { UpdateSchoolStatusInput } from "@school/dtos/update-school-status.input";
 import { SchoolGqlMutationNames } from "@school/enums/gql-names.enum";
 import { SchoolGqlQueryNames } from "@school/enums/gql-names.enum";
@@ -31,9 +31,10 @@ export class SchoolResolver {
   }
 
   @UseGuards(SchoolScopeGuard)
-  @SchoolScope({ requireActive: false })
+  @SchoolScope({ requireActive: false, allowSuperAdminBypass: true })
   @Query(() => SchoolEntity, { name: SchoolGqlQueryNames.MY_SCHOOL })
-  async mySchool(@Args("schoolId") schoolId: string) {
+  async mySchool(@Context() ctx: any) {
+    const schoolId = ctx.req.user?.schoolId;
     return this.schoolService.getSchool({ id: schoolId });
   }
 

@@ -3,6 +3,7 @@
 # ------------------------------------------------------
 
 input ApproveMembershipInput {
+  finalRole: String
   membershipId: String!
 }
 
@@ -38,7 +39,6 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 input GetSchoolInput {
-  """or with school code"""
   code: String
   id: String
 }
@@ -46,10 +46,11 @@ input GetSchoolInput {
 input ListMembershipRequestsInput {
   from: String
   q: String
+  requestedRole: SchoolRole
   role: String
   schoolId: String!
   skip: Int
-  status: String
+  status: MembershipStatus
   take: Int
   to: String
 }
@@ -67,10 +68,7 @@ input ListSchoolAdminsInput {
 }
 
 input ListSchoolsInput {
-  """just activated"""
   onlyActive: Boolean
-
-  """search on name or code"""
   q: String
   skip: Int
   take: Int
@@ -83,6 +81,10 @@ input LogoutInput {
 
 type LogoutResult {
   message: String!
+}
+
+input LogoutSuperAdminInput {
+  refreshToken: String!
 }
 
 type Me {
@@ -119,6 +121,8 @@ type MembershipRequest {
   lastName: String
   nationalId: String
   phone: String
+  requestedRole: String!
+  reviewNote: String
   reviewedAt: DateTime
   reviewedById: String
   role: String!
@@ -132,17 +136,27 @@ type MembershipRequestsPage {
   total: Int!
 }
 
+enum MembershipStatus {
+  APPROVED
+  PENDING
+  REJECTED
+  SUSPENDED
+}
+
 type Mutation {
   approveMembership(input: ApproveMembershipInput!): Membership!
   assignSchoolAdmin(input: AssignSchoolAdminInput!): AssignSchoolAdminResult!
   createSchool(input: CreateSchoolInput!): School!
   logout(input: LogoutInput!): LogoutResult!
+  logoutSuperAdmin(input: LogoutSuperAdminInput!): LogoutResult!
+  refreshSuperAdminToken(input: RefreshSuperAdminInput!): AuthPayload!
   refreshToken(input: RefreshTokenInput!): AuthPayload!
   registerRequest(input: RegisterRequestInput!): Membership!
   rejectMembership(input: RejectMembershipInput!): Membership!
   removeSchoolAdmin(input: RemoveSchoolAdminInput!): SchoolAdmin!
   requestLoginOtp(input: RequestLoginOtpInput!): RequestOtpResult!
   reviewMembership(input: ReviewMembershipInput!): ReviewResult!
+  signInSuperAdmin(input: SignInSuperAdminInput!): AuthPayload!
   updateSchoolStatus(input: UpdateSchoolStatusInput!): School!
   verifyLoginOtp(input: VerifyLoginOtpInput!): AuthPayload!
 }
@@ -170,11 +184,15 @@ type Query {
   me: User!
   membershipRequests(input: ListMembershipRequestsInput!): MembershipRequestsPage!
   myMemberships(input: MyMembershipsInput!): [Membership!]!
-  mySchool(schoolId: String!): School!
+  mySchool: School!
   pendingRequests(input: ListPendingRequestsInput!): PendingRequestsPage!
   school(input: GetSchoolInput!): School!
   schoolAdmins(input: ListSchoolAdminsInput!): SchoolAdminPage!
   schools(input: ListSchoolsInput): SchoolPage!
+}
+
+input RefreshSuperAdminInput {
+  refreshToken: String!
 }
 
 input RefreshTokenInput {
@@ -183,7 +201,6 @@ input RefreshTokenInput {
 }
 
 input RegisterRequestInput {
-  """email Or phone"""
   identifier: String!
   profile: ProfileInput
 
@@ -202,7 +219,6 @@ input RemoveSchoolAdminInput {
 }
 
 input RequestLoginOtpInput {
-  """email or phone"""
   identifier: String!
   schoolId: String!
 }
@@ -214,6 +230,7 @@ type RequestOtpResult {
 
 input ReviewMembershipInput {
   action: String!
+  finalRole: String
   membershipId: String!
   reason: String
 }
@@ -255,6 +272,19 @@ type SchoolAdminPage {
 type SchoolPage {
   items: [School!]!
   total: Int!
+}
+
+enum SchoolRole {
+  COUNSELOR
+  PARENT
+  SCHOOL_ADMIN
+  STUDENT
+  TEACHER
+}
+
+input SignInSuperAdminInput {
+  email: String!
+  password: String!
 }
 
 input UpdateSchoolStatusInput {

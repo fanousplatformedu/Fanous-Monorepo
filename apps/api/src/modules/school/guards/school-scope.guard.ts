@@ -23,18 +23,20 @@ export class SchoolScopeGuard implements CanActivate {
     if (!policy) return true;
     const req = this.getRequest(context);
     const user = req.user;
-    if (!user) throw new AppError(SchoolCodes.UNAUTHORIZED as any);
+    if (!user)
+      throw new AppError(SchoolCodes.UNAUTHORIZED as any, "UNAUTHORIZED", 401);
     const gql = GqlExecutionContext.create(context);
     const args = gql.getArgs();
-    const schoolId = this.extractSchoolId(args);
-    if (!schoolId)
+    const schoolId = this.extractSchoolId(args) ?? user.schoolId ?? null;
+    if (!schoolId) {
       throw new AppError(
         SchoolCodes.INVALID_INPUT as any,
         "schoolId is required",
+        400,
       );
-
+    }
     if (
-      policy.allowSuperAdminBypass &&
+      policy.allowSuperAdminBypass !== false &&
       user.globalRole === GlobalRole.SUPER_ADMIN
     ) {
       return this.ensureSchoolExistsAndMaybeActive(
@@ -42,8 +44,9 @@ export class SchoolScopeGuard implements CanActivate {
         policy.requireActive ?? true,
       );
     }
+
     if (user.schoolId !== schoolId)
-      throw new AppError(SchoolCodes.FORBIDDEN as any);
+      throw new AppError(SchoolCodes.FORBIDDEN as any, "FORBIDDEN", 403);
     return this.ensureSchoolExistsAndMaybeActive(
       schoolId,
       policy.requireActive ?? true,
@@ -56,16 +59,27 @@ export class SchoolScopeGuard implements CanActivate {
   ) {
     const school = await this.prismaService.school.findUnique({
       where: { id: schoolId },
+      select: { id: true, isActive: true },
     });
-    if (!school) throw new AppError(SchoolCodes.SCHOOL_NOT_FOUND as any);
+    if (!school)
+      throw new AppError(
+        SchoolCodes.SCHOOL_NOT_FOUND as any,
+        "SCHOOL_NOT_FOUND",
+        404,
+      );
     if (requireActive && !school.isActive)
-      throw new AppError(SchoolCodes.SCHOOL_INACTIVE as any);
+      throw new AppError(
+        SchoolCodes.SCHOOL_INACTIVE as any,
+        "SCHOOL_INACTIVE",
+        403,
+      );
     return true;
   }
 
   private extractSchoolId(args: any): string | null {
     if (args?.input?.schoolId) return args.input.schoolId;
     if (args?.schoolId) return args.schoolId;
+    if (args?.input?.where?.schoolId) return args.input.where.schoolId;
     return null;
   }
 

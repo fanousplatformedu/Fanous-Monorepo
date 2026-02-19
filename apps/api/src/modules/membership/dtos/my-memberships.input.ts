@@ -1,8 +1,8 @@
 import { MembershipGqlInputNames } from "@membership/enums/gql-names.enum";
+import { IsNotEmpty, IsString } from "class-validator";
 import { Field, InputType } from "@nestjs/graphql";
-import { IsUUID } from "class-validator";
 
 @InputType(MembershipGqlInputNames.MY_MEMBERSHIPS_INPUT)
 export class MyMembershipsInput {
-  @Field() @IsUUID() schoolId!: string;
+  @Field() @IsString() @IsNotEmpty() schoolId!: string;
 }
