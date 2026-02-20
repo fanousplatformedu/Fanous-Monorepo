@@ -1,7 +1,9 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: "src/lib/gql/schema/schema.json",
+  schema: process.env.BACKEND_URL
+    ? `${process.env.BACKEND_URL}/graphql`
+    : "http://localhost:5700/graphql",
   documents: ["src/lib/gql/documents/**/*.gql"],
   generates: {
     "src/lib/gql/generated/graphql.ts": {
@@ -9,11 +11,9 @@ const config: CodegenConfig = {
       config: {
         avoidOptionals: true,
         maybeValue: "T | null",
-        enumsAsTypes: true,
-        dedupeFragments: true,
-        preResolveTypes: true,
       },
     },
   },
 };
+
 export default config;

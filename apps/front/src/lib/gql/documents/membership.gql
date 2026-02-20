@@ -1,0 +1,22 @@
+query MyMemberships($input: MyMembershipsInput!) {
+  myMemberships(input: $input) {
+    id
+    schoolId
+    role
+    status
+    firstName
+    lastName
+    nationalId
+    grade
+    reviewedById
+    reviewedAt
+    createdAt
+    user {
+      id
+      email
+      phone
+      globalRole
+      isActive
+    }
+  }
+}

@@ -1,0 +1,10 @@
+mutation SignInSuperAdmin($input: SignInSuperAdminInput!) {
+  signInSuperAdmin(input: $input) {
+    expiresIn
+    me {
+      id
+      globalRole
+      email
+    }
+  }
+}

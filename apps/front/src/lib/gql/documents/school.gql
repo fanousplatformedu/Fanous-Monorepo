@@ -1,0 +1,12 @@
+query ListSchools($input: ListSchoolsInput!) {
+  schools(input: $input) {
+    total
+    items {
+      id
+      code
+      name
+      isActive
+      createdAt
+    }
+  }
+}

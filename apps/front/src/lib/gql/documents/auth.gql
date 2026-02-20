@@ -7,8 +7,20 @@ mutation RequestLoginOtp($input: RequestLoginOtpInput!) {
 
 mutation VerifyLoginOtp($input: VerifyLoginOtpInput!) {
   verifyLoginOtp(input: $input) {
-    accessToken
-    refreshToken
+    expiresIn
+    me {
+      id
+      schoolId
+      schoolRole
+      globalRole
+      email
+      phone
+    }
+  }
+}
+
+mutation RefreshToken($input: RefreshTokenInput!) {
+  refreshToken(input: $input) {
     expiresIn
     me {
       id
@@ -19,16 +31,13 @@ mutation VerifyLoginOtp($input: VerifyLoginOtpInput!) {
   }
 }
 
-mutation RefreshToken($input: RefreshTokenInput!) {
-  refreshToken(input: $input) {
-    accessToken
-    refreshToken
+mutation RefreshSuperAdminToken($input: RefreshSuperAdminInput!) {
+  refreshSuperAdminToken(input: $input) {
     expiresIn
     me {
       id
       globalRole
       email
-      phone
     }
   }
 }
@@ -39,34 +48,18 @@ mutation Logout($input: LogoutInput!) {
   }
 }
 
-mutation SignInSuperAdmin($input: SignInSuperAdminInput!) {
-  signInSuperAdmin(input: $input) {
-    accessToken
-    refreshToken
-    expiresIn
-    me {
-      id
-      globalRole
-      email
-    }
-  }
-}
-
-mutation RefreshSuperAdminToken($input: RefreshSuperAdminTokenInput!) {
-  refreshSuperAdminToken(input: $input) {
-    accessToken
-    refreshToken
-    expiresIn
-    me {
-      id
-      globalRole
-      email
-    }
-  }
-}
-
 mutation LogoutSuperAdmin($input: LogoutSuperAdminInput!) {
   logoutSuperAdmin(input: $input) {
     message
+  }
+}
+
+query Me {
+  me {
+    id
+    globalRole
+    email
+    phone
+    isActive
   }
 }

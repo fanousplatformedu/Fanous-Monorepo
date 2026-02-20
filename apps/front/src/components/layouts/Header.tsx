@@ -68,7 +68,7 @@ const Header = () => {
               variant="brand"
               className="hidden sm:inline-flex font-semibold rounded-2xl px-5 h-10"
             >
-              <Link href="/sign-in">{t("cta.getStarted")}</Link>
+              <Link href="/membership-request">{t("cta.getStarted")}</Link>
             </Button>
             <Button
               size="icon"
