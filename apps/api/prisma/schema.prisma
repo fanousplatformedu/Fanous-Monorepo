@@ -7,13 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ======== Global roles: only system-wide power ============
+// ========== Roles =============
 enum GlobalRole {
   USER
   SUPER_ADMIN
 }
 
-// ========= School-scoped roles (per school / tenant) ==========
 enum SchoolRole {
   SCHOOL_ADMIN
   STUDENT
@@ -22,7 +21,6 @@ enum SchoolRole {
   COUNSELOR
 }
 
-// =========== Membership lifecycle for “admin approval” ===========
 enum MembershipStatus {
   PENDING
   APPROVED
@@ -30,9 +28,13 @@ enum MembershipStatus {
   SUSPENDED
 }
 
-// ============= OTP use-cases ==============
 enum OtpPurpose {
-  LOGIN
+  SUPER_ADMIN_LOGIN
+  SCHOOL_ADMIN_LOGIN
+  USER_LOGIN
+  // optional future:
+  // SIGNUP_VERIFY
+  // RESET_PASSWORD
 }
 
 enum OtpChannel {
@@ -44,13 +46,12 @@ enum TokenType {
   REFRESH
 }
 
-// ========== SCHOOL (Tenant) ==============
+// =========== TENANT: School ===========
 model School {
-  id       String  @id @default(cuid())
-  code     String  @unique
-  name     String
-  isActive Boolean @default(true)
-
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -61,13 +62,15 @@ model School {
   @@index([isActive])
 }
 
-// =========== USER (Global identity) ===========
+// =========== Global Identity: User =============
 model User {
   id String @id @default(cuid())
 
-  email        String? @unique
-  phone        String? @unique
-  passwordHash String?
+  email           String?
+  phone           String?
+  passwordHash    String?
+  emailNormalized String? @unique
+  phoneNormalized String? @unique
 
   globalRole GlobalRole @default(USER)
   isActive   Boolean    @default(true)
@@ -82,9 +85,11 @@ model User {
   reviewedMemberships UserSchoolMembership[] @relation("ReviewedMemberships")
 
   @@index([isActive])
+  @@index([emailNormalized])
+  @@index([phoneNormalized])
 }
 
-// =========== USER <-> SCHOOL membership (Tenant-scoped identity + approval)
+// ========== Membership ============= 
 model UserSchoolMembership {
   id String @id @default(cuid())
 
@@ -92,17 +97,17 @@ model UserSchoolMembership {
   schoolId String
 
   requestedRole SchoolRole
-  role          SchoolRole
-  status        MembershipStatus @default(PENDING)
+  approvedRole  SchoolRole?
+
+  status MembershipStatus @default(PENDING)
 
   reviewedById String?
   reviewedAt   DateTime?
-
-  firstName  String?
-  lastName   String?
-  nationalId String?
-  reviewNote String?
-  grade      String?
+  reviewNote   String?
+  firstName    String?
+  lastName     String?
+  nationalId   String?
+  grade        String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -115,38 +120,48 @@ model UserSchoolMembership {
   @@unique([userId, schoolId])
   @@index([schoolId, status])
   @@index([userId])
-  @@index([schoolId, role])
+  @@index([schoolId, approvedRole])
 }
 
-// ======== OTP requests are school-scoped ========== 
+// ============= OTP Requests ============= 
 model OtpRequest {
-  id       String  @id @default(cuid())
-  schoolId String?
+  id String @id @default(cuid())
+
+  email    String?
+  phone    String?
   userId   String?
+  schoolId String?
 
   purpose OtpPurpose
   channel OtpChannel
 
-  email String?
-  phone String?
+  emailNormalized String?
+  phoneNormalized String?
 
   codeHash  String
   expiresAt DateTime
   usedAt    DateTime?
-  attempts  Int       @default(0)
+
+  attempts Int @default(0)
 
   resendAfter DateTime?
   createdAt   DateTime  @default(now())
 
+  ip        String?
+  userAgent String?
+
   school School? @relation(fields: schoolId, references: [id], onDelete: Cascade)
   user   User?   @relation(fields: userId, references: [id], onDelete: SetNull)
 
-  @@index([schoolId, purpose])
-  @@index([purpose])
-  @@index([email])
-  @@index([phone])
+  @@index([purpose, createdAt])
+  @@index([schoolId, purpose, createdAt])
+  @@index([emailNormalized, purpose])
+  @@index([phoneNormalized, purpose])
+  @@index([schoolId, emailNormalized, purpose])
+  @@index([schoolId, phoneNormalized, purpose])
 }
 
+// ========== Refresh sessions ========== 
 model UserSession {
   id String @id @default(cuid())
 
@@ -161,6 +176,9 @@ model UserSession {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  ip        String?
+  userAgent String?
 
   user   User    @relation(fields: userId, references: [id], onDelete: Cascade)
   school School? @relation(fields: schoolId, references: [id], onDelete: Cascade)

@@ -1,71 +1,59 @@
-import { MembershipStatus, SchoolRole } from "@prisma/client";
-import { ListMembershipRequestsInput } from "@schoolAdmin/dtos/list-requests.input";
-import { ReviewMembershipInput } from "@schoolAdmin/dtos/review-membership.input";
+import { MembershipStatus, Prisma, SchoolRole } from "@prisma/client";
 import { SchoolAdminMessages } from "@schoolAdmin/enums/school-admin-message.enum";
 import { SchoolAdminCodes } from "@schoolAdmin/enums/school-admin-codes.enum";
 import { PrismaService } from "@prisma/prisma.service";
+import { ReviewAction } from "@enums/reviewAction-register";
 import { Injectable } from "@nestjs/common";
 import { AppError } from "@ctypes/app-error";
+
+import * as H from "@utils/school-admin-helper";
+import * as T from "@schoolAdmin/types/school-admin.types";
 
 @Injectable()
 export class SchoolAdminService {
   constructor(private prismaService: PrismaService) {}
-  private async requireActiveSchool(schoolId: string) {
+
+  async requireActiveSchool(input: T.TRequireActiveSchoolInput) {
     const school = await this.prismaService.school.findUnique({
-      where: { id: schoolId },
+      where: { id: input.schoolId },
       select: { id: true, isActive: true },
     });
-    if (!school) throw new AppError(SchoolAdminCodes.SCHOOL_NOT_FOUND as any);
-    if (!school.isActive)
-      throw new AppError(SchoolAdminCodes.SCHOOL_INACTIVE as any);
+    if (!school) throw new AppError(SchoolAdminCodes.SCHOOL_NOT_FOUND);
+    if (!school.isActive) throw new AppError(SchoolAdminCodes.SCHOOL_INACTIVE);
     return school;
   }
 
-  private toDateOrNull(v?: string) {
-    if (!v) return null;
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? null : d;
-  }
-
   async listMembershipRequests(
-    adminUserId: string,
-    adminSchoolId: string,
-    input: ListMembershipRequestsInput,
-  ) {
-    if (!adminUserId)
-      throw new AppError(
-        SchoolAdminCodes.UNAUTHORIZED as any,
-        "UNAUTHORIZED",
-        401,
-      );
-    if (adminSchoolId !== input.schoolId)
-      throw new AppError(SchoolAdminCodes.FORBIDDEN as any);
-    await this.requireActiveSchool(input.schoolId);
-    const take = input.take ?? 20;
-    const skip = input.skip ?? 0;
-    const where: any = { schoolId: input.schoolId };
-    if (input.status) where.status = input.status;
-    if (input.requestedRole) where.requestedRole = input.requestedRole;
-    if (input.role) where.role = input.role;
-    const from = this.toDateOrNull(input.from);
-    const to = this.toDateOrNull(input.to);
+    params: T.TListMembershipRequestsParams,
+  ): Promise<T.TMembershipRequestsPage> {
+    H.requireAdminContext({
+      adminUserId: params.adminUserId,
+      adminSchoolId: params.adminSchoolId,
+    });
+    await this.requireActiveSchool({ schoolId: params.adminSchoolId });
+    const take = params.input.take ?? 20;
+    const skip = params.input.skip ?? 0;
+    const where: Prisma.UserSchoolMembershipWhereInput = {
+      schoolId: params.adminSchoolId,
+    };
+    if (params.input.status) where.status = params.input.status;
+    if (params.input.requestedRole)
+      where.requestedRole = params.input.requestedRole;
+    if (params.input.approvedRole)
+      where.approvedRole = params.input.approvedRole;
+    const { from, to } = H.parseDateRange({
+      from: params.input.from,
+      to: params.input.to,
+    });
     if (from || to) {
-      where.createdAt = {};
-      if (from) where.createdAt.gte = from;
-      if (to) where.createdAt.lte = to;
+      where.createdAt = {
+        ...(from ? { gte: from } : {}),
+        ...(to ? { lte: to } : {}),
+      };
     }
 
-    if (input.q?.trim()) {
-      const q = input.q.trim();
-      where.OR = [
-        { firstName: { contains: q, mode: "insensitive" } },
-        { lastName: { contains: q, mode: "insensitive" } },
-        { nationalId: { contains: q, mode: "insensitive" } },
-        { user: { email: { contains: q, mode: "insensitive" } } },
-        { user: { phone: { contains: q, mode: "insensitive" } } },
-      ];
-    }
-
+    const OR = H.buildSearchOr(params.input.q);
+    if (OR) where.OR = OR;
     const [items, total] = await this.prismaService.$transaction([
       this.prismaService.userSchoolMembership.findMany({
         where,
@@ -82,10 +70,11 @@ export class SchoolAdminService {
       items: items.map((m) => ({
         id: m.id,
         schoolId: m.schoolId,
-        requestedRole: (m as any).requestedRole ?? m.role,
-        role: m.role,
-        status: m.status,
         userId: m.userId,
+        createdAt: m.createdAt,
+        status: m.status,
+        requestedRole: m.requestedRole,
+        approvedRole: m.approvedRole ?? undefined,
         email: m.user.email ?? undefined,
         phone: m.user.phone ?? undefined,
         firstName: m.firstName ?? undefined,
@@ -94,82 +83,65 @@ export class SchoolAdminService {
         grade: m.grade ?? undefined,
         reviewedById: m.reviewedById ?? undefined,
         reviewedAt: m.reviewedAt ?? undefined,
-        reviewNote: (m as any).reviewNote ?? undefined,
-        createdAt: m.createdAt,
+        reviewNote: m.reviewNote ?? undefined,
       })),
     };
   }
 
   async reviewMembership(
-    adminUserId: string,
-    adminSchoolId: string,
-    input: ReviewMembershipInput,
-  ) {
-    if (!adminUserId)
-      throw new AppError(
-        SchoolAdminCodes.UNAUTHORIZED as any,
-        "UNAUTHORIZED",
-        401,
-      );
-
+    params: T.TReviewMembershipParams,
+  ): Promise<T.TReviewResult> {
+    H.requireAdminContext({
+      adminUserId: params.adminUserId,
+      adminSchoolId: params.adminSchoolId,
+    });
     const membership = await this.prismaService.userSchoolMembership.findUnique(
       {
-        where: { id: input.membershipId },
+        where: { id: params.input.membershipId },
         include: { user: true, school: true },
       },
     );
-
-    if (!membership)
-      throw new AppError(SchoolAdminCodes.MEMBERSHIP_NOT_FOUND as any);
-    if (membership.schoolId !== adminSchoolId)
-      throw new AppError(SchoolAdminCodes.FORBIDDEN as any);
+    if (!membership) throw new AppError(SchoolAdminCodes.MEMBERSHIP_NOT_FOUND);
+    H.ensureSchoolMatches(params.adminSchoolId, membership.schoolId);
     if (!membership.school.isActive)
-      throw new AppError(SchoolAdminCodes.SCHOOL_INACTIVE as any);
-    if (membership.status !== MembershipStatus.PENDING)
-      throw new AppError(SchoolAdminCodes.ONLY_PENDING_CAN_BE_REVIEWED as any);
+      throw new AppError(SchoolAdminCodes.SCHOOL_INACTIVE);
+    H.ensurePending(membership.status);
     const nextStatus =
-      input.action === "APPROVE"
+      params.input.action === ReviewAction.APPROVE
         ? MembershipStatus.APPROVED
         : MembershipStatus.REJECTED;
-
-    let nextRole = membership.role;
-    if (input.action === "APPROVE") {
-      const requestedRole =
-        (membership as any).requestedRole ?? membership.role;
-      nextRole = input.finalRole ?? requestedRole;
-      if (nextRole === SchoolRole.SCHOOL_ADMIN) {
-        throw new AppError(
-          SchoolAdminCodes.FORBIDDEN as any,
-          "CANNOT_ASSIGN_ADMIN_ROLE",
-          403,
-        );
-      }
+    let nextApprovedRole: SchoolRole | null = null;
+    if (params.input.action === ReviewAction.APPROVE) {
+      const finalRole = params.input.finalRole ?? membership.requestedRole;
+      H.ensureRoleNotAdmin(finalRole);
+      nextApprovedRole = finalRole;
+    } else {
+      nextApprovedRole = null;
     }
-
     const updated = await this.prismaService.userSchoolMembership.update({
       where: { id: membership.id },
       data: {
         status: nextStatus,
-        role: nextRole,
-        reviewedById: adminUserId,
+        approvedRole: nextApprovedRole,
+        reviewedById: params.adminUserId,
         reviewedAt: new Date(),
-        reviewNote: input.reason ?? undefined,
+        reviewNote: params.input.reason ?? undefined,
       },
       include: { user: true },
     });
-
     return {
       message:
-        input.action === "APPROVE"
+        params.input.action === ReviewAction.APPROVE
           ? SchoolAdminMessages.APPROVED
           : SchoolAdminMessages.REJECTED,
       membership: {
         id: updated.id,
         schoolId: updated.schoolId,
-        requestedRole: (updated as any).requestedRole ?? updated.role,
-        role: updated.role,
-        status: updated.status,
         userId: updated.userId,
+        createdAt: updated.createdAt,
+        status: updated.status,
+        requestedRole: updated.requestedRole,
+        approvedRole: updated.approvedRole ?? undefined,
         email: updated.user.email ?? undefined,
         phone: updated.user.phone ?? undefined,
         firstName: updated.firstName ?? undefined,
@@ -178,8 +150,7 @@ export class SchoolAdminService {
         grade: updated.grade ?? undefined,
         reviewedById: updated.reviewedById ?? undefined,
         reviewedAt: updated.reviewedAt ?? undefined,
-        reviewNote: (updated as any).reviewNote ?? undefined,
-        createdAt: updated.createdAt,
+        reviewNote: updated.reviewNote ?? undefined,
       },
     };
   }

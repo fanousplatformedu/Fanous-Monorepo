@@ -1,3 +1,14 @@
+mutation CreateSchool($input: CreateSchoolInput!) {
+  createSchool(input: $input) {
+    id
+    code
+    name
+    isActive
+    createdAt
+    updatedAt
+  }
+}
+
 query ListSchools($input: ListSchoolsInput!) {
   schools(input: $input) {
     total
@@ -8,5 +19,80 @@ query ListSchools($input: ListSchoolsInput!) {
       isActive
       createdAt
     }
+  }
+}
+
+query GetSchool($input: GetSchoolInput!) {
+  school(input: $input) {
+    id
+    code
+    name
+    isActive
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateSchoolStatus($input: UpdateSchoolStatusInput!) {
+  updateSchoolStatus(input: $input) {
+    id
+    code
+    name
+    isActive
+    updatedAt
+  }
+}
+
+mutation AssignSchoolAdmin($input: AssignSchoolAdminInput!) {
+  assignSchoolAdmin(input: $input) {
+    message
+    admin {
+      membershipId
+      schoolId
+      userId
+      status
+      email
+      phone
+      firstName
+      lastName
+      reviewedById
+      reviewedAt
+      createdAt
+    }
+  }
+}
+
+query ListSchoolAdmins($input: ListSchoolAdminsInput!) {
+  schoolAdmins(input: $input) {
+    total
+    items {
+      membershipId
+      schoolId
+      userId
+      status
+      email
+      phone
+      firstName
+      lastName
+      reviewedById
+      reviewedAt
+      createdAt
+    }
+  }
+}
+
+mutation RemoveSchoolAdmin($input: RemoveSchoolAdminInput!) {
+  removeSchoolAdmin(input: $input) {
+    membershipId
+    schoolId
+    userId
+    status
+    email
+    phone
+    firstName
+    lastName
+    reviewedById
+    reviewedAt
+    createdAt
   }
 }

@@ -19,8 +19,8 @@
               "name": "finalRole",
               "description": null,
               "type": {
-                "kind": "SCALAR",
-                "name": "String",
+                "kind": "ENUM",
+                "name": "SchoolRole",
                 "ofType": null
               },
               "defaultValue": null
@@ -348,6 +348,16 @@
           "fields": null,
           "inputFields": [
             {
+              "name": "approvedRole",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "SchoolRole",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
               "name": "from",
               "description": null,
               "type": {
@@ -374,30 +384,6 @@
                 "kind": "ENUM",
                 "name": "SchoolRole",
                 "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "role",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "schoolId",
-              "description": null,
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
               },
               "defaultValue": null
             },
@@ -522,6 +508,16 @@
               "defaultValue": null
             },
             {
+              "name": "status",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "MembershipStatus",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
               "name": "take",
               "description": null,
               "type": {
@@ -585,6 +581,29 @@
           ],
           "interfaces": null,
           "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "LoginAs",
+          "description": null,
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "SCHOOL_ADMIN",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "USER",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
           "possibleTypes": null
         },
         {
@@ -726,13 +745,9 @@
               "description": null,
               "args": [],
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -742,13 +757,9 @@
               "description": null,
               "args": [],
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -764,6 +775,18 @@
           "name": "Membership",
           "description": null,
           "fields": [
+            {
+              "name": "approvedRole",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "SchoolRole",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
             {
               "name": "createdAt",
               "description": null,
@@ -845,6 +868,22 @@
               "deprecationReason": null
             },
             {
+              "name": "requestedRole",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "SchoolRole",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "reviewedAt",
               "description": null,
               "args": [],
@@ -864,22 +903,6 @@
                 "kind": "SCALAR",
                 "name": "String",
                 "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "role",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -959,6 +982,18 @@
           "name": "MembershipRequest",
           "description": null,
           "fields": [
+            {
+              "name": "approvedRole",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "SchoolRole",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
             {
               "name": "createdAt",
               "description": null,
@@ -1071,8 +1106,8 @@
                 "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
+                  "kind": "ENUM",
+                  "name": "SchoolRole",
                   "ofType": null
                 }
               },
@@ -1111,22 +1146,6 @@
                 "kind": "SCALAR",
                 "name": "String",
                 "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "role",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -1880,22 +1899,6 @@
           "description": null,
           "fields": [
             {
-              "name": "healthCheck",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
               "name": "me",
               "description": null,
               "args": [],
@@ -2176,7 +2179,21 @@
           "fields": null,
           "inputFields": [
             {
-              "name": "identifier",
+              "name": "email",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "phone",
               "description": null,
               "type": {
                 "kind": "NON_NULL",
@@ -2206,8 +2223,8 @@
                 "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
+                  "kind": "ENUM",
+                  "name": "SchoolRole",
                   "ofType": null
                 }
               },
@@ -2313,6 +2330,20 @@
               "defaultValue": null
             },
             {
+              "name": "loginAs",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "LoginAs",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
               "name": "schoolId",
               "description": null,
               "type": {
@@ -2371,6 +2402,29 @@
           "possibleTypes": null
         },
         {
+          "kind": "ENUM",
+          "name": "ReviewAction",
+          "description": null,
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "APPROVE",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "REJECT",
+              "description": null,
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
           "kind": "INPUT_OBJECT",
           "name": "ReviewMembershipInput",
           "description": null,
@@ -2383,8 +2437,8 @@
                 "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
+                  "kind": "ENUM",
+                  "name": "ReviewAction",
                   "ofType": null
                 }
               },
@@ -2394,8 +2448,8 @@
               "name": "finalRole",
               "description": null,
               "type": {
-                "kind": "SCALAR",
-                "name": "String",
+                "kind": "ENUM",
+                "name": "SchoolRole",
                 "ofType": null
               },
               "defaultValue": null
@@ -2585,6 +2639,18 @@
           "description": null,
           "fields": [
             {
+              "name": "approvedRole",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "SchoolRole",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "createdAt",
               "description": null,
               "args": [],
@@ -2665,6 +2731,34 @@
               "deprecationReason": null
             },
             {
+              "name": "requestedRole",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "SchoolRole",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "reviewNote",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "reviewedAt",
               "description": null,
               "args": [],
@@ -2684,22 +2778,6 @@
                 "kind": "SCALAR",
                 "name": "String",
                 "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "role",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -3101,6 +3179,20 @@
                 "ofType": {
                   "kind": "SCALAR",
                   "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "loginAs",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "LoginAs",
                   "ofType": null
                 }
               },

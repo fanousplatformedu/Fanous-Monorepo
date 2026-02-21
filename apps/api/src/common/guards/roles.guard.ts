@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { ROLES_KEY, RolesPolicy, RoleValue } from "@decorators/roles.decorator";
-import { isGlobalRole, isSchoolRole } from "@utils/function-helper";
+import { isGlobalRole, isSchoolRole } from "@common/utils/guard-helper";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { GlobalRole } from "@prisma/client";
 import { Reflector } from "@nestjs/core";

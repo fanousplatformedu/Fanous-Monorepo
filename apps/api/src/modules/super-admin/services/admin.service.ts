@@ -1,29 +1,19 @@
-import { MembershipStatus, SchoolRole } from "@prisma/client";
-import { RemoveSchoolAdminInput } from "@superAdmin/dtos/remove-school.input";
-import { AssignSchoolAdminInput } from "@superAdmin/dtos/assign-school.input";
-import { ListSchoolAdminsInput } from "@superAdmin/dtos/list-school.input";
-import { isEmail, isPhone } from "@utils/function-helper";
+import { MembershipStatus, SchoolRole, GlobalRole } from "@prisma/client";
 import { PrismaService } from "@prisma/prisma.service";
-import { Injectable } from "@nestjs/common";
 import { AdminCodes } from "@superAdmin/enums/admin-codes.enum";
+import { Injectable } from "@nestjs/common";
 import { AppError } from "@ctypes/app-error";
+
+import * as T from "@superAdmin/types/admin-service";
+import * as H from "@utils/super-admin-helper";
 
 @Injectable()
 export class AdminService {
   constructor(private prismaService: PrismaService) {}
 
-  private normalizeIdentifier(identifier: string) {
-    const v = identifier.trim();
-    if (isEmail(v))
-      return { email: v.toLowerCase(), phone: null as string | null };
-    const p = v.replace(/\s/g, "");
-    if (isPhone(p)) return { email: null as string | null, phone: p };
-    throw new AppError(AdminCodes.IDENTIFIER_INVALID as any);
-  }
-
-  private async requireSchoolActive(schoolId: string) {
+  async requireSchoolActive(input: T.TRequireSchoolActiveInput) {
     const school = await this.prismaService.school.findUnique({
-      where: { id: schoolId },
+      where: { id: input.schoolId },
       select: { id: true, isActive: true },
     });
     if (!school) throw new AppError(AdminCodes.SCHOOL_NOT_FOUND as any);
@@ -31,101 +21,106 @@ export class AdminService {
     return school;
   }
 
-  async assignSchoolAdmin(
-    superAdminUserId: string,
-    input: AssignSchoolAdminInput,
-  ) {
-    if (!superAdminUserId)
-      throw new AppError(AdminCodes.UNAUTHORIZED as any, "UNAUTHORIZED", 401);
-    await this.requireSchoolActive(input.schoolId);
-    const norm = this.normalizeIdentifier(input.identifier);
+  async assignSchoolAdmin(params: T.TAssignSchoolAdminParams) {
+    const superAdminUserId = H.requireSuperAdminId({
+      superAdminUserId: params.superAdminUserId,
+    });
+    await this.requireSchoolActive({ schoolId: params.input.schoolId });
+    const norm = H.normalizeAssignInput({
+      identifier: params.input.identifier,
+    });
     return this.prismaService.$transaction(async (tx) => {
       let user = await tx.user.findFirst({
         where: {
           OR: [
-            ...(norm.email ? [{ email: norm.email }] : []),
-            ...(norm.phone ? [{ phone: norm.phone }] : []),
+            ...(norm.emailNormalized
+              ? [{ emailNormalized: norm.emailNormalized }]
+              : []),
+            ...(norm.phoneNormalized
+              ? [{ phoneNormalized: norm.phoneNormalized }]
+              : []),
           ],
         },
-        select: { id: true, email: true, phone: true, isActive: true },
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          isActive: true,
+          globalRole: true,
+        },
       });
-
       if (!user) {
         user = await tx.user.create({
           data: {
             email: norm.email ?? undefined,
             phone: norm.phone ?? undefined,
+            emailNormalized: norm.emailNormalized ?? undefined,
+            phoneNormalized: norm.phoneNormalized ?? undefined,
             isActive: true,
+            globalRole: GlobalRole.USER,
           },
-          select: { id: true, email: true, phone: true, isActive: true },
+          select: {
+            id: true,
+            email: true,
+            phone: true,
+            isActive: true,
+            globalRole: true,
+          },
         });
       } else {
-        if (!user.isActive)
-          throw new AppError(AdminCodes.USER_NOT_FOUND as any);
-      }
-      const existing = await tx.userSchoolMembership.findUnique({
-        where: {
-          userId_schoolId: { userId: user.id, schoolId: input.schoolId },
-        },
-        include: { user: true },
-      });
-      if (existing && existing.role !== SchoolRole.SCHOOL_ADMIN) {
-        throw new AppError(
-          AdminCodes.ALREADY_ADMIN as any,
-          "USER_ALREADY_MEMBER_IN_SCHOOL",
-          400,
-          {
-            currentRole: existing.role,
-            status: existing.status,
-          },
-        );
+        H.ensureUserAssignable({
+          isActive: user.isActive,
+          globalRole: user.globalRole,
+        });
       }
 
+      const existing = await tx.userSchoolMembership.findUnique({
+        where: H.membershipUniqueWhere(user.id, params.input.schoolId),
+        select: { approvedRole: true, status: true },
+      });
+      H.ensureNoNonAdminRoleConflict(existing ?? undefined);
       const membership = await tx.userSchoolMembership.upsert({
-        where: {
-          userId_schoolId: { userId: user.id, schoolId: input.schoolId },
-        },
+        where: H.membershipUniqueWhere(user.id, params.input.schoolId),
         update: {
           requestedRole: SchoolRole.SCHOOL_ADMIN,
-          role: SchoolRole.SCHOOL_ADMIN,
+          approvedRole: SchoolRole.SCHOOL_ADMIN,
           status: MembershipStatus.APPROVED,
           reviewedById: superAdminUserId,
           reviewedAt: new Date(),
-          firstName: input.firstName ?? undefined,
-          lastName: input.lastName ?? undefined,
+          reviewNote: null,
+          firstName: params.input.firstName ?? undefined,
+          lastName: params.input.lastName ?? undefined,
         },
         create: {
           userId: user.id,
-          schoolId: input.schoolId,
+          schoolId: params.input.schoolId,
           requestedRole: SchoolRole.SCHOOL_ADMIN,
-          role: SchoolRole.SCHOOL_ADMIN,
+          approvedRole: SchoolRole.SCHOOL_ADMIN,
           status: MembershipStatus.APPROVED,
           reviewedById: superAdminUserId,
           reviewedAt: new Date(),
-          firstName: input.firstName ?? undefined,
-          lastName: input.lastName ?? undefined,
+          reviewNote: null,
+          firstName: params.input.firstName ?? undefined,
+          lastName: params.input.lastName ?? undefined,
         },
         include: { user: true },
       });
-      return { membership, user };
+      return membership;
     });
   }
 
-  async removeSchoolAdmin(
-    superAdminUserId: string,
-    input: RemoveSchoolAdminInput,
-  ) {
-    if (!superAdminUserId)
-      throw new AppError(AdminCodes.UNAUTHORIZED as any, "UNAUTHORIZED", 401);
+  async removeSchoolAdmin(params: T.TRemoveSchoolAdminParams) {
+    const superAdminUserId = H.requireSuperAdminId({
+      superAdminUserId: params.superAdminUserId,
+    });
     const membership = await this.prismaService.userSchoolMembership.findUnique(
       {
-        where: { id: input.membershipId },
+        where: { id: params.input.membershipId },
         include: { user: true, school: true },
       },
     );
-
     if (!membership) throw new AppError(AdminCodes.MEMBERSHIP_NOT_FOUND as any);
-    if (membership.role !== SchoolRole.SCHOOL_ADMIN)
+    if (membership.approvedRole !== SchoolRole.SCHOOL_ADMIN)
       throw new AppError(AdminCodes.MEMBERSHIP_NOT_FOUND as any);
     const updated = await this.prismaService.userSchoolMembership.update({
       where: { id: membership.id },
@@ -133,21 +128,21 @@ export class AdminService {
         status: MembershipStatus.SUSPENDED,
         reviewedById: superAdminUserId,
         reviewedAt: new Date(),
+        reviewNote: "SUSPENDED_BY_SUPER_ADMIN",
       },
       include: { user: true },
     });
     return updated;
   }
 
-  async listSchoolAdmins(input: ListSchoolAdminsInput) {
-    await this.requireSchoolActive(input.schoolId);
-    const take = input.take ?? 20;
-    const skip = input.skip ?? 0;
-    const where = {
-      schoolId: input.schoolId,
-      role: SchoolRole.SCHOOL_ADMIN,
-    };
-
+  async listSchoolAdmins(params: T.TListSchoolAdminsParams) {
+    await this.requireSchoolActive({ schoolId: params.input.schoolId });
+    const take = params.input.take ?? 20;
+    const skip = params.input.skip ?? 0;
+    const where = H.buildListAdminsWhere(
+      params.input.schoolId,
+      params.input.status,
+    );
     const [items, total] = await this.prismaService.$transaction([
       this.prismaService.userSchoolMembership.findMany({
         where,

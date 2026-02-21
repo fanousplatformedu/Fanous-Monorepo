@@ -1,9 +1,11 @@
 import { SchoolScopeGuard } from "@school/guards/school-scope.guard";
 import { SchoolResolver } from "@school/resolvers/school.resolver";
 import { SchoolService } from "@school/services/school.service";
+import { PrismaModule } from "@prisma/prisma.module";
 import { Module } from "@nestjs/common";
 
 @Module({
+  imports: [PrismaModule],
   providers: [SchoolResolver, SchoolService, SchoolScopeGuard],
   exports: [SchoolService, SchoolScopeGuard],
 })

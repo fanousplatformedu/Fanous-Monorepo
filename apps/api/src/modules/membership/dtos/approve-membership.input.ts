@@ -6,5 +6,5 @@ import { SchoolRole } from "@prisma/client";
 @InputType(MembershipGqlInputNames.APPROVE_MEMBERSHIP_INPUT)
 export class ApproveMembershipInput {
   @Field() @IsString() @IsNotEmpty() membershipId!: string;
-  @Field(() => String, { nullable: true }) @IsOptional() finalRole?: SchoolRole;
+  @Field(() => SchoolRole, { nullable: true }) finalRole?: SchoolRole;
 }

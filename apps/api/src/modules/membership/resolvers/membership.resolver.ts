@@ -11,11 +11,13 @@ import { MembershipService } from "@membership/services/membership.service";
 import { MembershipEntity } from "@membership/entities/membership.entity";
 import { SchoolScopeGuard } from "@school/guards/school-scope.guard";
 import { SchoolScope } from "@school/decorators/school-scope.decorator";
-import { UserEntity } from "@membership/entities/user.entity";
 import { SchoolRole } from "@prisma/client";
+import { UserEntity } from "@membership/entities/user.entity";
 import { UseGuards } from "@nestjs/common";
 import { Public } from "@decorators/public.decorator";
 import { Roles } from "@decorators/roles.decorator";
+
+type GqlCtx = { req: any; res: any };
 
 @Resolver()
 export class MembershipResolver {
@@ -26,13 +28,13 @@ export class MembershipResolver {
     name: MembershipGqlMutationNames.REGISTER_REQUEST,
   })
   async registerRequest(@Args("input") input: RegisterRequestInput) {
-    return this.membershipService.registerRequest(input);
+    return this.membershipService.registerRequest({ input });
   }
 
   @Query(() => UserEntity, { name: MembershipGqlQueryNames.ME })
-  async me(@Context() ctx: any) {
+  async me(@Context() ctx: GqlCtx) {
     const userId = ctx.req.user?.id;
-    return this.membershipService.me(userId);
+    return this.membershipService.me({ userId });
   }
 
   @UseGuards(SchoolScopeGuard)
@@ -42,10 +44,13 @@ export class MembershipResolver {
   })
   async myMemberships(
     @Args("input") input: MyMembershipsInput,
-    @Context() ctx: any,
+    @Context() ctx: GqlCtx,
   ) {
     const userId = ctx.req.user?.id;
-    return this.membershipService.myMemberships(userId, input.schoolId);
+    return this.membershipService.myMemberships({
+      userId,
+      schoolId: input.schoolId,
+    });
   }
 
   @Roles(SchoolRole.SCHOOL_ADMIN)
@@ -56,10 +61,10 @@ export class MembershipResolver {
   })
   async pendingRequests(
     @Args("input") input: ListPendingRequestsInput,
-    @Context() ctx: any,
+    @Context() ctx: GqlCtx,
   ) {
     const adminUserId = ctx.req.user?.id;
-    return this.membershipService.listPendingRequests(adminUserId, input);
+    return this.membershipService.listPendingRequests({ adminUserId, input });
   }
 
   @Roles(SchoolRole.SCHOOL_ADMIN)
@@ -70,10 +75,10 @@ export class MembershipResolver {
   })
   async approveMembership(
     @Args("input") input: ApproveMembershipInput,
-    @Context() ctx: any,
+    @Context() ctx: GqlCtx,
   ) {
     const adminUserId = ctx.req.user?.id;
-    return this.membershipService.approveMembership(adminUserId, input);
+    return this.membershipService.approveMembership({ adminUserId, input });
   }
 
   @Roles(SchoolRole.SCHOOL_ADMIN)
@@ -84,9 +89,9 @@ export class MembershipResolver {
   })
   async rejectMembership(
     @Args("input") input: RejectMembershipInput,
-    @Context() ctx: any,
+    @Context() ctx: GqlCtx,
   ) {
     const adminUserId = ctx.req.user?.id;
-    return this.membershipService.rejectMembership(adminUserId, input);
+    return this.membershipService.rejectMembership({ adminUserId, input });
   }
 }

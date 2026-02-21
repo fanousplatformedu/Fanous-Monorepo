@@ -8,16 +8,16 @@ export class MembershipRequestEntity {
   @Field() userId!: string;
   @Field() createdAt!: Date;
   @Field() schoolId!: string;
-  @Field(() => String) role!: SchoolRole;
   @Field({ nullable: true }) email?: string;
   @Field({ nullable: true }) phone?: string;
   @Field({ nullable: true }) grade?: string;
-  @Field({ nullable: true }) reviewedAt?: Date;
   @Field({ nullable: true }) lastName?: string;
+  @Field({ nullable: true }) reviewedAt?: Date;
   @Field({ nullable: true }) firstName?: string;
   @Field(() => String) status!: MembershipStatus;
-  @Field({ nullable: true }) reviewNote?: string;
   @Field({ nullable: true }) nationalId?: string;
-  @Field(() => String) requestedRole!: SchoolRole;
+  @Field({ nullable: true }) reviewNote?: string;
   @Field({ nullable: true }) reviewedById?: string;
+  @Field(() => SchoolRole) requestedRole!: SchoolRole;
+  @Field(() => SchoolRole, { nullable: true }) approvedRole?: SchoolRole;
 }

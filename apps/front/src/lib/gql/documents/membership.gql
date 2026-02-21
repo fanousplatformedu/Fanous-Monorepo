@@ -1,9 +1,71 @@
+mutation RegisterRequest($input: RegisterRequestInput!) {
+  registerRequest(input: $input) {
+    id
+    schoolId
+    status
+    requestedRole
+    approvedRole
+    user {
+      id
+      email
+      phone
+    }
+  }
+}
+
+query MembershipRequests_Pending($input: ListMembershipRequestsInput!) {
+  membershipRequests(input: $input) {
+    total
+    items {
+      id
+      userId
+      schoolId
+      status
+      requestedRole
+      email
+      phone
+      firstName
+      lastName
+      nationalId
+      grade
+      reviewedById
+      reviewedAt
+      reviewNote
+      createdAt
+    }
+  }
+}
+
+mutation ReviewMembership($input: ReviewMembershipInput!) {
+  reviewMembership(input: $input) {
+    message
+    membership {
+      id
+      userId
+      schoolId
+      status
+      requestedRole
+      email
+      phone
+      firstName
+      lastName
+      nationalId
+      grade
+      reviewedById
+      reviewedAt
+      reviewNote
+      createdAt
+    }
+  }
+}
+
 query MyMemberships($input: MyMembershipsInput!) {
   myMemberships(input: $input) {
     id
     schoolId
-    role
     status
+    requestedRole
+    approvedRole
     firstName
     lastName
     nationalId

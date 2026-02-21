@@ -1,68 +1,77 @@
 import { apiSlice } from "@lib/rtk/api/apiSlice";
-import {
-  type MeQuery,
-  type LogoutMutation,
-  type VerifyLoginOtpMutation,
-  type LogoutMutationVariables,
-  type RequestLoginOtpMutation,
-  type LogoutSuperAdminMutation,
-  type VerifyLoginOtpMutationVariables,
-  type RequestLoginOtpMutationVariables,
-} from "@/lib/gql/generated/graphql";
 
+import type * as T from "@/lib/gql/generated/graphql";
 import * as G from "@/lib/gql/generated/graphql";
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-    me: build.query<MeQuery["me"], void>({
+    // --- Queries ---
+    me: build.query<T.MeQuery["me"], void>({
       query: () => ({ document: G.MeDocument }),
-      transformResponse: (data: MeQuery) => data.me,
+      transformResponse: (data: T.MeQuery) => data.me,
       providesTags: ["Me"],
     }),
 
+    // --- Mutations ---
+    signInSuperAdmin: build.mutation<
+      T.SignInSuperAdminMutation["signInSuperAdmin"],
+      T.SignInSuperAdminMutationVariables["input"]
+    >({
+      query: (input) => ({
+        document: G.SignInSuperAdminDocument,
+        variables: { input } satisfies T.SignInSuperAdminMutationVariables,
+      }),
+      transformResponse: (data: T.SignInSuperAdminMutation) =>
+        data.signInSuperAdmin,
+      invalidatesTags: ["Me"],
+    }),
+
     requestLoginOtp: build.mutation<
-      RequestLoginOtpMutation["requestLoginOtp"],
-      RequestLoginOtpMutationVariables["input"]
+      T.RequestLoginOtpMutation["requestLoginOtp"],
+      T.RequestLoginOtpMutationVariables["input"]
     >({
       query: (input) => ({
         document: G.RequestLoginOtpDocument,
-        variables: { input } satisfies RequestLoginOtpMutationVariables,
+        variables: { input } satisfies T.RequestLoginOtpMutationVariables,
       }),
-      transformResponse: (data: RequestLoginOtpMutation) =>
+      transformResponse: (data: T.RequestLoginOtpMutation) =>
         data.requestLoginOtp,
     }),
 
     verifyLoginOtp: build.mutation<
-      VerifyLoginOtpMutation["verifyLoginOtp"],
-      VerifyLoginOtpMutationVariables["input"]
+      T.VerifyLoginOtpMutation["verifyLoginOtp"],
+      T.VerifyLoginOtpMutationVariables["input"]
     >({
       query: (input) => ({
         document: G.VerifyLoginOtpDocument,
-        variables: { input } satisfies VerifyLoginOtpMutationVariables,
+        variables: { input } satisfies T.VerifyLoginOtpMutationVariables,
       }),
-      transformResponse: (data: VerifyLoginOtpMutation) => data.verifyLoginOtp,
+      transformResponse: (data: T.VerifyLoginOtpMutation) =>
+        data.verifyLoginOtp,
       invalidatesTags: ["Me"],
     }),
 
     logout: build.mutation<
-      LogoutMutation["logout"],
-      LogoutMutationVariables["input"]
+      T.LogoutMutation["logout"],
+      T.LogoutMutationVariables["input"]
     >({
       query: (input) => ({
         document: G.LogoutDocument,
-        variables: { input } satisfies LogoutMutationVariables,
+        variables: { input } satisfies T.LogoutMutationVariables,
       }),
-      transformResponse: (data: LogoutMutation) => data.logout,
+      transformResponse: (data: T.LogoutMutation) => data.logout,
       invalidatesTags: ["Me"],
     }),
+
     logoutSuperAdmin: build.mutation<
-      LogoutSuperAdminMutation["logoutSuperAdmin"],
-      void
+      T.LogoutSuperAdminMutation["logoutSuperAdmin"],
+      T.LogoutSuperAdminMutationVariables["input"]
     >({
-      query: () => ({
+      query: (input) => ({
         document: G.LogoutSuperAdminDocument,
+        variables: { input } satisfies T.LogoutSuperAdminMutationVariables,
       }),
-      transformResponse: (data: LogoutSuperAdminMutation) =>
+      transformResponse: (data: T.LogoutSuperAdminMutation) =>
         data.logoutSuperAdmin,
       invalidatesTags: ["Me"],
     }),
@@ -74,5 +83,6 @@ export const {
   useLogoutMutation,
   useVerifyLoginOtpMutation,
   useRequestLoginOtpMutation,
+  useSignInSuperAdminMutation,
   useLogoutSuperAdminMutation,
 } = authApi;

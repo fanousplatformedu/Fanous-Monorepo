@@ -21,21 +21,15 @@ export class AuthResolver {
   constructor(private auth: AuthService) {}
 
   @Public()
-  @Query(() => String, { name: "healthCheck" })
-  healthCheck(): string {
-    return "ok";
-  }
-
-  // ============== school auth (OTP) ============
-  @Public()
   @Mutation(() => RequestOtpResultEntity, {
     name: GqlMutationNames.REQUEST_LOGIN_OTP,
   })
   async requestLoginOtp(@Args("input") input: RequestLoginOtpInput) {
-    const { resendAfter } = await this.auth.requestLoginOtp(
-      input.schoolId,
-      input.identifier,
-    );
+    const { resendAfter } = await this.auth.requestLoginOtp({
+      schoolId: input.schoolId,
+      identifier: input.identifier,
+      loginAs: input.loginAs,
+    });
     return { message: AuthMessages.OTP_SENT, resendAfter };
   }
 
@@ -47,14 +41,19 @@ export class AuthResolver {
     @Args("input") input: VerifyLoginOtpInput,
     @Context() ctx: GqlCtx,
   ) {
-    const payload = await this.auth.verifyLoginOtp(
-      input.schoolId,
-      input.identifier,
-      input.code,
-    );
-    this.auth.setSchoolAuthCookies(ctx.res, {
-      accessToken: payload.accessToken,
-      refreshToken: payload.refreshToken,
+    const payload = await this.auth.verifyLoginOtp({
+      schoolId: input.schoolId,
+      identifier: input.identifier,
+      code: input.code,
+      loginAs: input.loginAs,
+    });
+
+    this.auth.setSchoolAuthCookies({
+      res: ctx.res,
+      tokens: {
+        accessToken: payload.accessToken,
+        refreshToken: payload.refreshToken,
+      },
     });
     return payload;
   }
@@ -65,14 +64,22 @@ export class AuthResolver {
     @Args("input") input: RefreshTokenInput,
     @Context() ctx: GqlCtx,
   ) {
-    const refreshTokenRaw = this.auth.getCookie(ctx.req, "sk_rt");
-    const payload = await this.auth.rotateRefreshToken(
-      input.schoolId,
+    const refreshTokenRaw = this.auth.getCookie({
+      req: ctx.req,
+      name: "sk_rt",
+    });
+
+    const payload = await this.auth.rotateRefreshToken({
+      schoolId: input.schoolId,
       refreshTokenRaw,
-    );
-    this.auth.setSchoolAuthCookies(ctx.res, {
-      accessToken: payload.accessToken,
-      refreshToken: payload.refreshToken,
+    });
+
+    this.auth.setSchoolAuthCookies({
+      res: ctx.res,
+      tokens: {
+        accessToken: payload.accessToken,
+        refreshToken: payload.refreshToken,
+      },
     });
     return payload;
   }
@@ -80,13 +87,16 @@ export class AuthResolver {
   @Public()
   @Mutation(() => LogoutResultEntity, { name: GqlMutationNames.LOGOUT })
   async logout(@Args("input") input: LogoutInput, @Context() ctx: GqlCtx) {
-    const refreshTokenRaw = this.auth.getCookie(ctx.req, "sk_rt");
-    await this.auth.logout(input.schoolId, refreshTokenRaw);
-    this.auth.clearSchoolAuthCookies(ctx.res);
+    const refreshTokenRaw = this.auth.getCookie({
+      req: ctx.req,
+      name: "sk_rt",
+    });
+    await this.auth.logout({ schoolId: input.schoolId, refreshTokenRaw });
+    this.auth.clearSchoolAuthCookies({ res: ctx.res });
     return { message: AuthMessages.LOGOUT_OK };
   }
 
-  // ============== super admin auth  ============
+  // ============= super admin ============
   @Public()
   @Mutation(() => AuthPayloadEntity, {
     name: GqlMutationNames.SIGNIN_SUPER_ADMIN,
@@ -95,13 +105,16 @@ export class AuthResolver {
     @Args("input") input: SignInSuperAdminInput,
     @Context() ctx: GqlCtx,
   ) {
-    const payload = await this.auth.signInSuperAdmin(
-      input.email,
-      input.password,
-    );
-    this.auth.setSuperAdminAuthCookies(ctx.res, {
-      accessToken: payload.accessToken,
-      refreshToken: payload.refreshToken,
+    const payload = await this.auth.signInSuperAdmin({
+      email: input.email,
+      password: input.password,
+    });
+    this.auth.setSuperAdminAuthCookies({
+      res: ctx.res,
+      tokens: {
+        accessToken: payload.accessToken,
+        refreshToken: payload.refreshToken,
+      },
     });
     return payload;
   }
@@ -114,12 +127,19 @@ export class AuthResolver {
     @Args("input") _input: RefreshSuperAdminInput,
     @Context() ctx: GqlCtx,
   ) {
-    const refreshTokenRaw = this.auth.getCookie(ctx.req, "sa_rt");
-    const payload =
-      await this.auth.rotateSuperAdminRefreshToken(refreshTokenRaw);
-    this.auth.setSuperAdminAuthCookies(ctx.res, {
-      accessToken: payload.accessToken,
-      refreshToken: payload.refreshToken,
+    const refreshTokenRaw = this.auth.getCookie({
+      req: ctx.req,
+      name: "sa_rt",
+    });
+    const payload = await this.auth.rotateSuperAdminRefreshToken({
+      refreshTokenRaw,
+    });
+    this.auth.setSuperAdminAuthCookies({
+      res: ctx.res,
+      tokens: {
+        accessToken: payload.accessToken,
+        refreshToken: payload.refreshToken,
+      },
     });
     return payload;
   }
@@ -132,9 +152,12 @@ export class AuthResolver {
     @Args("input") _input: LogoutSuperAdminInput,
     @Context() ctx: GqlCtx,
   ) {
-    const refreshTokenRaw = this.auth.getCookie(ctx.req, "sa_rt");
-    await this.auth.logoutSuperAdmin(refreshTokenRaw);
-    this.auth.clearSuperAdminAuthCookies(ctx.res);
+    const refreshTokenRaw = this.auth.getCookie({
+      req: ctx.req,
+      name: "sa_rt",
+    });
+    await this.auth.logoutSuperAdmin({ refreshTokenRaw });
+    this.auth.clearSuperAdminAuthCookies({ res: ctx.res });
     return { message: AuthMessages.LOGOUT_OK };
   }
 }

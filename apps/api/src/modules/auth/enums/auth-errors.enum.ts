@@ -1,4 +1,5 @@
 export const AuthCodes = {
+  FORBIDDEN: "forbiden",
   OTP_INVALID: "OTP_INVALID",
   OTP_EXPIRED: "OTP_EXPIRED",
   UNAUTHORIZED: "UNAUTHORIZED",

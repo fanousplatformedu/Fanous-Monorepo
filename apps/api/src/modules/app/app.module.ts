@@ -13,7 +13,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { Module } from "@nestjs/common";
 import { join } from "path";
 
-import "@enums/register.enum";
+import "@common/enums/membership-register.enum";
 
 @Module({
   imports: [

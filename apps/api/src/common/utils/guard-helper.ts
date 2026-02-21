@@ -28,10 +28,8 @@ export const isSchoolRole = (r: RoleValue): r is SchoolRole =>
 
 // ========= Cookie Header ==========
 export const cookieOrHeaderJwtExtractor = (req: any): string | null => {
-  // ========= Authorization Bearer ===========
   const headerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
   if (headerToken) return headerToken;
-  // ========= Cookie ==========
   const sk = req?.cookies?.["sk_at"];
   if (sk) return sk;
   const sa = req?.cookies?.["sa_at"];

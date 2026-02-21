@@ -12,6 +12,8 @@ import { SchoolRole } from "@prisma/client";
 import { UseGuards } from "@nestjs/common";
 import { Roles } from "@decorators/roles.decorator";
 
+type GqlCtx = { req: any; res: any };
+
 @Resolver()
 export class SchoolAdminResolver {
   constructor(private schoolService: SchoolAdminService) {}
@@ -24,15 +26,15 @@ export class SchoolAdminResolver {
   })
   async membershipRequests(
     @Args("input") input: ListMembershipRequestsInput,
-    @Context() ctx: any,
+    @Context() ctx: GqlCtx,
   ) {
     const adminUserId = ctx.req.user?.id;
     const adminSchoolId = ctx.req.user?.schoolId;
-    return this.schoolService.listMembershipRequests(
+    return this.schoolService.listMembershipRequests({
       adminUserId,
       adminSchoolId,
       input,
-    );
+    });
   }
 
   @Roles(SchoolRole.SCHOOL_ADMIN)
@@ -43,14 +45,14 @@ export class SchoolAdminResolver {
   })
   async reviewMembership(
     @Args("input") input: ReviewMembershipInput,
-    @Context() ctx: any,
+    @Context() ctx: GqlCtx,
   ) {
     const adminUserId = ctx.req.user?.id;
     const adminSchoolId = ctx.req.user?.schoolId;
-    return this.schoolService.reviewMembership(
+    return this.schoolService.reviewMembership({
       adminUserId,
       adminSchoolId,
       input,
-    );
+    });
   }
 }

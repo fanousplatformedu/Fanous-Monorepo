@@ -1,22 +1,71 @@
-import { type MyMembershipsQueryVariables } from "@/lib/gql/generated/graphql";
-import { type MyMembershipsQuery } from "@/lib/gql/generated/graphql";
-import { MyMembershipsDocument } from "@/lib/gql/generated/graphql";
 import { apiSlice } from "@lib/rtk/api/apiSlice";
 
-export const membershipApi = apiSlice.injectEndpoints({
+import type * as T from "@/lib/gql/generated/graphql";
+import * as G from "@/lib/gql/generated/graphql";
+
+export const membershipsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-    myMemberships: build.query<
-      MyMembershipsQuery["myMemberships"],
-      MyMembershipsQueryVariables["input"]
+    // ---------- Register request ----------
+    registerRequest: build.mutation<
+      T.RegisterRequestMutation["registerRequest"],
+      T.RegisterRequestMutationVariables["input"]
     >({
       query: (input) => ({
-        document: MyMembershipsDocument,
-        variables: { input } satisfies MyMembershipsQueryVariables,
+        document: G.RegisterRequestDocument,
+        variables: { input } satisfies T.RegisterRequestMutationVariables,
       }),
-      transformResponse: (data: MyMembershipsQuery) => data.myMemberships,
+      transformResponse: (data: T.RegisterRequestMutation) =>
+        data.registerRequest,
+      invalidatesTags: ["MembershipRequests", "MyMemberships"],
+    }),
+
+    // ---------- Admin reviews ----------
+    membershipRequests: build.query<
+      T.MembershipRequests_PendingQuery["membershipRequests"],
+      T.MembershipRequests_PendingQueryVariables["input"]
+    >({
+      query: (input) => ({
+        document: G.MembershipRequests_PendingDocument,
+        variables: {
+          input,
+        } satisfies T.MembershipRequests_PendingQueryVariables,
+      }),
+      transformResponse: (data: T.MembershipRequests_PendingQuery) =>
+        data.membershipRequests,
+      providesTags: ["MembershipRequests"],
+    }),
+
+    reviewMembership: build.mutation<
+      T.ReviewMembershipMutation["reviewMembership"],
+      T.ReviewMembershipMutationVariables["input"]
+    >({
+      query: (input) => ({
+        document: G.ReviewMembershipDocument,
+        variables: { input } satisfies T.ReviewMembershipMutationVariables,
+      }),
+      transformResponse: (data: T.ReviewMembershipMutation) =>
+        data.reviewMembership,
+      invalidatesTags: ["MembershipRequests", "MyMemberships", "Me"],
+    }),
+
+    // ---------- My memberships ----------
+    myMemberships: build.query<
+      T.MyMembershipsQuery["myMemberships"],
+      T.MyMembershipsQueryVariables["input"]
+    >({
+      query: (input) => ({
+        document: G.MyMembershipsDocument,
+        variables: { input } satisfies T.MyMembershipsQueryVariables,
+      }),
+      transformResponse: (data: T.MyMembershipsQuery) => data.myMemberships,
       providesTags: ["MyMemberships"],
     }),
   }),
 });
 
-export const { useMyMembershipsQuery } = membershipApi;
+export const {
+  useMyMembershipsQuery,
+  useRegisterRequestMutation,
+  useMembershipRequestsQuery,
+  useReviewMembershipMutation,
+} = membershipsApi;

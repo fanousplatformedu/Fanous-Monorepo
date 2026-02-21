@@ -27,7 +27,7 @@ export class SchoolScopeGuard implements CanActivate {
       throw new AppError(SchoolCodes.UNAUTHORIZED as any, "UNAUTHORIZED", 401);
     const gql = GqlExecutionContext.create(context);
     const args = gql.getArgs();
-    const schoolId = this.extractSchoolId(args) ?? user.schoolId ?? null;
+    const schoolId = this.pickSchoolId(policy, user, args);
     if (!schoolId) {
       throw new AppError(
         SchoolCodes.INVALID_INPUT as any,
@@ -44,13 +44,25 @@ export class SchoolScopeGuard implements CanActivate {
         policy.requireActive ?? true,
       );
     }
-
-    if (user.schoolId !== schoolId)
+    if (!user.schoolId || user.schoolId !== schoolId)
       throw new AppError(SchoolCodes.FORBIDDEN as any, "FORBIDDEN", 403);
     return this.ensureSchoolExistsAndMaybeActive(
       schoolId,
       policy.requireActive ?? true,
     );
+  }
+
+  private pickSchoolId(
+    policy: SchoolScopePolicy,
+    user: any,
+    args: any,
+  ): string | null {
+    const fromToken = user?.schoolId ?? null;
+    const fromArgs = this.extractSchoolId(args);
+    const source = policy.source ?? "token_or_args";
+    if (source === "token") return fromToken;
+    if (source === "args") return fromArgs;
+    return fromToken ?? fromArgs ?? null;
   }
 
   private async ensureSchoolExistsAndMaybeActive(
@@ -79,7 +91,10 @@ export class SchoolScopeGuard implements CanActivate {
   private extractSchoolId(args: any): string | null {
     if (args?.input?.schoolId) return args.input.schoolId;
     if (args?.schoolId) return args.schoolId;
+    if (args?.where?.schoolId) return args.where.schoolId;
     if (args?.input?.where?.schoolId) return args.input.where.schoolId;
+    if (args?.data?.schoolId) return args.data.schoolId;
+    if (args?.input?.data?.schoolId) return args.input.data.schoolId;
     return null;
   }
 

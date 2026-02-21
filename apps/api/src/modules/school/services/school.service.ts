@@ -1,57 +1,49 @@
-import { UpdateSchoolStatusInput } from "@school/dtos/update-school-status.input";
-import { CreateSchoolInput } from "@school/dtos/create-school.input";
-import { ListSchoolsInput } from "@school/dtos/list-schools.input";
-import { GetSchoolInput } from "@school/dtos/get-school.input";
 import { PrismaService } from "@prisma/prisma.service";
 import { SchoolCodes } from "@school/enums/school-codes.enum";
 import { Injectable } from "@nestjs/common";
 import { AppError } from "@ctypes/app-error";
 
+import * as T from "@school/types/school-service";
+import * as H from "@utils/school-helper";
+
 @Injectable()
 export class SchoolService {
   constructor(private prismaService: PrismaService) {}
 
-  async createSchool(input: CreateSchoolInput) {
-    const code = input.code.trim();
-    const name = input.name.trim();
-
+  async createSchool(params: T.TCreateSchoolParams) {
+    const { code, name } = H.normalizeSchoolFields({
+      code: params.input.code,
+      name: params.input.name,
+    });
     const exists = await this.prismaService.school.findUnique({
       where: { code },
     });
-    if (exists) throw new AppError(SchoolCodes.SCHOOL_CODE_EXISTS as any);
+    if (exists) throw new AppError(SchoolCodes.SCHOOL_CODE_EXISTS);
     return this.prismaService.school.create({
       data: {
         code,
         name,
-        isActive: input.isActive ?? true,
+        isActive: params.input.isActive ?? true,
       },
     });
   }
 
-  async updateSchoolStatus(input: UpdateSchoolStatusInput) {
+  async updateSchoolStatus(params: T.TUpdateSchoolStatusParams) {
     const school = await this.prismaService.school.findUnique({
-      where: { id: input.schoolId },
+      where: { id: params.input.schoolId },
+      select: { id: true },
     });
-    if (!school) throw new AppError(SchoolCodes.SCHOOL_NOT_FOUND as any);
+    if (!school) throw new AppError(SchoolCodes.SCHOOL_NOT_FOUND);
     return this.prismaService.school.update({
-      where: { id: input.schoolId },
-      data: { isActive: input.isActive },
+      where: { id: params.input.schoolId },
+      data: { isActive: params.input.isActive },
     });
   }
 
-  async listSchools(input: ListSchoolsInput) {
-    const take = input.take ?? 20;
-    const skip = input.skip ?? 0;
-    const where: any = {};
-    if (input.onlyActive) where.isActive = true;
-    if (input.q?.trim()) {
-      const q = input.q.trim();
-      where.OR = [
-        { name: { contains: q, mode: "insensitive" } },
-        { code: { contains: q, mode: "insensitive" } },
-      ];
-    }
-
+  async listSchools(params: T.TListSchoolsParams) {
+    const take = params.input.take ?? 20;
+    const skip = params.input.skip ?? 0;
+    const where = H.buildSchoolSearchWhere(params.input);
     const [items, total] = await this.prismaService.$transaction([
       this.prismaService.school.findMany({
         where,
@@ -64,15 +56,17 @@ export class SchoolService {
     return { items, total };
   }
 
-  async getSchool(input: GetSchoolInput) {
-    if (!input.id && !input.code)
-      throw new AppError(SchoolCodes.INVALID_INPUT as any);
-    const school = input.id
-      ? await this.prismaService.school.findUnique({ where: { id: input.id } })
-      : await this.prismaService.school.findUnique({
-          where: { code: input.code!.trim() },
-        });
-    if (!school) throw new AppError(SchoolCodes.SCHOOL_NOT_FOUND as any);
+  async getSchool(params: T.TGetSchoolParams) {
+    const lookup = H.getSchoolLookup(params.input);
+    const school = await this.prismaService.school.findUnique({
+      where: lookup.where,
+    });
+    if (!school) throw new AppError(SchoolCodes.SCHOOL_NOT_FOUND);
     return school;
+  }
+
+  async mySchool(params: T.TMySchoolParams) {
+    const schoolId = H.requireSchoolId(params.schoolId);
+    return this.getSchool({ input: { id: schoolId } });
   }
 }
