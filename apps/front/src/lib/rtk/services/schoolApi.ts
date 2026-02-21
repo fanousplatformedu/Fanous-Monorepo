@@ -1,95 +1,97 @@
 import { apiSlice } from "@lib/rtk/api/apiSlice";
 
-import * as G from "@/lib/gql/generated/graphql";
 import type * as T from "@/lib/gql/generated/graphql";
+import * as G from "@/lib/gql/generated/graphql";
 
 export const schoolsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-    // ---------- Schools ----------
+    // =========== Schools ==========
     createSchool: build.mutation<
-      T.CreateSchoolMutation["createSchool"],
-      T.CreateSchoolMutationVariables["input"]
+      T.School_CreateMutation["createSchool"],
+      T.School_CreateMutationVariables["input"]
     >({
       query: (input) => ({
-        document: G.CreateSchoolDocument,
-        variables: { input } satisfies T.CreateSchoolMutationVariables,
+        document: G.School_CreateDocument,
+        variables: { input } satisfies T.School_CreateMutationVariables,
       }),
-      transformResponse: (data: T.CreateSchoolMutation) => data.createSchool,
+      transformResponse: (data: T.School_CreateMutation) => data.createSchool,
       invalidatesTags: ["Schools"],
     }),
 
     listSchools: build.query<
-      T.ListSchoolsQuery["schools"],
-      T.ListSchoolsQueryVariables["input"]
+      T.School_ListQuery["schools"],
+      T.School_ListQueryVariables["input"]
     >({
       query: (input) => ({
-        document: G.ListSchoolsDocument,
-        variables: { input } satisfies T.ListSchoolsQueryVariables,
+        document: G.School_ListDocument,
+        variables: { input } satisfies T.School_ListQueryVariables,
       }),
-      transformResponse: (data: T.ListSchoolsQuery) => data.schools,
+      transformResponse: (data: T.School_ListQuery) => data.schools,
       providesTags: ["Schools"],
     }),
 
     getSchool: build.query<
-      T.GetSchoolQuery["school"],
-      T.GetSchoolQueryVariables["input"]
+      T.School_GetQuery["school"],
+      T.School_GetQueryVariables["input"]
     >({
       query: (input) => ({
-        document: G.GetSchoolDocument,
-        variables: { input } satisfies T.GetSchoolQueryVariables,
+        document: G.School_GetDocument,
+        variables: { input } satisfies T.School_GetQueryVariables,
       }),
-      transformResponse: (data: T.GetSchoolQuery) => data.school,
+      transformResponse: (data: T.School_GetQuery) => data.school,
       providesTags: ["Schools"],
     }),
 
     updateSchoolStatus: build.mutation<
-      T.UpdateSchoolStatusMutation["updateSchoolStatus"],
-      T.UpdateSchoolStatusMutationVariables["input"]
+      T.School_UpdateStatusMutation["updateSchoolStatus"],
+      T.School_UpdateStatusMutationVariables["input"]
     >({
       query: (input) => ({
-        document: G.UpdateSchoolStatusDocument,
-        variables: { input } satisfies T.UpdateSchoolStatusMutationVariables,
+        document: G.School_UpdateStatusDocument,
+        variables: {
+          input,
+        } satisfies T.School_UpdateStatusMutationVariables,
       }),
-      transformResponse: (data: T.UpdateSchoolStatusMutation) =>
+      transformResponse: (data: T.School_UpdateStatusMutation) =>
         data.updateSchoolStatus,
       invalidatesTags: ["Schools"],
     }),
 
-    // ---------- School Admins ----------
+    // ========= School Admins ==========
     assignSchoolAdmin: build.mutation<
-      T.AssignSchoolAdminMutation["assignSchoolAdmin"],
-      T.AssignSchoolAdminMutationVariables["input"]
+      T.School_AssignAdminMutation["assignSchoolAdmin"],
+      T.School_AssignAdminMutationVariables["input"]
     >({
       query: (input) => ({
-        document: G.AssignSchoolAdminDocument,
-        variables: { input } satisfies T.AssignSchoolAdminMutationVariables,
+        document: G.School_AssignAdminDocument,
+        variables: { input } satisfies T.School_AssignAdminMutationVariables,
       }),
-      transformResponse: (data: T.AssignSchoolAdminMutation) =>
+      transformResponse: (data: T.School_AssignAdminMutation) =>
         data.assignSchoolAdmin,
       invalidatesTags: ["SchoolAdmins"],
     }),
 
     listSchoolAdmins: build.query<
-      T.ListSchoolAdminsQuery["schoolAdmins"],
-      T.ListSchoolAdminsQueryVariables["input"]
+      T.School_ListAdminsQuery["schoolAdmins"],
+      T.School_ListAdminsQueryVariables["input"]
     >({
       query: (input) => ({
-        document: G.ListSchoolAdminsDocument,
-        variables: { input } satisfies T.ListSchoolAdminsQueryVariables,
+        document: G.School_ListAdminsDocument,
+        variables: { input } satisfies T.School_ListAdminsQueryVariables,
       }),
-      transformResponse: (data: T.ListSchoolAdminsQuery) => data.schoolAdmins,
+      transformResponse: (data: T.School_ListAdminsQuery) => data.schoolAdmins,
       providesTags: ["SchoolAdmins"],
     }),
 
     removeSchoolAdmin: build.mutation<
-      T.RemoveSchoolAdminMutation["removeSchoolAdmin"],
-      T.RemoveSchoolAdminMutationVariables["input"]
+      T.School_RemoveAdminMutation["removeSchoolAdmin"],
+      T.School_RemoveAdminMutationVariables["input"]
     >({
       query: (input) => ({
-        document: G.RemoveSchoolAdminDocument,
-        variables: { input } satisfies T.RemoveSchoolAdminMutationVariables,
+        document: G.School_RemoveAdminDocument,
+        variables: { input } satisfies T.School_RemoveAdminMutationVariables,
       }),
-      transformResponse: (data: T.RemoveSchoolAdminMutation) =>
+      transformResponse: (data: T.School_RemoveAdminMutation) =>
         data.removeSchoolAdmin,
       invalidatesTags: ["SchoolAdmins"],
     }),

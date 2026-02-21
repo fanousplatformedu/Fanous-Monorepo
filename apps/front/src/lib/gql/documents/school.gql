@@ -1,15 +1,37 @@
-mutation CreateSchool($input: CreateSchoolInput!) {
+fragment SchoolBase on School {
+  id
+  code
+  name
+  isActive
+}
+
+fragment SchoolFull on School {
+  ...SchoolBase
+  createdAt
+  updatedAt
+}
+
+fragment SchoolAdminItem on SchoolAdmin {
+  email
+  phone
+  status
+  userId
+  lastName
+  schoolId
+  firstName
+  createdAt
+  reviewedAt
+  membershipId
+  reviewedById
+}
+
+mutation School_Create($input: CreateSchoolInput!) {
   createSchool(input: $input) {
-    id
-    code
-    name
-    isActive
-    createdAt
-    updatedAt
+    ...SchoolFull
   }
 }
 
-query ListSchools($input: ListSchoolsInput!) {
+query School_List($input: ListSchoolsInput!) {
   schools(input: $input) {
     total
     items {
@@ -22,18 +44,13 @@ query ListSchools($input: ListSchoolsInput!) {
   }
 }
 
-query GetSchool($input: GetSchoolInput!) {
+query School_Get($input: GetSchoolInput!) {
   school(input: $input) {
-    id
-    code
-    name
-    isActive
-    createdAt
-    updatedAt
+    ...SchoolFull
   }
 }
 
-mutation UpdateSchoolStatus($input: UpdateSchoolStatusInput!) {
+mutation School_UpdateStatus($input: UpdateSchoolStatusInput!) {
   updateSchoolStatus(input: $input) {
     id
     code
@@ -43,56 +60,26 @@ mutation UpdateSchoolStatus($input: UpdateSchoolStatusInput!) {
   }
 }
 
-mutation AssignSchoolAdmin($input: AssignSchoolAdminInput!) {
+mutation School_AssignAdmin($input: AssignSchoolAdminInput!) {
   assignSchoolAdmin(input: $input) {
     message
     admin {
-      membershipId
-      schoolId
-      userId
-      status
-      email
-      phone
-      firstName
-      lastName
-      reviewedById
-      reviewedAt
-      createdAt
+      ...SchoolAdminItem
     }
   }
 }
 
-query ListSchoolAdmins($input: ListSchoolAdminsInput!) {
+query School_ListAdmins($input: ListSchoolAdminsInput!) {
   schoolAdmins(input: $input) {
     total
     items {
-      membershipId
-      schoolId
-      userId
-      status
-      email
-      phone
-      firstName
-      lastName
-      reviewedById
-      reviewedAt
-      createdAt
+      ...SchoolAdminItem
     }
   }
 }
 
-mutation RemoveSchoolAdmin($input: RemoveSchoolAdminInput!) {
+mutation School_RemoveAdmin($input: RemoveSchoolAdminInput!) {
   removeSchoolAdmin(input: $input) {
-    membershipId
-    schoolId
-    userId
-    status
-    email
-    phone
-    firstName
-    lastName
-    reviewedById
-    reviewedAt
-    createdAt
+    ...SchoolAdminItem
   }
 }

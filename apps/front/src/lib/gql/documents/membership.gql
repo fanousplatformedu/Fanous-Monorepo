@@ -1,10 +1,54 @@
-mutation RegisterRequest($input: RegisterRequestInput!) {
+fragment MembershipRequestItem on MembershipRequest {
+  id
+  grade
+  email
+  phone
+  userId
+  status
+  schoolId
+  lastName
+  createdAt
+  firstName
+  nationalId
+  reviewedAt
+  reviewNote
+  reviewedById
+  requestedRole
+}
+
+fragment MembershipUser on User {
+  id
+  email
+  phone
+  isActive
+  globalRole
+}
+
+fragment MyMembershipItem on Membership {
+  id
+  grade
+  status
+  schoolId
+  lastName
+  createdAt
+  firstName
+  reviewedAt
+  nationalId
+  approvedRole
+  reviewedById
+  requestedRole
+  user {
+    ...MembershipUser
+  }
+}
+
+mutation Membership_RegisterRequest($input: RegisterRequestInput!) {
   registerRequest(input: $input) {
     id
-    schoolId
     status
-    requestedRole
+    schoolId
     approvedRole
+    requestedRole
     user {
       id
       email
@@ -13,72 +57,40 @@ mutation RegisterRequest($input: RegisterRequestInput!) {
   }
 }
 
-query MembershipRequests_Pending($input: ListMembershipRequestsInput!) {
+query Membership_ListRequests($input: ListMembershipRequestsInput!) {
   membershipRequests(input: $input) {
     total
     items {
-      id
-      userId
-      schoolId
-      status
-      requestedRole
-      email
-      phone
-      firstName
-      lastName
-      nationalId
-      grade
-      reviewedById
-      reviewedAt
-      reviewNote
-      createdAt
+      ...MembershipRequestItem
     }
   }
 }
 
-mutation ReviewMembership($input: ReviewMembershipInput!) {
+mutation Membership_Review($input: ReviewMembershipInput!) {
   reviewMembership(input: $input) {
     message
     membership {
       id
-      userId
-      schoolId
-      status
-      requestedRole
       email
       phone
-      firstName
-      lastName
-      nationalId
       grade
-      reviewedById
-      reviewedAt
-      reviewNote
+      userId
+      status
+      schoolId
+      lastName
       createdAt
+      firstName
+      reviewedAt
+      nationalId
+      reviewNote
+      reviewedById
+      requestedRole
     }
   }
 }
 
-query MyMemberships($input: MyMembershipsInput!) {
+query Membership_MyMemberships($input: MyMembershipsInput!) {
   myMemberships(input: $input) {
-    id
-    schoolId
-    status
-    requestedRole
-    approvedRole
-    firstName
-    lastName
-    nationalId
-    grade
-    reviewedById
-    reviewedAt
-    createdAt
-    user {
-      id
-      email
-      phone
-      globalRole
-      isActive
-    }
+    ...MyMembershipItem
   }
 }

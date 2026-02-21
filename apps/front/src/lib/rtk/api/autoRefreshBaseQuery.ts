@@ -1,7 +1,7 @@
 import { detectScopeFromPath, extractSchoolIdFromPath } from "@/lib/auth/scope";
 import { TGraphqlBaseQueryError, TGraphqlRequest } from "@/types/rtk";
-import { RefreshSuperAdminTokenDocument } from "@/lib/gql/generated/graphql";
-import { RefreshTokenDocument } from "@/lib/gql/generated/graphql";
+import { Auth_RefreshSuperAdminTokenDocument } from "@/lib/gql/generated/graphql";
+import { Auth_RefreshTokenDocument } from "@/lib/gql/generated/graphql";
 import { graphqlBaseQuery } from "./baseQuery";
 import { BaseQueryFn } from "@reduxjs/toolkit/query";
 
@@ -32,7 +32,7 @@ export const autoRefreshBaseQuery = (): BaseQueryFn<
     if (scope === "super-admin") {
       await base(
         {
-          document: RefreshSuperAdminTokenDocument,
+          document: Auth_RefreshSuperAdminTokenDocument,
           variables: { input: {} },
         },
         api,
@@ -43,7 +43,7 @@ export const autoRefreshBaseQuery = (): BaseQueryFn<
       if (!schoolId) return result;
       await base(
         {
-          document: RefreshTokenDocument,
+          document: Auth_RefreshTokenDocument,
           variables: { input: { schoolId } },
         },
         api,
