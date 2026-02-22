@@ -1,4 +1,7 @@
-export const AuthMessages = {
-  OTP_SENT: "OTP_SENT",
-  LOGOUT_OK: "LOGOUT_OK",
-};
+export enum AuthMessage {
+  OTP_SENT = "OTP_SENT",
+  LOGGED_IN = "LOGGED_IN",
+  REFRESHED = "REFRESHED",
+  LOGGED_OUT = "LOGGED_OUT",
+  OTP_VERIFIED = "OTP_VERIFIED",
+}

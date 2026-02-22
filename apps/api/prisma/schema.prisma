@@ -7,13 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ========== Roles =============
-enum GlobalRole {
-  USER
+enum Role {
   SUPER_ADMIN
-}
-
-enum SchoolRole {
   SCHOOL_ADMIN
   STUDENT
   PARENT
@@ -21,20 +16,23 @@ enum SchoolRole {
   COUNSELOR
 }
 
-enum MembershipStatus {
+enum SchoolStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+  DELETED
+}
+
+enum AccessRequestStatus {
   PENDING
   APPROVED
   REJECTED
-  SUSPENDED
-}
-
-enum OtpPurpose {
-  SUPER_ADMIN_LOGIN
-  SCHOOL_ADMIN_LOGIN
-  USER_LOGIN
-  // optional future:
-  // SIGNUP_VERIFY
-  // RESET_PASSWORD
+  CANCELED
 }
 
 enum OtpChannel {
@@ -42,148 +40,221 @@ enum OtpChannel {
   SMS
 }
 
-enum TokenType {
-  REFRESH
+enum OtpPurpose {
+  LOGIN
 }
 
-// =========== TENANT: School ===========
+enum SessionStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum AuditAction {
+  SCHOOL_CREATE
+  SCHOOL_UPDATE
+  SCHOOL_SUSPEND
+  SCHOOL_ARCHIVE
+  SCHOOL_UNSUSPEND
+
+  USER_DELETE
+  ADMIN_CREATE
+  ADMIN_DELETE
+  USER_DISABLE
+  ADMIN_DISABLE
+
+  ACCESS_REQUEST_SUBMIT
+  ACCESS_REQUEST_APPROVE
+  ACCESS_REQUEST_REJECT
+
+  AUTH_LOGOUT
+  OTP_REQUEST
+  AUTH_REFRESH
+  OTP_VERIFY_FAIL
+  AUTH_LOGIN_FAIL
+  AUTH_LOGIN_SUCCESS
+  OTP_VERIFY_SUCCESS
+}
+
 model School {
-  id        String   @id @default(cuid())
-  code      String   @unique
-  name      String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id     String       @id @default(cuid())
+  name   String
+  code   String?      @unique
+  status SchoolStatus @default(ACTIVE)
 
-  memberships UserSchoolMembership[]
-  otpRequests OtpRequest[]
-  sessions    UserSession[]
+  settings Json?
 
-  @@index([isActive])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  users          User[]
+  accessRequests AccessRequest[]
+  otpCodes       OtpCode[]
+  sessions       AuthSession[]
+  auditLogs      AuditLog[]
+
+  @@index([status])
+  @@index([createdAt])
 }
 
-// =========== Global Identity: User =============
 model User {
   id String @id @default(cuid())
 
-  email           String?
-  phone           String?
-  passwordHash    String?
-  emailNormalized String? @unique
-  phoneNormalized String? @unique
+  schoolId String?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: Restrict)
 
-  globalRole GlobalRole @default(USER)
-  isActive   Boolean    @default(true)
+  role   Role
+  status UserStatus @default(ACTIVE)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  username     String? @unique
+  passwordHash String?
 
-  memberships UserSchoolMembership[]
-  otpRequests OtpRequest[]
-  sessions    UserSession[]
+  email  String?
+  mobile String?
 
-  reviewedMemberships UserSchoolMembership[] @relation("ReviewedMemberships")
+  fullName  String?
+  avatarUrl String?
 
-  @@index([isActive])
-  @@index([emailNormalized])
-  @@index([phoneNormalized])
+  forcePasswordChange Boolean   @default(false)
+  lastLoginAt         DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  accessRequestsSubmitted AccessRequest[] @relation("AccessRequest_Submitter")
+  accessRequestsReviewed  AccessRequest[] @relation("AccessRequest_Reviewer")
+  otpCodes                OtpCode[]
+  sessions                AuthSession[]
+  auditLogsAsActor        AuditLog[]      @relation("Audit_Actor")
+  accessRequests          AccessRequest[]
+
+  @@unique([schoolId, email])
+  @@unique([schoolId, mobile])
+  @@index([schoolId])
+  @@index([role, status])
+  @@index([email])
+  @@index([mobile])
 }
 
-// ========== Membership ============= 
-model UserSchoolMembership {
+model AccessRequest {
   id String @id @default(cuid())
 
-  userId   String
   schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
 
-  requestedRole SchoolRole
-  approvedRole  SchoolRole?
+  status        AccessRequestStatus @default(PENDING)
+  requestedRole Role
 
-  status MembershipStatus @default(PENDING)
+  email  String?
+  mobile String?
+
+  fullName String?
+
+  approvedUserId String?
+  approvedUser   User?   @relation(fields: [approvedUserId], references: [id], onDelete: SetNull)
 
   reviewedById String?
+  reviewedBy   User?   @relation("AccessRequest_Reviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
   reviewedAt   DateTime?
-  reviewNote   String?
-  firstName    String?
-  lastName     String?
-  nationalId   String?
-  grade        String?
+  rejectReason String?
+
+  submittedById String?
+  submittedBy   User?   @relation("AccessRequest_Submitter", fields: [submittedById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: userId, references: [id], onDelete: Cascade)
-  school School @relation(fields: schoolId, references: [id], onDelete: Cascade)
-
-  reviewedBy User? @relation("ReviewedMemberships", fields: reviewedById, references: [id], onDelete: SetNull)
-
-  @@unique([userId, schoolId])
+  @@unique([schoolId, email, status])
+  @@unique([schoolId, mobile, status])
   @@index([schoolId, status])
-  @@index([userId])
-  @@index([schoolId, approvedRole])
+  @@index([schoolId, requestedRole])
+  @@index([createdAt])
 }
 
-// ============= OTP Requests ============= 
-model OtpRequest {
+model OtpCode {
   id String @id @default(cuid())
 
-  email    String?
-  phone    String?
-  userId   String?
-  schoolId String?
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
-  purpose OtpPurpose
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   channel OtpChannel
+  purpose OtpPurpose @default(LOGIN)
 
-  emailNormalized String?
-  phoneNormalized String?
+  destination String
+  codeHash    String
+  expiresAt   DateTime
+  consumedAt  DateTime?
 
-  codeHash  String
-  expiresAt DateTime
-  usedAt    DateTime?
-
-  attempts Int @default(0)
+  attempts    Int @default(0)
+  maxAttempts Int @default(5)
 
   resendAfter DateTime?
-  createdAt   DateTime  @default(now())
-
-  ip        String?
-  userAgent String?
-
-  school School? @relation(fields: schoolId, references: [id], onDelete: Cascade)
-  user   User?   @relation(fields: userId, references: [id], onDelete: SetNull)
-
-  @@index([purpose, createdAt])
-  @@index([schoolId, purpose, createdAt])
-  @@index([emailNormalized, purpose])
-  @@index([phoneNormalized, purpose])
-  @@index([schoolId, emailNormalized, purpose])
-  @@index([schoolId, phoneNormalized, purpose])
-}
-
-// ========== Refresh sessions ========== 
-model UserSession {
-  id String @id @default(cuid())
-
-  userId   String
-  schoolId String?
-
-  tokenType TokenType @default(REFRESH)
-  tokenHash String
-
-  revokedAt DateTime?
-  expiresAt DateTime
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  @@index([schoolId, destination])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuthSession {
+  id String @id @default(cuid())
+
+  sid String @unique
+
+  schoolId String?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status SessionStatus @default(ACTIVE)
+
+  refreshTokenHash String
+  parentSid        String?
+  parent           AuthSession?  @relation("SessionRotation", fields: [parentSid], references: [sid], onDelete: SetNull)
+  children         AuthSession[] @relation("SessionRotation")
 
   ip        String?
   userAgent String?
 
-  user   User    @relation(fields: userId, references: [id], onDelete: Cascade)
-  school School? @relation(fields: schoolId, references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime
+  revokedAt DateTime?
 
-  @@index([userId, schoolId])
+  @@index([userId, status])
   @@index([schoolId])
   @@index([expiresAt])
+}
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  action  AuditAction
+  actorId String?
+  actor   User?       @relation("Audit_Actor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  schoolId String?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+
+  entityType String?
+  entityId   String?
+
+  metadata Json?
+
+  ip        String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([schoolId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
 }

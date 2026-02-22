@@ -12,3 +12,10 @@ export type TSocialItem = {
   label: string;
   icon: LucideIcon;
 };
+
+// =========== RTK Error =============
+export type TNormalizedError = {
+  code?: string;
+  message: string;
+  status?: number;
+};

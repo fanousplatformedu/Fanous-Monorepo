@@ -2,319 +2,50 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-input ApproveMembershipInput {
-  finalRole: SchoolRole
-  membershipId: String!
-}
-
-input AssignSchoolAdminInput {
-  firstName: String
-  identifier: String!
-  lastName: String
-  schoolId: String!
-}
-
-type AssignSchoolAdminResult {
-  admin: SchoolAdmin!
-  message: String!
+input AdminLoginInput {
+  password: String!
+  username: String!
 }
 
 type AuthPayload {
-  accessToken: String!
-  expiresIn: Float!
-  me: Me!
-  refreshToken: String!
-}
-
-input CreateSchoolInput {
-  """subdomain"""
-  code: String!
-  isActive: Boolean
-  name: String!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-input GetSchoolInput {
-  code: String
-  id: String
-}
-
-input ListMembershipRequestsInput {
-  approvedRole: SchoolRole
-  from: String
-  q: String
-  requestedRole: SchoolRole
-  skip: Int
-  status: MembershipStatus
-  take: Int
-  to: String
-}
-
-input ListPendingRequestsInput {
-  schoolId: String!
-  skip: Int
-  take: Int
-}
-
-input ListSchoolAdminsInput {
-  schoolId: String!
-  skip: Int
-  status: MembershipStatus
-  take: Int
-}
-
-input ListSchoolsInput {
-  onlyActive: Boolean
-  q: String
-  skip: Int
-  take: Int
-}
-
-enum LoginAs {
-  SCHOOL_ADMIN
-  USER
-}
-
-input LogoutInput {
-  schoolId: String!
+  fullName: String
+  message: String!
+  role: String!
+  schoolId: String
+  userId: String!
 }
 
 type LogoutResult {
   message: String!
 }
 
-input LogoutSuperAdminInput {
-  clientMutationId: String
-}
-
-type Me {
-  email: String
-  globalRole: String!
-  id: String!
-  phone: String
-  schoolId: String
-  schoolRole: String
-}
-
-type Membership {
-  approvedRole: SchoolRole
-  createdAt: DateTime!
-  firstName: String
-  grade: String
-  id: String!
-  lastName: String
-  nationalId: String
-  requestedRole: SchoolRole!
-  reviewedAt: DateTime
-  reviewedById: String
-  schoolId: String!
-  status: String!
-  updatedAt: DateTime!
-  user: User!
-}
-
-type MembershipRequest {
-  approvedRole: SchoolRole
-  createdAt: DateTime!
-  email: String
-  firstName: String
-  grade: String
-  id: String!
-  lastName: String
-  nationalId: String
-  phone: String
-  requestedRole: SchoolRole!
-  reviewNote: String
-  reviewedAt: DateTime
-  reviewedById: String
-  schoolId: String!
-  status: String!
-  userId: String!
-}
-
-type MembershipRequestsPage {
-  items: [MembershipRequest!]!
-  total: Int!
-}
-
-enum MembershipStatus {
-  APPROVED
-  PENDING
-  REJECTED
-  SUSPENDED
-}
-
 type Mutation {
-  approveMembership(input: ApproveMembershipInput!): Membership!
-  assignSchoolAdmin(input: AssignSchoolAdminInput!): AssignSchoolAdminResult!
-  createSchool(input: CreateSchoolInput!): School!
-  logout(input: LogoutInput!): LogoutResult!
-  logoutSuperAdmin(input: LogoutSuperAdminInput!): LogoutResult!
-  refreshSuperAdminToken(input: RefreshSuperAdminInput!): AuthPayload!
-  refreshToken(input: RefreshTokenInput!): AuthPayload!
-  registerRequest(input: RegisterRequestInput!): Membership!
-  rejectMembership(input: RejectMembershipInput!): Membership!
-  removeSchoolAdmin(input: RemoveSchoolAdminInput!): SchoolAdmin!
-  requestLoginOtp(input: RequestLoginOtpInput!): RequestOtpResult!
-  reviewMembership(input: ReviewMembershipInput!): ReviewResult!
-  signInSuperAdmin(input: SignInSuperAdminInput!): AuthPayload!
-  updateSchoolStatus(input: UpdateSchoolStatusInput!): School!
-  verifyLoginOtp(input: VerifyLoginOtpInput!): AuthPayload!
+  adminLogin(input: AdminLoginInput!): AuthPayload!
+  logout: LogoutResult!
+  logoutAll: LogoutResult!
+  refreshAuth: AuthPayload!
+  requestOtp(input: RequestOtpInput!): OtpResponse!
+  verifyOtp(input: VerifyOtpInput!): AuthPayload!
 }
 
-input MyMembershipsInput {
-  schoolId: String!
-}
-
-type PendingRequestsPage {
-  items: [Membership!]!
-  total: Int!
-}
-
-input ProfileInput {
-  firstName: String
-
-  """Just for Student"""
-  grade: String
-  lastName: String
-  nationalId: String
+type OtpResponse {
+  message: String!
+  resendAfterSeconds: Float
 }
 
 type Query {
-  me: User!
-  membershipRequests(input: ListMembershipRequestsInput!): MembershipRequestsPage!
-  myMemberships(input: MyMembershipsInput!): [Membership!]!
-  mySchool: School!
-  pendingRequests(input: ListPendingRequestsInput!): PendingRequestsPage!
-  school(input: GetSchoolInput!): School!
-  schoolAdmins(input: ListSchoolAdminsInput!): SchoolAdminPage!
-  schools(input: ListSchoolsInput): SchoolPage!
+  HealthCheck: String!
 }
 
-input RefreshSuperAdminInput {
-  clientMutationId: String
-}
-
-input RefreshTokenInput {
-  schoolId: String!
-}
-
-input RegisterRequestInput {
-  email: String!
-  phone: String!
-  profile: ProfileInput
-
-  """STUDENT | PARENT | TEACHER | COUNSELOR"""
-  role: SchoolRole!
-  schoolId: String!
-}
-
-input RejectMembershipInput {
-  membershipId: String!
-  reason: String
-}
-
-input RemoveSchoolAdminInput {
-  membershipId: String!
-}
-
-input RequestLoginOtpInput {
-  identifier: String!
-  loginAs: LoginAs!
-  schoolId: String!
-}
-
-type RequestOtpResult {
-  message: String!
-  resendAfter: DateTime
-}
-
-enum ReviewAction {
-  APPROVE
-  REJECT
-}
-
-input ReviewMembershipInput {
-  action: ReviewAction!
-  finalRole: SchoolRole
-  membershipId: String!
-  reason: String
-}
-
-type ReviewResult {
-  membership: MembershipRequest!
-  message: String!
-}
-
-type School {
-  code: String!
-  createdAt: DateTime!
-  id: String!
-  isActive: Boolean!
-  name: String!
-  updatedAt: DateTime!
-}
-
-type SchoolAdmin {
-  approvedRole: SchoolRole
-  createdAt: DateTime!
+input RequestOtpInput {
   email: String
-  firstName: String
-  lastName: String
-  membershipId: String!
-  phone: String
-  requestedRole: SchoolRole!
-  reviewNote: String
-  reviewedAt: DateTime
-  reviewedById: String
-  schoolId: String!
-  status: String!
-  userId: String!
+  mobile: String
+  schoolCode: String
 }
 
-type SchoolAdminPage {
-  items: [SchoolAdmin!]!
-  total: Int!
-}
-
-type SchoolPage {
-  items: [School!]!
-  total: Int!
-}
-
-enum SchoolRole {
-  COUNSELOR
-  PARENT
-  SCHOOL_ADMIN
-  STUDENT
-  TEACHER
-}
-
-input SignInSuperAdminInput {
-  email: String!
-  password: String!
-}
-
-input UpdateSchoolStatusInput {
-  isActive: Boolean!
-  schoolId: String!
-}
-
-type User {
-  email: String
-  globalRole: String!
-  id: String!
-  isActive: Boolean!
-  phone: String
-}
-
-input VerifyLoginOtpInput {
+input VerifyOtpInput {
   code: String!
-  identifier: String!
-  loginAs: LoginAs!
-  schoolId: String!
+  email: String
+  mobile: String
+  schoolCode: String
 }

@@ -1,11 +1,10 @@
-import { apiSlice } from "@lib/rtk/api/apiSlice";
+import { apiSlice } from "@/lib/rtk/api/apiSlice";
 
 import type * as T from "@/lib/gql/generated/graphql";
 import * as G from "@/lib/gql/generated/graphql";
 
 export const membershipsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-    // ============ Register request =============
     registerRequest: build.mutation<
       T.Membership_RegisterRequestMutation["registerRequest"],
       T.Membership_RegisterRequestMutationVariables["input"]
@@ -21,7 +20,6 @@ export const membershipsApi = apiSlice.injectEndpoints({
       invalidatesTags: ["MembershipRequests", "MyMemberships"],
     }),
 
-    // ============= Admin list requests =============
     membershipRequests: build.query<
       T.Membership_ListRequestsQuery["membershipRequests"],
       T.Membership_ListRequestsQueryVariables["input"]
@@ -35,7 +33,6 @@ export const membershipsApi = apiSlice.injectEndpoints({
       providesTags: ["MembershipRequests"],
     }),
 
-    // ============ Admin review ============
     reviewMembership: build.mutation<
       T.Membership_ReviewMutation["reviewMembership"],
       T.Membership_ReviewMutationVariables["input"]
@@ -49,7 +46,6 @@ export const membershipsApi = apiSlice.injectEndpoints({
       invalidatesTags: ["MembershipRequests", "MyMemberships", "Me"],
     }),
 
-    // =========== My memberships ============
     myMemberships: build.query<
       T.Membership_MyMembershipsQuery["myMemberships"],
       T.Membership_MyMembershipsQueryVariables["input"]
@@ -63,6 +59,7 @@ export const membershipsApi = apiSlice.injectEndpoints({
       providesTags: ["MyMemberships"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

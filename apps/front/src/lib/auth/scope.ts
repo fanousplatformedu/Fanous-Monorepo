@@ -1,11 +1,11 @@
-export type AuthScope = "super-admin" | "school";
+import { TAuthScope } from "@/types/modules";
 
 export const getPathname = (): string => {
   if (typeof window === "undefined") return "";
   return window.location.pathname ?? "";
 };
 
-export const detectScopeFromPath = (pathname = getPathname()): AuthScope => {
+export const detectScopeFromPath = (pathname = getPathname()): TAuthScope => {
   if (pathname.startsWith("/super-admin")) return "super-admin";
   return "school";
 };

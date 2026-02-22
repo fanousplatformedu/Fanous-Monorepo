@@ -1,11 +1,10 @@
-import { apiSlice } from "@lib/rtk/api/apiSlice";
+import { apiSlice } from "@/lib/rtk/api/apiSlice";
 
 import type * as T from "@/lib/gql/generated/graphql";
 import * as G from "@/lib/gql/generated/graphql";
 
 export const schoolsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-    // =========== Schools ==========
     createSchool: build.mutation<
       T.School_CreateMutation["createSchool"],
       T.School_CreateMutationVariables["input"]
@@ -48,16 +47,13 @@ export const schoolsApi = apiSlice.injectEndpoints({
     >({
       query: (input) => ({
         document: G.School_UpdateStatusDocument,
-        variables: {
-          input,
-        } satisfies T.School_UpdateStatusMutationVariables,
+        variables: { input } satisfies T.School_UpdateStatusMutationVariables,
       }),
       transformResponse: (data: T.School_UpdateStatusMutation) =>
         data.updateSchoolStatus,
       invalidatesTags: ["Schools"],
     }),
 
-    // ========= School Admins ==========
     assignSchoolAdmin: build.mutation<
       T.School_AssignAdminMutation["assignSchoolAdmin"],
       T.School_AssignAdminMutationVariables["input"]
@@ -96,6 +92,7 @@ export const schoolsApi = apiSlice.injectEndpoints({
       invalidatesTags: ["SchoolAdmins"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

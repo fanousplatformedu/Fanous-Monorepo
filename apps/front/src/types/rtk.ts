@@ -1,32 +1,35 @@
-import { TypedDocumentNode } from "@graphql-typed-document-node/core";
-
-export type TGraphqlRequest<
-  TVars extends Record<string, unknown> = Record<string, unknown>,
-> = {
-  document: unknown;
-  variables?: TVars;
-};
-
-export type TGraphqlBaseQueryError = {
-  data?: unknown;
-  error?: string;
-  status?: number;
-};
+import type { DocumentNode } from "graphql";
 
 export type TGraphQLArgs<
-  Vars extends Record<string, unknown> = Record<string, unknown>,
-> = {
-  document: TypedDocumentNode<unknown, Vars>;
-  variables?: Vars;
+  TVariables extends Record<string, unknown> = Record<string, unknown>,
+> =
+  | {
+      document: DocumentNode;
+      variables?: TVariables;
+    }
+  | {
+      document: DocumentNode;
+      variables: TVariables;
+    };
+
+export type GraphQLErrorExtensions = {
+  code?: string;
+  [key: string]: unknown;
 };
 
-export type TGraphQLErrorShape = {
-  data?: unknown;
-  error?: string;
-  status?: number;
+export type GraphQLErrorItem = {
+  message: string;
+  extensions?: GraphQLErrorExtensions;
+  path?: ReadonlyArray<string | number>;
 };
 
-export type TGraphQLResponse = {
+export type TGraphQLResponse<TData> = {
+  data?: TData;
+  errors?: GraphQLErrorItem[];
+};
+
+export type TGraphQLBaseQueryError = {
+  status: number;
+  error: string;
   data?: unknown;
-  errors?: Array<{ message?: string }>;
 };

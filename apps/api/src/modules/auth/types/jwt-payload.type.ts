@@ -1,8 +1,7 @@
-import { GlobalRole, SchoolRole } from "@prisma/client";
+import { Role } from "@prisma/client";
 
-export type JwtPayload = {
+export type TJwtPayload = {
+  role: Role;
   sub: string;
-  schoolId?: string;
-  globalRole: GlobalRole;
-  schoolRole?: SchoolRole;
+  sid?: string;
 };
