@@ -1,4 +1,4 @@
-import { MeDocument } from "@/lib/gql/generated/graphql";
+import { Auth_MeDocument } from "@/lib/gql/generated/graphql";
 import { apiSlice } from "@/lib/rtk/api/apiSlice";
 
 export const sessionApi = apiSlice.injectEndpoints({
@@ -15,7 +15,7 @@ export const sessionApi = apiSlice.injectEndpoints({
       },
       void
     >({
-      query: () => ({ document: MeDocument }),
+      query: () => ({ document: Auth_MeDocument }),
       providesTags: ["Me"],
     }),
   }),

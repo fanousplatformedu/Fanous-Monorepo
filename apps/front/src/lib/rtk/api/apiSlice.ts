@@ -1,4 +1,4 @@
-import { autoRefreshBaseQuery } from "./autoRefreshBaseQuery";
+import { autoRefreshBaseQuery } from "@lib/rtk/api/autoRefreshBaseQuery";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const apiSlice = createApi({

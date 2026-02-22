@@ -1,6 +1,7 @@
 // ============ Auth ==============
 export type AuthMethod = "email" | "phone";
 export type AuthStep = "method" | "credentials" | "otp";
+export type TAuthScope = "super-admin" | "school";
 
 export type TOtpStepProps = {
   value: string;
