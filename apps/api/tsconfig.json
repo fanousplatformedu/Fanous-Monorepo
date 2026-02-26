@@ -17,6 +17,7 @@
 
       "@app/*": ["src/modules/app/*"],
       "@auth/*": ["src/modules/auth/*"],
+      "@user/*": ["src/modules/user/*"],
       "@notif/*": ["src/modules/notif/*"],
 
       "@config/*": ["src/config/*"],
