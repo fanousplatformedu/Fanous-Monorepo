@@ -25,7 +25,18 @@ type Mutation {
   logoutAll: LogoutResult!
   refreshAuth: AuthPayload!
   requestOtp(input: RequestOtpInput!): OtpResponse!
+  sendTestEmail(input: SendTestEmailInput!): NotificationResult!
+  sendTestSms(input: SendTestSmsInput!): NotificationResult!
   verifyOtp(input: VerifyOtpInput!): AuthPayload!
+}
+
+type NotificationResult {
+  channel: String!
+  destination: String!
+  errorCode: String
+  errorMessage: String
+  message: String!
+  providerMessageId: String
 }
 
 type OtpResponse {
@@ -41,6 +52,19 @@ input RequestOtpInput {
   email: String
   mobile: String
   schoolCode: String
+}
+
+input SendTestEmailInput {
+  html: String!
+  subject: String!
+  text: String
+  to: String!
+}
+
+input SendTestSmsInput {
+  message: String!
+  mobile: String!
+  sender: String
 }
 
 input VerifyOtpInput {

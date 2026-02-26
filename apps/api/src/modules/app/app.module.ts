@@ -8,6 +8,7 @@ import { RolesGuard } from "@auth/guards/roles.guard";
 import { APP_GUARD } from "@nestjs/core";
 import { Module } from "@nestjs/common";
 import { join } from "path";
+import { NotificationModule } from "@modules/notif/notif.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { join } from "path";
     }),
     AuthModule,
     PrismaModule,
+    NotificationModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       inject: [ConfigService],

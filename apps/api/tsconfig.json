@@ -17,12 +17,7 @@
 
       "@app/*": ["src/modules/app/*"],
       "@auth/*": ["src/modules/auth/*"],
-      "@user/*": ["src/modules/user/*"],
-      "@jobs/*": ["src/modules/jobs/*"],
-      "@school/*": ["src/modules/school/*"],
-      "@membership/*": ["src/modules/membership/*"],
-      "@superAdmin/*": ["src/modules/super-admin/*"],
-      "@schoolAdmin/*": ["src/modules/school-admin/*"],
+      "@notif/*": ["src/modules/notif/*"],
 
       "@config/*": ["src/config/*"],
       "@dtos/*": ["src/common/dto/*"],
