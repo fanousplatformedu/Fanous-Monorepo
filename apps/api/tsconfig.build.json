@@ -10,6 +10,7 @@
       "@auth/*": ["src/modules/auth/*"],
       "@user/*": ["src/modules/user/*"],
       "@notif/*": ["src/modules/notif/*"],
+      "@school/*": ["src/modules/school/*"],
 
       "@config/*": ["src/config/*"],
       "@dtos/*": ["src/common/dto/*"],

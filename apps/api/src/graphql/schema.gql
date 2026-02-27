@@ -15,14 +15,52 @@ type AuthPayload {
   userId: String!
 }
 
+input CreateSchoolAdminInput {
+  adminEmail: String!
+  adminFullName: String
+  schoolId: String!
+}
+
+type CreateSchoolAdminResult {
+  admin: SchoolAdmin!
+  message: String!
+  notificationError: String
+  tempPassword: String
+}
+
+input CreateSchoolInput {
+  code: String
+  name: String!
+  settings: JSON
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
 
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+input ListSchoolAdminsInput {
+  schoolId: String
+  skip: Int! = 0
+  status: String
+  take: Int! = 20
+}
+
 input ListSchoolMembersInput {
   query: String
   role: String
+  skip: Int! = 0
+  status: String
+  take: Int! = 20
+}
+
+input ListSchoolsInput {
+  query: String
   skip: Int! = 0
   status: String
   take: Int! = 20
@@ -34,6 +72,8 @@ type LogoutResult {
 
 type Mutation {
   adminLogin(input: AdminLoginInput!): AuthPayload!
+  createSchool(input: CreateSchoolInput!): School!
+  createSchoolAdmin(input: CreateSchoolAdminInput!): CreateSchoolAdminResult!
   logout: LogoutResult!
   logoutAll: LogoutResult!
   refreshAuth: AuthPayload!
@@ -41,7 +81,10 @@ type Mutation {
   requestOtp(input: RequestOtpInput!): OtpResponse!
   sendTestEmail(input: SendTestEmailInput!): NotificationResult!
   sendTestSms(input: SendTestSmsInput!): NotificationResult!
+  setAdminStatus(input: SetAdminStatusInput!): String!
+  setSchoolStatus(input: SetSchoolStatusInput!): School!
   updateMe(input: UpdateMeInput!): User!
+  updateSchool(input: UpdateSchoolInput!): School!
   verifyOtp(input: VerifyOtpInput!): AuthPayload!
 }
 
@@ -62,7 +105,10 @@ type OtpResponse {
 type Query {
   HealthCheck: String!
   me: User!
+  schoolAdmins(input: ListSchoolAdminsInput!): SchoolAdminList!
+  schoolById(schoolId: String!): School!
   schoolMembers(input: ListSchoolMembersInput!): UserList!
+  schools(input: ListSchoolsInput!): SchoolList!
 }
 
 input RemoveSchoolMemberInput {
@@ -74,6 +120,44 @@ input RequestOtpInput {
   email: String
   mobile: String
   schoolCode: String
+}
+
+type School {
+  archivedAt: DateTime
+  code: String
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  settings: JSON
+  status: String!
+  updatedAt: DateTime!
+}
+
+type SchoolAdmin {
+  createdAt: DateTime!
+  email: String
+  forcePasswordChange: Boolean!
+  fullName: String
+  id: String!
+  role: String!
+  schoolId: String!
+  schoolName: String
+  status: String!
+  username: String
+}
+
+type SchoolAdminList {
+  items: [SchoolAdmin!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type SchoolList {
+  items: [School!]!
+  skip: Int!
+  take: Int!
+  total: Int!
 }
 
 input SendTestEmailInput {
@@ -89,11 +173,28 @@ input SendTestSmsInput {
   sender: String
 }
 
+input SetAdminStatusInput {
+  adminUserId: String!
+  status: String!
+}
+
+input SetSchoolStatusInput {
+  schoolId: String!
+  status: String!
+}
+
 input UpdateMeInput {
   avatarUrl: String
   email: String
   fullName: String
   mobile: String
+}
+
+input UpdateSchoolInput {
+  code: String
+  name: String
+  schoolId: String!
+  settings: JSON
 }
 
 type User {

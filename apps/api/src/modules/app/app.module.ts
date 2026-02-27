@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { NotificationModule } from "@notif/notif.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { PrismaModule } from "@prisma/prisma.module";
+import { SchoolModule } from "@school/school.module";
 import { JwtAuthGuard } from "@auth/guards/jwt-auth.guard";
 import { AuthModule } from "@auth/auth.module";
 import { RolesGuard } from "@auth/guards/roles.guard";
@@ -21,6 +22,7 @@ import { join } from "path";
     AuthModule,
     UserModule,
     PrismaModule,
+    SchoolModule,
     NotificationModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
