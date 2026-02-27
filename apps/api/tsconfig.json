@@ -20,6 +20,7 @@
       "@user/*": ["src/modules/user/*"],
       "@notif/*": ["src/modules/notif/*"],
       "@school/*": ["src/modules/school/*"],
+      "@accessRequest/*": ["src/modules/access-request/*"],
 
       "@config/*": ["src/config/*"],
       "@dtos/*": ["src/common/dto/*"],

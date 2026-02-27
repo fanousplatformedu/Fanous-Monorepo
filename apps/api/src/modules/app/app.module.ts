@@ -1,5 +1,6 @@
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { AccessRequestModule } from "@accessRequest/access-request.module";
 import { NotificationModule } from "@notif/notif.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { PrismaModule } from "@prisma/prisma.module";
@@ -24,6 +25,7 @@ import { join } from "path";
     PrismaModule,
     SchoolModule,
     NotificationModule,
+    AccessRequestModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       inject: [ConfigService],

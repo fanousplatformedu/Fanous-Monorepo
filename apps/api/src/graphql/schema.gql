@@ -2,6 +2,29 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AccessRequest {
+  approvedUserId: String
+  createdAt: DateTime!
+  email: String
+  fullName: String
+  id: String!
+  mobile: String
+  rejectReason: String
+  requestedRole: String!
+  reviewedAt: DateTime
+  reviewedById: String
+  schoolId: String!
+  status: String!
+  updatedAt: DateTime!
+}
+
+type AccessRequestList {
+  items: [AccessRequest!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
 input AdminLoginInput {
   password: String!
   username: String!
@@ -44,6 +67,14 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+input ListAccessRequestsInput {
+  query: String
+  schoolId: String
+  skip: Int! = 0
+  status: String
+  take: Int! = 20
+}
+
 input ListSchoolAdminsInput {
   schoolId: String
   skip: Int! = 0
@@ -79,10 +110,12 @@ type Mutation {
   refreshAuth: AuthPayload!
   removeSchoolMember(input: RemoveSchoolMemberInput!): User!
   requestOtp(input: RequestOtpInput!): OtpResponse!
+  reviewAccessRequest(input: ReviewAccessRequestInput!): ReviewResult!
   sendTestEmail(input: SendTestEmailInput!): NotificationResult!
   sendTestSms(input: SendTestSmsInput!): NotificationResult!
   setAdminStatus(input: SetAdminStatusInput!): String!
   setSchoolStatus(input: SetSchoolStatusInput!): School!
+  submitAccessRequest(input: SubmitAccessRequestInput!): AccessRequest!
   updateMe(input: UpdateMeInput!): User!
   updateSchool(input: UpdateSchoolInput!): School!
   verifyOtp(input: VerifyOtpInput!): AuthPayload!
@@ -104,6 +137,8 @@ type OtpResponse {
 
 type Query {
   HealthCheck: String!
+  accessRequestById(id: String!): AccessRequest!
+  accessRequests(input: ListAccessRequestsInput!): AccessRequestList!
   me: User!
   schoolAdmins(input: ListSchoolAdminsInput!): SchoolAdminList!
   schoolById(schoolId: String!): School!
@@ -120,6 +155,21 @@ input RequestOtpInput {
   email: String
   mobile: String
   schoolCode: String
+}
+
+input ReviewAccessRequestInput {
+  approve: Boolean!
+  finalRole: String
+  notifyVia: String = "AUTO"
+  rejectReason: String
+  requestId: String!
+}
+
+type ReviewResult {
+  createdUserId: String
+  message: String!
+  notificationError: String
+  requestId: String!
 }
 
 type School {
@@ -181,6 +231,14 @@ input SetAdminStatusInput {
 input SetSchoolStatusInput {
   schoolId: String!
   status: String!
+}
+
+input SubmitAccessRequestInput {
+  email: String
+  fullName: String
+  mobile: String
+  requestedRole: String!
+  schoolId: String!
 }
 
 input UpdateMeInput {
