@@ -18,6 +18,7 @@
       "@app/*": ["src/modules/app/*"],
       "@auth/*": ["src/modules/auth/*"],
       "@user/*": ["src/modules/user/*"],
+      "@audit/*": ["src/modules/audit/*"],
       "@notif/*": ["src/modules/notif/*"],
       "@school/*": ["src/modules/school/*"],
       "@accessRequest/*": ["src/modules/access-request/*"],

@@ -30,12 +30,45 @@ input AdminLoginInput {
   username: String!
 }
 
+type AuditCreateResult {
+  log: AuditLog!
+  message: String!
+}
+
+type AuditLog {
+  action: String!
+  actorId: String
+  createdAt: DateTime!
+  entityId: String
+  entityType: String
+  id: String!
+  ip: String
+  metadata: JSON
+  schoolId: String
+  userAgent: String
+}
+
+type AuditLogList {
+  items: [AuditLog!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
 type AuthPayload {
   fullName: String
   message: String!
   role: String!
   schoolId: String
   userId: String!
+}
+
+input CreateAuditLogInput {
+  action: String!
+  entityId: String
+  entityType: String
+  metadata: JSON
+  schoolId: String
 }
 
 input CreateSchoolAdminInput {
@@ -75,6 +108,18 @@ input ListAccessRequestsInput {
   take: Int! = 20
 }
 
+input ListAuditLogsInput {
+  action: String
+  actorId: String
+  entityId: String
+  entityType: String
+  from: String
+  schoolId: String
+  skip: Int! = 0
+  take: Int! = 30
+  to: String
+}
+
 input ListSchoolAdminsInput {
   schoolId: String
   skip: Int! = 0
@@ -103,6 +148,7 @@ type LogoutResult {
 
 type Mutation {
   adminLogin(input: AdminLoginInput!): AuthPayload!
+  createAuditLog(input: CreateAuditLogInput!): AuditCreateResult!
   createSchool(input: CreateSchoolInput!): School!
   createSchoolAdmin(input: CreateSchoolAdminInput!): CreateSchoolAdminResult!
   logout: LogoutResult!
@@ -139,6 +185,8 @@ type Query {
   HealthCheck: String!
   accessRequestById(id: String!): AccessRequest!
   accessRequests(input: ListAccessRequestsInput!): AccessRequestList!
+  auditLogById(id: String!): AuditLog!
+  auditLogs(input: ListAuditLogsInput!): AuditLogList!
   me: User!
   schoolAdmins(input: ListSchoolAdminsInput!): SchoolAdminList!
   schoolById(schoolId: String!): School!

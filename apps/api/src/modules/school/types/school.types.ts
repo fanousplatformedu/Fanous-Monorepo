@@ -2,14 +2,19 @@ import { Role, SchoolStatus, UserStatus } from "@prisma/client";
 
 export type TActor = { id: string; role: Role; schoolId: string | null };
 
-export type TCreateSchoolArgs = {
+export type TRequestMeta = {
+  ip?: string | null;
+  userAgent?: string | null;
+};
+
+export type TCreateSchoolArgs = TRequestMeta & {
   actor: TActor;
   name: string;
   code?: string | null;
   settings?: any | null;
 };
 
-export type TUpdateSchoolArgs = {
+export type TUpdateSchoolArgs = TRequestMeta & {
   actor: TActor;
   schoolId: string;
   name?: string | null;
@@ -17,7 +22,7 @@ export type TUpdateSchoolArgs = {
   settings?: any | null;
 };
 
-export type TSetSchoolStatusArgs = {
+export type TSetSchoolStatusArgs = TRequestMeta & {
   actor: TActor;
   schoolId: string;
   status: SchoolStatus;
@@ -31,7 +36,7 @@ export type TListSchoolsArgs = {
   status?: SchoolStatus | null;
 };
 
-export type TCreateSchoolAdminArgs = {
+export type TCreateSchoolAdminArgs = TRequestMeta & {
   actor: TActor;
   schoolId: string;
   adminEmail: string;
@@ -46,7 +51,7 @@ export type TListSchoolAdminsArgs = {
   status?: UserStatus | null;
 };
 
-export type TSetAdminStatusArgs = {
+export type TSetAdminStatusArgs = TRequestMeta & {
   actor: TActor;
   adminUserId: string;
   status: UserStatus;
