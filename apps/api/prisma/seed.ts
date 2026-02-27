@@ -27,25 +27,17 @@ async function main() {
   };
   faker.seed(cfg.seed);
   const ctx: TSeedCtx = { prisma, faker, cfg };
-  console.log("🧹 Cleaning DB...");
   await cleanDb(ctx);
-  console.log("👑 Seeding SuperAdmin...");
   await seedSuperAdmin(ctx);
-  console.log("🏫 Seeding Schools...");
   const schools = await seedSchools(ctx);
-  console.log("🧑‍💼 Seeding School Admins...");
   await seedSchoolAdmins(
     ctx,
     schools.map((s) => ({ id: s.id, name: s.name, code: s.code })),
   );
-
-  console.log("👥 Seeding School Users...");
   const users = await seedSchoolUsers(
     ctx,
     schools.map((s) => ({ id: s.id, name: s.name, code: s.code })),
   );
-
-  console.log("📝 Seeding Access Requests...");
   await seedAccessRequests(
     ctx,
     schools.map((s) => ({ id: s.id, name: s.name })),
@@ -58,15 +50,12 @@ async function main() {
       status: u.status,
     })),
   );
-
-  console.log("🔐 Seeding Sessions...");
   await seedSessions(
     ctx,
     users.map((u) => ({ id: u.id, schoolId: u.schoolId ?? null })),
   );
 
   if (cfg.includeOtps) {
-    console.log("📲 Seeding OTPs...");
     await seedOtps(
       ctx,
       users.map((u) => ({
@@ -79,7 +68,6 @@ async function main() {
   }
 
   if (cfg.includeAudit) {
-    console.log("📜 Seeding Audit Logs...");
     await seedAuditLogs(
       ctx,
       schools.map((s) => ({ id: s.id, name: s.name, code: s.code })),
