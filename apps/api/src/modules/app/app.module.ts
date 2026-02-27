@@ -12,6 +12,7 @@ import { UserModule } from "@user/user.module";
 import { APP_GUARD } from "@nestjs/core";
 import { Module } from "@nestjs/common";
 import { join } from "path";
+import { ForcePasswordChangeGuard } from "@modules/admin-password/guards/force-password-change.guard";
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { join } from "path";
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: ForcePasswordChangeGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })

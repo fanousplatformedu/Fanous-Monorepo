@@ -26,6 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         status: true,
         schoolId: true,
         fullName: true,
+        forcePasswordChange: true,
         school: { select: { status: true } },
       },
     });
@@ -44,13 +45,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         });
       }
     }
-
     return {
       id: user.id,
       role: user.role,
-      sid: payload.sid ?? null,
       schoolId: user.schoolId ?? null,
       fullName: user.fullName ?? null,
+      sid: payload.sid ?? null,
+      forcePasswordChange: user.forcePasswordChange,
     };
   }
 }
