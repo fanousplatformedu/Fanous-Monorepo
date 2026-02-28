@@ -68,7 +68,7 @@ export class AccessRequestResolver {
     );
   }
 
-  // ====== Review: SCHOOL_ADMIN only =======
+  // ======== Review: SCHOOL_ADMIN =========
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SCHOOL_ADMIN)
   @Mutation(() => ReviewResultEntity, {

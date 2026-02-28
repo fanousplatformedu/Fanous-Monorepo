@@ -63,6 +63,11 @@ type AuthPayload {
   userId: String!
 }
 
+input ChangeAdminPasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
 input CreateAuditLogInput {
   action: String!
   entityId: String
@@ -148,6 +153,7 @@ type LogoutResult {
 
 type Mutation {
   adminLogin(input: AdminLoginInput!): AuthPayload!
+  changeAdminPassword(input: ChangeAdminPasswordInput!): PasswordResult!
   createAuditLog(input: CreateAuditLogInput!): AuditCreateResult!
   createSchool(input: CreateSchoolInput!): School!
   createSchoolAdmin(input: CreateSchoolAdminInput!): CreateSchoolAdminResult!
@@ -156,6 +162,7 @@ type Mutation {
   refreshAuth: AuthPayload!
   removeSchoolMember(input: RemoveSchoolMemberInput!): User!
   requestOtp(input: RequestOtpInput!): OtpResponse!
+  resetAdminPassword(input: ResetAdminPasswordInput!): PasswordResult!
   reviewAccessRequest(input: ReviewAccessRequestInput!): ReviewResult!
   sendTestEmail(input: SendTestEmailInput!): NotificationResult!
   sendTestSms(input: SendTestSmsInput!): NotificationResult!
@@ -181,6 +188,13 @@ type OtpResponse {
   resendAfterSeconds: Float
 }
 
+type PasswordResult {
+  adminUserId: String
+  message: String!
+  notificationError: String
+  tempPassword: String
+}
+
 type Query {
   HealthCheck: String!
   accessRequestById(id: String!): AccessRequest!
@@ -203,6 +217,10 @@ input RequestOtpInput {
   email: String
   mobile: String
   schoolCode: String
+}
+
+input ResetAdminPasswordInput {
+  adminUserId: String!
 }
 
 input ReviewAccessRequestInput {

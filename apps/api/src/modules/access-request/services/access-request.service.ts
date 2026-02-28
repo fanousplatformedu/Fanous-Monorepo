@@ -20,12 +20,13 @@ export class AccessRequestService {
 
   // ========= Public submit ============
   async submit(args: T.TSubmitAccessRequestArgs) {
-    const hasEmail = !!args.email;
-    const hasMobile = !!args.mobile;
-    if ((hasEmail && hasMobile) || (!hasEmail && !hasMobile))
+    const hasEmail = !!args.email?.trim();
+    const hasMobile = !!args.mobile?.trim();
+    if (!hasEmail && !hasMobile) {
       throw new BadRequestException({
         code: AccessRequestErrorCode.INVALID_DESTINATION,
       });
+    }
     const school = await this.prismaService.school.findUnique({
       where: { id: args.schoolId },
       select: { id: true, status: true, name: true },

@@ -1,6 +1,8 @@
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ForcePasswordChangeGuard } from "@adminPassword/guards/force-password-change.guard";
 import { AccessRequestModule } from "@accessRequest/access-request.module";
+import { AdminPasswordModule } from "@adminPassword/admin-password.module";
 import { NotificationModule } from "@notif/notif.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { PrismaModule } from "@prisma/prisma.module";
@@ -12,7 +14,6 @@ import { UserModule } from "@user/user.module";
 import { APP_GUARD } from "@nestjs/core";
 import { Module } from "@nestjs/common";
 import { join } from "path";
-import { ForcePasswordChangeGuard } from "@modules/admin-password/guards/force-password-change.guard";
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ForcePasswordChangeGuard } from "@modules/admin-password/guards/force-p
     SchoolModule,
     NotificationModule,
     AccessRequestModule,
+    AdminPasswordModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       inject: [ConfigService],
