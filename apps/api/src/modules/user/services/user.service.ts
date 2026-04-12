@@ -2,13 +2,17 @@ import { TRemoveSchoolMemberArgs, TUpdateMeArgs } from "@user/types/user.types";
 import { NotFoundException, BadRequestException } from "@nestjs/common";
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { TListSchoolMembersArgs } from "@user/types/user.types";
-import { Role, UserStatus } from "@prisma/client";
+import { AuditAction, Role, UserStatus } from "@prisma/client";
 import { PrismaService } from "@prisma/prisma.service";
 import { UserErrorCode } from "@user/enums/user-error-code.enum";
+import { AuditService } from "@audit/services/audit.service";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly auditService: AuditService,
+  ) {}
 
   async me(userId: string) {
     const user = await this.prismaService.user.findUnique({
@@ -82,7 +86,15 @@ export class UserService {
       throw new BadRequestException({ code: UserErrorCode.CANNOT_REMOVE_SELF });
     const target = await this.prismaService.user.findUnique({
       where: { id: args.targetUserId },
-      select: { id: true, schoolId: true, role: true, status: true },
+      select: {
+        id: true,
+        schoolId: true,
+        role: true,
+        status: true,
+        email: true,
+        mobile: true,
+        fullName: true,
+      },
     });
     if (!target)
       throw new NotFoundException({ code: UserErrorCode.USER_NOT_FOUND });
@@ -91,16 +103,57 @@ export class UserService {
     if (target.role === Role.SUPER_ADMIN)
       throw new ForbiddenException({ code: UserErrorCode.FORBIDDEN });
     if (args.hardDelete) {
-      await this.prismaService.user.delete({ where: { id: target.id } });
+      await this.auditService.record({
+        action: AuditAction.USER_DELETE,
+        actorId: args.actor.id,
+        schoolId: args.actor.schoolId,
+        entityType: "User",
+        entityId: target.id,
+        metadata: {
+          targetUserId: target.id,
+          targetRole: target.role,
+          previousStatus: target.status,
+          hardDelete: true,
+          email: target.email,
+          mobile: target.mobile,
+          fullName: target.fullName,
+        },
+      });
+      await this.prismaService.user.delete({
+        where: { id: target.id },
+      });
       return { id: target.id };
     }
-    await this.prismaService.user.update({
-      where: { id: target.id },
-      data: { status: UserStatus.DISABLED, deletedAt: new Date() },
+
+    await this.prismaService.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: target.id },
+        data: {
+          status: UserStatus.DISABLED,
+          deletedAt: new Date(),
+        },
+      });
+      await tx.authSession.updateMany({
+        where: { userId: target.id, status: "ACTIVE" },
+        data: { status: "REVOKED", revokedAt: new Date() },
+      });
     });
-    await this.prismaService.authSession.updateMany({
-      where: { userId: target.id, status: "ACTIVE" },
-      data: { status: "REVOKED", revokedAt: new Date() },
+    await this.auditService.record({
+      action: AuditAction.USER_DISABLE,
+      actorId: args.actor.id,
+      schoolId: args.actor.schoolId,
+      entityType: "User",
+      entityId: target.id,
+      metadata: {
+        targetUserId: target.id,
+        targetRole: target.role,
+        previousStatus: target.status,
+        newStatus: UserStatus.DISABLED,
+        hardDelete: false,
+        email: target.email,
+        mobile: target.mobile,
+        fullName: target.fullName,
+      },
     });
     return { id: target.id };
   }
@@ -118,6 +171,7 @@ export class UserService {
       avatarUrl: true,
       createdAt: true,
       updatedAt: true,
+      forcePasswordChange: true,
     };
   }
 }

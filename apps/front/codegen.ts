@@ -1,19 +1,31 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: "src/lib/gql/schema/schema.json",
-  documents: ["src/lib/gql/documents/**/*.gql"],
+  schema: "./src/lib/gql/schema/schema.json",
+  documents: ["./src/lib/graphql/documents/**/*.graphql"],
   generates: {
-    "src/lib/gql/generated/graphql.ts": {
+    "./src/lib/graphql/generated.ts": {
       plugins: ["typescript", "typescript-operations", "typed-document-node"],
       config: {
-        avoidOptionals: true,
-        maybeValue: "T | null",
+        useTypeImports: true,
         enumsAsTypes: true,
-        dedupeFragments: true,
-        preResolveTypes: true,
+        avoidOptionals: {
+          field: true,
+          inputValue: false,
+          object: true,
+          defaultValue: true,
+        },
+        maybeValue: "T | null",
+        inputMaybeValue: "T | null | undefined",
+        scalars: {
+          DateTime: "string",
+          JSON: "unknown",
+          Json: "unknown",
+        },
       },
     },
   },
+  ignoreNoDocuments: false,
 };
+
 export default config;

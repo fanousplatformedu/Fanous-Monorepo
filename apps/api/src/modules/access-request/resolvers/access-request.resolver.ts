@@ -36,7 +36,7 @@ export class AccessRequestResolver {
     return res.request;
   }
 
-  // ========= List requests: SCHOOL_ADMIN (own school) ===========
+  // ========= List requests: SCHOOL_ADMIN ===========
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SCHOOL_ADMIN, Role.SUPER_ADMIN)
   @Query(() => AccessRequestListEntity, {
@@ -70,7 +70,7 @@ export class AccessRequestResolver {
 
   // ======== Review: SCHOOL_ADMIN =========
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SCHOOL_ADMIN)
+  @Roles(Role.SCHOOL_ADMIN, Role.SUPER_ADMIN)
   @Mutation(() => ReviewResultEntity, {
     name: AccessRequestGqlMutationNames.ReviewAccessRequest,
   })

@@ -7,9 +7,13 @@ export type TSeedConfig = {
   includeOtps: boolean;
   includeAudit: boolean;
   usersPerSchool: number;
-  sessionsPerUser: number;
+  gradesPerSchool: number;
   adminsPerSchool: number;
+  sessionsPerUser: number;
   requestsPerSchool: number;
+  classroomsPerGrade: number;
+  assignmentsPerSchool: number;
+  assignmentParticipationRate: number;
 };
 
 export type TSeedCtx = {

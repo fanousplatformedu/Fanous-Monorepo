@@ -1,0 +1,17 @@
+query HeaderCurrentUser {
+  me {
+    id
+    role
+    email
+    fullName
+    schoolId
+    avatarUrl
+    forcePasswordChange
+  }
+}
+
+mutation HeaderLogout {
+  logout {
+    message
+  }
+}

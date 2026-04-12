@@ -77,6 +77,58 @@ enum AuditAction {
 
   ADMIN_PASSWORD_CHANGED
   ADMIN_PASSWORD_RESET
+
+  MEMBER_CREATED
+  GRADE_CREATE
+  GRADE_UPDATE
+  GRADE_ARCHIVE
+  GRADE_RESTORE
+  CLASSROOM_CREATE
+  CLASSROOM_UPDATE
+  CLASSROOM_ARCHIVE
+  CLASSROOM_RESTORE
+  ENROLLMENT_CREATE
+  ENROLLMENT_CLOSE
+
+  ASSIGNMENT_CREATE
+  ASSIGNMENT_UPDATE
+  ASSIGNMENT_PUBLISH
+  ASSIGNMENT_CLOSE
+  ASSIGNMENT_ASSIGN
+  ASSESSMENT_SUBMIT
+  ASSESSMENT_EVALUATE
+  ASSESSMENT_EXPORT
+}
+
+enum AssignmentStatus {
+  DRAFT
+  CLOSED
+  PUBLISHED
+}
+
+enum AssignmentTargetMode {
+  BY_GRADE
+  ALL_STUDENTS
+  BY_CLASSROOM
+  BY_STUDENT_IDS
+}
+
+enum StudentAssignmentStatus {
+  PENDING
+  SUBMITTED
+  EVALUATED
+  IN_PROGRESS
+}
+
+enum IntelligenceKey {
+  LINGUISTIC
+  LOGICAL_MATH
+  MUSICAL
+  BODILY_KINESTHETIC
+  VISUAL_SPATIAL
+  NATURALISTIC
+  INTERPERSONAL
+  INTRAPERSONAL
 }
 
 model School {
@@ -91,11 +143,16 @@ model School {
   updatedAt  DateTime  @updatedAt
   archivedAt DateTime?
 
-  users          User[]
-  accessRequests AccessRequest[]
-  otpCodes       OtpCode[]
-  sessions       AuthSession[]
-  auditLogs      AuditLog[]
+  users             User[]
+  accessRequests    AccessRequest[]
+  otpCodes          OtpCode[]
+  sessions          AuthSession[]
+  auditLogs         AuditLog[]
+  grades            Grade[]
+  classrooms        Classroom[]
+  enrollments       Enrollment[]
+  schoolAssignments SchoolAssignment[]
+  assessmentResults AssessmentResult[]
 
   @@index([status])
   @@index([createdAt])
@@ -126,12 +183,17 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  accessRequestsSubmitted AccessRequest[] @relation("AccessRequest_Submitter")
-  accessRequestsReviewed  AccessRequest[] @relation("AccessRequest_Reviewer")
+  accessRequestsSubmitted AccessRequest[]     @relation("AccessRequest_Submitter")
+  accessRequestsReviewed  AccessRequest[]     @relation("AccessRequest_Reviewer")
   otpCodes                OtpCode[]
   sessions                AuthSession[]
-  auditLogsAsActor        AuditLog[]      @relation("Audit_Actor")
+  auditLogsAsActor        AuditLog[]          @relation("Audit_Actor")
   accessRequests          AccessRequest[]
+  enrollments             Enrollment[]
+  studentAssignments      StudentAssignment[]
+  assessmentResults       AssessmentResult[]
+  schoolAssignments       SchoolAssignment[]
+  createdAssignments      SchoolAssignment[]  @relation("AssignmentCreatedBy")
 
   @@unique([schoolId, email])
   @@unique([schoolId, mobile])
@@ -260,4 +322,212 @@ model AuditLog {
   @@index([schoolId, createdAt])
   @@index([actorId, createdAt])
   @@index([action, createdAt])
+}
+
+model Grade {
+  id       String @id @default(cuid())
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  name      String
+  code      String?
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  classrooms        Classroom[]
+  schoolAssignments SchoolAssignment[]
+
+  @@unique([schoolId, name])
+  @@unique([schoolId, code])
+  @@index([schoolId, deletedAt])
+  @@index([createdAt])
+}
+
+model Classroom {
+  id       String @id @default(cuid())
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  gradeId String
+  grade   Grade  @relation(fields: [gradeId], references: [id], onDelete: Restrict)
+
+  name      String
+  code      String?
+  year      Int?
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments       Enrollment[]
+  schoolAssignments SchoolAssignment[]
+
+  @@unique([schoolId, gradeId, name])
+  @@unique([schoolId, code])
+  @@index([schoolId, gradeId, deletedAt])
+  @@index([createdAt])
+}
+
+model Enrollment {
+  id       String @id @default(cuid())
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Restrict)
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  startedAt DateTime
+  endedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId, classroomId])
+  @@index([schoolId, studentId])
+  @@index([startedAt, endedAt])
+}
+
+// ============== Assessment ==============
+model AssessmentQuestion {
+  id       String  @id @default(cuid())
+  code     Int     @unique
+  text     String
+  order    Int
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  intelligences AssessmentQuestionIntelligence[]
+  answers       StudentAnswer[]
+
+  @@index([order])
+  @@index([isActive])
+}
+
+model AssessmentQuestionIntelligence {
+  id              String          @id @default(cuid())
+  questionId      String
+  intelligenceKey IntelligenceKey
+
+  question AssessmentQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, intelligenceKey])
+  @@index([intelligenceKey])
+}
+
+model SchoolAssignment {
+  id String @id @default(cuid())
+
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  status      AssignmentStatus     @default(DRAFT)
+  targetMode  AssignmentTargetMode @default(ALL_STUDENTS)
+
+  targetGradeId String?
+  targetGrade   Grade?  @relation(fields: [targetGradeId], references: [id], onDelete: SetNull)
+
+  targetClassroomId String?
+  targetClassroom   Classroom? @relation(fields: [targetClassroomId], references: [id], onDelete: SetNull)
+
+  dueAt       DateTime?
+  publishedAt DateTime?
+
+  createdById String
+  createdBy   User   @relation("AssignmentCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentAssignments StudentAssignment[]
+  user               User?               @relation(fields: [userId], references: [id])
+  userId             String?
+
+  @@index([schoolId, status])
+  @@index([createdById])
+  @@index([dueAt])
+  @@index([publishedAt])
+}
+
+model StudentAssignment {
+  id String @id @default(cuid())
+
+  assignmentId String
+  assignment   SchoolAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  status         StudentAssignmentStatus @default(PENDING)
+  startedAt      DateTime?
+  submittedAt    DateTime?
+  evaluatedAt    DateTime?
+  completionRate Float                   @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  answers StudentAnswer[]
+  result  AssessmentResult?
+
+  @@unique([assignmentId, studentId])
+  @@index([studentId, status])
+  @@index([assignmentId, status])
+}
+
+model StudentAnswer {
+  id String @id @default(cuid())
+
+  studentAssignmentId String
+  studentAssignment   StudentAssignment @relation(fields: [studentAssignmentId], references: [id], onDelete: Cascade)
+
+  questionId String
+  question   AssessmentQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  value Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentAssignmentId, questionId])
+  @@index([questionId])
+}
+
+model AssessmentResult {
+  id String @id @default(cuid())
+
+  studentAssignmentId String            @unique
+  studentAssignment   StudentAssignment @relation(fields: [studentAssignmentId], references: [id], onDelete: Cascade)
+
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  linguistic        Float
+  logicalMath       Float
+  musical           Float
+  bodilyKinesthetic Float
+  visualSpatial     Float
+  naturalistic      Float
+  interpersonal     Float
+  intrapersonal     Float
+
+  dominantKey IntelligenceKey?
+  summaryJson Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId, studentId])
+  @@index([dominantKey])
 }

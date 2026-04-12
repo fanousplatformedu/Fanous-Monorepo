@@ -1,9 +1,9 @@
 "use client";
 
 import { Mail, MapPin, ArrowUpRight } from "lucide-react";
-import { DotBackground } from "@elements/DotBackground";
+import { DotBackground } from "@/components/elements/dot-background";
 import { footerStyles } from "@/utils/style";
-import { SocialLinks } from "@elements/SocialLinks";
+import { SocialLinks } from "@/components/elements/social-links";
 import { TFooterCol } from "@/types/layouts";
 import { SOCIALS } from "@/utils/constant";
 import { useMemo } from "react";

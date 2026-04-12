@@ -1,0 +1,10 @@
+query PublicSchools {
+  publicSchools {
+    total
+    items {
+      id
+      name
+      code
+    }
+  }
+}

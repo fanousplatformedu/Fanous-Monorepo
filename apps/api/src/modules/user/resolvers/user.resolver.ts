@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { AllowForcePasswordChange } from "@superAdmin/decorators/allow-force-password-change.decorator";
 import { RemoveSchoolMemberInput } from "@user/dtos/remove-school-member.input";
 import { ListSchoolMembersInput } from "@user/dtos/list-school-members.input";
 import { UserGqlMutationNames } from "@user/enums/gql-names.enum";
@@ -19,12 +20,14 @@ export class UserResolver {
   constructor(private readonly usersService: UserService) {}
 
   @UseGuards(JwtAuthGuard)
+  @AllowForcePasswordChange()
   @Query(() => UserEntity, { name: UserGqlQueryNames.Me })
   me(@CurrentUser() user: any) {
     return this.usersService.me(user.id);
   }
 
   @UseGuards(JwtAuthGuard)
+  @AllowForcePasswordChange()
   @Mutation(() => UserEntity, { name: UserGqlMutationNames.UpdateMe })
   updateMe(@CurrentUser() user: any, @Args("input") input: UpdateMeInput) {
     return this.usersService.updateMe({
@@ -65,6 +68,7 @@ export class UserResolver {
       targetUserId: input.userId,
       hardDelete: input.hardDelete ?? false,
     });
+
     return this.usersService.me(input.userId).catch(() => ({
       id: input.userId,
       role: Role.STUDENT,

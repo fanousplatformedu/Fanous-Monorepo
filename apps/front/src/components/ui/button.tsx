@@ -22,14 +22,58 @@ const buttonVariants = cva(
           "bg-muted/60 text-foreground hover:bg-muted " +
           "shadow-none border border-border/60 " +
           "backdrop-blur-sm transition-colors",
+
+        // Login, Submit, Save, Create
         brand:
           "rounded-xl text-primary-foreground " +
           "bg-[linear-gradient(135deg,rgba(59,130,246,1),rgba(147,197,253,1))] " +
           "transition-all duration-500 ease-in-out " +
           "shadow-sm hover:shadow-md " +
-          "hover:bg-[linear-gradient(135deg,rgba(147,197,253,1),rgba(59,130,246,1))] " + // Reverse gradient on hover
+          "hover:bg-[linear-gradient(135deg,rgba(147,197,253,1),rgba(59,130,246,1))] " +
           "hover:brightness-[1.02] active:brightness-[0.98] " +
           "focus-visible:ring-2 focus-visible:ring-ring/50",
+
+        // Back, View Details, Secondary action, Filter,
+        brandSoft:
+          "rounded-xl border border-blue-200/70 bg-[linear-gradient(135deg,rgba(59,130,246,0.10),rgba(147,197,253,0.18))] " +
+          "text-blue-700 shadow-none backdrop-blur-sm transition-all duration-300 " +
+          "hover:bg-[linear-gradient(135deg,rgba(59,130,246,0.16),rgba(147,197,253,0.24))] hover:shadow-sm " +
+          "active:scale-[0.99] " +
+          "dark:border-[rgba(243,226,199,0.18)] dark:bg-[linear-gradient(135deg,rgba(243,226,199,0.10),rgba(200,170,130,0.14))] " +
+          "dark:text-[var(--primary)] dark:hover:bg-[linear-gradient(135deg,rgba(243,226,199,0.16),rgba(200,170,130,0.20))] " +
+          "focus-visible:ring-2 focus-visible:ring-ring/40",
+
+        // Cancel, Close, Open Modal, Low-priority
+        brandOutline:
+          "rounded-xl border border-blue-300/70 bg-white/40 text-blue-700 backdrop-blur-xl " +
+          "transition-all duration-300 shadow-none " +
+          "hover:bg-blue-50/80 hover:border-blue-400/80 hover:text-blue-800 hover:shadow-sm " +
+          "active:scale-[0.99] " +
+          "dark:border-[rgba(243,226,199,0.22)] dark:bg-white/5 dark:text-[var(--primary)] " +
+          "dark:hover:bg-white/10 dark:hover:border-[rgba(243,226,199,0.34)] " +
+          "focus-visible:ring-2 focus-visible:ring-ring/40",
+
+        brandChip:
+          "rounded-2xl border border-border/60 bg-card/55 text-foreground " +
+          "backdrop-blur-xl shadow-none transition-all duration-200 " +
+          "hover:bg-card/80 hover:border-border " +
+          "focus-visible:ring-2 focus-visible:ring-ring/40 " +
+          "dark:border-[rgba(243,226,199,0.14)] dark:bg-white/6 dark:text-[var(--foreground)] " +
+          "dark:hover:bg-white/10 dark:hover:border-[rgba(243,226,199,0.24)] " +
+          "data-[state=active]:border-transparent " +
+          "data-[state=active]:bg-[linear-gradient(135deg,rgba(59,130,246,1),rgba(147,197,253,1))] " +
+          "data-[state=active]:text-white " +
+          "data-[state=active]:shadow-[0_10px_24px_rgba(59,130,246,0.18)] " +
+          "dark:data-[state=active]:bg-[linear-gradient(135deg,rgba(243,226,199,1),rgba(200,170,130,0.92))] " +
+          "dark:data-[state=active]:text-[#2a2018]",
+
+        brandDanger:
+          "rounded-2xl border border-rose-300/60 bg-rose-500/8 text-rose-700 " +
+          "backdrop-blur-xl shadow-none transition-all duration-200 " +
+          "hover:bg-rose-500/14 hover:border-rose-400/70 " +
+          "dark:border-rose-400/20 dark:bg-rose-500/10 dark:text-rose-300 " +
+          "dark:hover:bg-rose-500/16 " +
+          "focus-visible:ring-2 focus-visible:ring-rose-500/20",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

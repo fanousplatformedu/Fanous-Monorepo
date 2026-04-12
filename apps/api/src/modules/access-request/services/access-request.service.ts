@@ -1,6 +1,6 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { ForbiddenException, Injectable } from "@nestjs/common";
-import { AccessRequestStatus, Role } from "@prisma/client";
+import { AccessRequestStatus, AuditAction, Role } from "@prisma/client";
 import { SchoolStatus, UserStatus } from "@prisma/client";
 import { AccessRequestErrorCode } from "@accessRequest/enums/access-request-error-code.enum";
 import { AccessRequestMessage } from "@accessRequest/enums/access-request-message.enum";
@@ -8,6 +8,7 @@ import { NotificationTemplate } from "@notif/enums/notif-template.enum";
 import { NotificationService } from "@notif/services/notif.service";
 import { NotificationChannel } from "@notif/enums/notif-channel.enum";
 import { PrismaService } from "@prisma/prisma.service";
+import { AuditService } from "@audit/services/audit.service";
 
 import * as T from "@accessRequest/types/access-request.types";
 
@@ -16,6 +17,7 @@ export class AccessRequestService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly notifService: NotificationService,
+    private readonly auditService: AuditService,
   ) {}
 
   // ========= Public submit ============
@@ -142,11 +144,13 @@ export class AccessRequestService {
     return req;
   }
 
-  // ========= approve/reject (SCHOOL_ADMIN) ==========
+  // ========= approve/reject ==========
   async review(args: T.TReviewAccessRequestArgs) {
-    if (args.actor.role !== Role.SCHOOL_ADMIN)
+    const isSchoolAdmin = args.actor.role === Role.SCHOOL_ADMIN;
+    const isSuperAdmin = args.actor.role === Role.SUPER_ADMIN;
+    if (!isSchoolAdmin && !isSuperAdmin)
       throw new ForbiddenException({ code: AccessRequestErrorCode.FORBIDDEN });
-    if (!args.actor.schoolId)
+    if (isSchoolAdmin && !args.actor.schoolId)
       throw new ForbiddenException({ code: AccessRequestErrorCode.FORBIDDEN });
     const req = await this.prismaService.accessRequest.findUnique({
       where: { id: args.requestId },
@@ -155,11 +159,12 @@ export class AccessRequestService {
         school: { select: { id: true, name: true, status: true } },
       },
     });
+
     if (!req)
       throw new NotFoundException({
         code: AccessRequestErrorCode.REQUEST_NOT_FOUND,
       });
-    if (req.schoolId !== args.actor.schoolId)
+    if (isSchoolAdmin && req.schoolId !== args.actor.schoolId)
       throw new ForbiddenException({
         code: AccessRequestErrorCode.CROSS_TENANT_ACCESS,
       });
@@ -167,6 +172,7 @@ export class AccessRequestService {
       throw new BadRequestException({
         code: AccessRequestErrorCode.ALREADY_REVIEWED,
       });
+
     if (req.school.status !== SchoolStatus.ACTIVE)
       throw new BadRequestException({
         code: AccessRequestErrorCode.SCHOOL_SUSPENDED,
@@ -182,28 +188,24 @@ export class AccessRequestService {
           : destinationEmail
             ? NotificationChannel.EMAIL
             : NotificationChannel.SMS;
-
     const destination =
       channel === NotificationChannel.EMAIL
         ? destinationEmail
         : destinationMobile;
-
     if (!destination)
       throw new BadRequestException({
         code: AccessRequestErrorCode.INVALID_DESTINATION,
       });
-
     if (args.approve) {
       const finalRoleCandidate = (args.finalRole ?? req.requestedRole) as
         | Role
         | string
         | null
         | undefined;
-      if (!T.isSchoolUserRole(finalRoleCandidate)) {
+      if (!T.isSchoolUserRole(finalRoleCandidate))
         throw new BadRequestException({
           code: AccessRequestErrorCode.FORBIDDEN,
         });
-      }
       const finalRole = finalRoleCandidate;
       const existingUser = await this.prismaService.user.findFirst({
         where: {
@@ -215,11 +217,11 @@ export class AccessRequestService {
         },
         select: { id: true },
       });
-
       if (existingUser)
         throw new BadRequestException({
           code: AccessRequestErrorCode.USER_ALREADY_EXISTS,
         });
+
       let createdUserId: string | undefined;
       let notificationError: string | undefined;
       await this.prismaService.$transaction(async (tx) => {
@@ -246,7 +248,23 @@ export class AccessRequestService {
           },
         });
       });
-
+      await this.auditService.record({
+        action: AuditAction.ACCESS_REQUEST_APPROVE,
+        actorId: args.actor.id,
+        schoolId: req.schoolId,
+        entityType: "AccessRequest",
+        entityId: req.id,
+        metadata: {
+          requestId: req.id,
+          requestedRole: req.requestedRole,
+          finalRole,
+          approvedUserId: createdUserId,
+          email: req.email,
+          mobile: req.mobile,
+          fullName: req.fullName,
+          reviewedByRole: args.actor.role,
+        },
+      });
       try {
         const result = await this.notifService.notifyByTemplate({
           template: NotificationTemplate.ACCESS_REQUEST_APPROVED,
@@ -255,16 +273,13 @@ export class AccessRequestService {
           schoolName: req.school.name,
           roleTitle: finalRole,
         });
-
-        if (result.message !== "SENT") {
+        if (result.message !== "SENT")
           notificationError =
             `${result.errorCode ?? "FAILED"}: ${result.errorMessage ?? ""}`.trim();
-        }
       } catch (e: any) {
         notificationError =
           e?.message ?? AccessRequestErrorCode.NOTIFICATION_FAILED;
       }
-
       return {
         message: AccessRequestMessage.APPROVED,
         requestId: req.id,
@@ -284,7 +299,25 @@ export class AccessRequestService {
       },
     });
 
+    await this.auditService.record({
+      action: AuditAction.ACCESS_REQUEST_REJECT,
+      actorId: args.actor.id,
+      schoolId: req.schoolId,
+      entityType: "AccessRequest",
+      entityId: req.id,
+      metadata: {
+        requestId: req.id,
+        requestedRole: req.requestedRole,
+        rejectReason: reason,
+        email: req.email,
+        mobile: req.mobile,
+        fullName: req.fullName,
+        reviewedByRole: args.actor.role,
+      },
+    });
+
     let notificationError: string | undefined;
+
     try {
       const result = await this.notifService.notifyByTemplate({
         template: NotificationTemplate.ACCESS_REQUEST_REJECTED,
@@ -293,10 +326,9 @@ export class AccessRequestService {
         schoolName: req.school.name,
         reason: reason ?? undefined,
       });
-      if (result.message !== "SENT") {
+      if (result.message !== "SENT")
         notificationError =
           `${result.errorCode ?? "FAILED"}: ${result.errorMessage ?? ""}`.trim();
-      }
     } catch (e: any) {
       notificationError =
         e?.message ?? AccessRequestErrorCode.NOTIFICATION_FAILED;

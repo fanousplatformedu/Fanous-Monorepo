@@ -1,10 +1,12 @@
 import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-import { AuditAction, Role, SchoolStatus, UserStatus } from "@prisma/client";
+  AuditAction,
+  Prisma,
+  Role,
+  SchoolStatus,
+  UserStatus,
+} from "@prisma/client";
+import { BadRequestException, ForbiddenException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { NotificationTemplate } from "@notif/enums/notif-template.enum";
 import { NotificationChannel } from "@notif/enums/notif-channel.enum";
 import { NotificationService } from "@notif/services/notif.service";
@@ -410,6 +412,497 @@ export class SchoolService {
     return school;
   }
 
+  async createGrade(
+    actor: { id: string; role: Role; schoolId: string | null },
+    input: { schoolId: string; name: string; code?: string | null },
+  ) {
+    const schoolId = await this.resolveManagedSchoolId(actor, input.schoolId);
+    const existing = await this.prismaService.grade.findFirst({
+      where: {
+        schoolId,
+        OR: [
+          { name: input.name.trim() },
+          input.code ? { code: input.code.trim() } : undefined,
+        ].filter(Boolean) as any,
+      },
+      select: { id: true },
+    });
+    if (existing)
+      throw new BadRequestException("Grade already exists in this school");
+    const grade = await this.prismaService.grade.create({
+      data: {
+        schoolId,
+        name: input.name.trim(),
+        code: input.code?.trim() ?? null,
+      },
+    });
+    await this.auditService.record({
+      action: AuditAction.GRADE_CREATE,
+      actorId: actor.id,
+      schoolId,
+      entityType: "Grade",
+      entityId: grade.id,
+      metadata: {
+        name: grade.name,
+        code: grade.code,
+      },
+    });
+    return grade;
+  }
+
+  async updateGrade(
+    actor: { id: string; role: Role; schoolId: string | null },
+    input: { id: string; name?: string | null; code?: string | null },
+  ) {
+    const grade = await this.prismaService.grade.findUnique({
+      where: { id: input.id },
+    });
+    if (!grade) throw new NotFoundException("Grade not found");
+    await this.resolveManagedSchoolId(actor, grade.schoolId);
+    const updated = await this.prismaService.grade.update({
+      where: { id: grade.id },
+      data: {
+        name: input.name !== undefined ? input.name?.trim() : undefined,
+        code:
+          input.code !== undefined ? (input.code?.trim() ?? null) : undefined,
+      },
+    });
+    await this.auditService.record({
+      action: AuditAction.GRADE_UPDATE,
+      actorId: actor.id,
+      schoolId: grade.schoolId,
+      entityType: "Grade",
+      entityId: grade.id,
+      metadata: {
+        before: {
+          name: grade.name,
+          code: grade.code,
+        },
+        after: {
+          name: updated.name,
+          code: updated.code,
+        },
+      },
+    });
+    return updated;
+  }
+
+  async archiveGrade(
+    actor: { id: string; role: Role; schoolId: string | null },
+    id: string,
+  ) {
+    const grade = await this.prismaService.grade.findUnique({
+      where: { id },
+    });
+    if (!grade) throw new NotFoundException("Grade not found");
+    await this.resolveManagedSchoolId(actor, grade.schoolId);
+    const updated = await this.prismaService.grade.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+    await this.auditService.record({
+      action: AuditAction.GRADE_ARCHIVE,
+      actorId: actor.id,
+      schoolId: grade.schoolId,
+      entityType: "Grade",
+      entityId: grade.id,
+      metadata: {
+        name: grade.name,
+        code: grade.code,
+      },
+    });
+    return updated;
+  }
+
+  async restoreGrade(
+    actor: { id: string; role: Role; schoolId: string | null },
+    id: string,
+  ) {
+    const grade = await this.prismaService.grade.findUnique({
+      where: { id },
+    });
+    if (!grade) throw new NotFoundException("Grade not found");
+    await this.resolveManagedSchoolId(actor, grade.schoolId);
+    const updated = await this.prismaService.grade.update({
+      where: { id },
+      data: { deletedAt: null },
+    });
+    await this.auditService.record({
+      action: AuditAction.GRADE_RESTORE,
+      actorId: actor.id,
+      schoolId: grade.schoolId,
+      entityType: "Grade",
+      entityId: grade.id,
+      metadata: {
+        name: grade.name,
+        code: grade.code,
+      },
+    });
+    return updated;
+  }
+
+  async listGrades(
+    actor: { id: string; role: Role; schoolId: string | null },
+    input: {
+      schoolId: string;
+      take: number;
+      skip: number;
+      query?: string | null;
+      includeDeleted?: boolean | null;
+    },
+  ) {
+    const schoolId = await this.resolveManagedSchoolId(actor, input.schoolId);
+    const where: Prisma.GradeWhereInput = {
+      schoolId,
+      ...(input.includeDeleted ? {} : { deletedAt: null }),
+      ...(input.query?.trim()
+        ? {
+            OR: [
+              { name: { contains: input.query.trim(), mode: "insensitive" } },
+              { code: { contains: input.query.trim(), mode: "insensitive" } },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await this.prismaService.$transaction([
+      this.prismaService.grade.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: input.take,
+        skip: input.skip,
+      }),
+      this.prismaService.grade.count({ where }),
+    ]);
+    return { items, total, take: input.take, skip: input.skip };
+  }
+
+  async createClassroom(
+    actor: { id: string; role: Role; schoolId: string | null },
+    input: {
+      schoolId: string;
+      gradeId: string;
+      name: string;
+      code?: string | null;
+      year?: number | null;
+    },
+  ) {
+    const schoolId = await this.resolveManagedSchoolId(actor, input.schoolId);
+    const grade = await this.prismaService.grade.findFirst({
+      where: {
+        id: input.gradeId,
+        schoolId,
+        deletedAt: null,
+      },
+    });
+    if (!grade) throw new BadRequestException("Invalid grade for this school");
+    const classroom = await this.prismaService.classroom.create({
+      data: {
+        schoolId,
+        gradeId: input.gradeId,
+        name: input.name.trim(),
+        code: input.code?.trim() ?? null,
+        year: input.year ?? null,
+      },
+    });
+    await this.auditService.record({
+      action: AuditAction.CLASSROOM_CREATE,
+      actorId: actor.id,
+      schoolId,
+      entityType: "Classroom",
+      entityId: classroom.id,
+      metadata: {
+        gradeId: classroom.gradeId,
+        name: classroom.name,
+        code: classroom.code,
+        year: classroom.year,
+      },
+    });
+    return classroom;
+  }
+
+  async updateClassroom(
+    actor: { id: string; role: Role; schoolId: string | null },
+    input: {
+      id: string;
+      gradeId?: string | null;
+      name?: string | null;
+      code?: string | null;
+      year?: number | null;
+    },
+  ) {
+    const classroom = await this.prismaService.classroom.findUnique({
+      where: { id: input.id },
+    });
+    if (!classroom) throw new NotFoundException("Classroom not found");
+    await this.resolveManagedSchoolId(actor, classroom.schoolId);
+    if (input.gradeId) {
+      const grade = await this.prismaService.grade.findFirst({
+        where: {
+          id: input.gradeId,
+          schoolId: classroom.schoolId,
+          deletedAt: null,
+        },
+        select: { id: true },
+      });
+      if (!grade)
+        throw new BadRequestException("Invalid grade for this school");
+    }
+
+    const updated = await this.prismaService.classroom.update({
+      where: { id: classroom.id },
+      data: {
+        gradeId: input.gradeId ?? undefined,
+        name: input.name !== undefined ? input.name?.trim() : undefined,
+        code:
+          input.code !== undefined ? (input.code?.trim() ?? null) : undefined,
+        year: input.year !== undefined ? (input.year ?? null) : undefined,
+      },
+    });
+    await this.auditService.record({
+      action: AuditAction.CLASSROOM_UPDATE,
+      actorId: actor.id,
+      schoolId: classroom.schoolId,
+      entityType: "Classroom",
+      entityId: classroom.id,
+      metadata: {
+        before: {
+          gradeId: classroom.gradeId,
+          name: classroom.name,
+          code: classroom.code,
+          year: classroom.year,
+        },
+        after: {
+          gradeId: updated.gradeId,
+          name: updated.name,
+          code: updated.code,
+          year: updated.year,
+        },
+      },
+    });
+    return updated;
+  }
+
+  async archiveClassroom(
+    actor: { id: string; role: Role; schoolId: string | null },
+    id: string,
+  ) {
+    const classroom = await this.prismaService.classroom.findUnique({
+      where: { id },
+    });
+    if (!classroom) throw new NotFoundException("Classroom not found");
+    await this.resolveManagedSchoolId(actor, classroom.schoolId);
+    const updated = await this.prismaService.classroom.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+    await this.auditService.record({
+      action: AuditAction.CLASSROOM_ARCHIVE,
+      actorId: actor.id,
+      schoolId: classroom.schoolId,
+      entityType: "Classroom",
+      entityId: classroom.id,
+      metadata: {
+        name: classroom.name,
+        code: classroom.code,
+        year: classroom.year,
+      },
+    });
+    return updated;
+  }
+
+  async restoreClassroom(
+    actor: { id: string; role: Role; schoolId: string | null },
+    id: string,
+  ) {
+    const classroom = await this.prismaService.classroom.findUnique({
+      where: { id },
+    });
+    if (!classroom) throw new NotFoundException("Classroom not found");
+    await this.resolveManagedSchoolId(actor, classroom.schoolId);
+    const updated = await this.prismaService.classroom.update({
+      where: { id },
+      data: { deletedAt: null },
+    });
+    await this.auditService.record({
+      action: AuditAction.CLASSROOM_RESTORE,
+      actorId: actor.id,
+      schoolId: classroom.schoolId,
+      entityType: "Classroom",
+      entityId: classroom.id,
+      metadata: {
+        name: classroom.name,
+        code: classroom.code,
+        year: classroom.year,
+      },
+    });
+    return updated;
+  }
+
+  async listClassrooms(
+    actor: { id: string; role: Role; schoolId: string | null },
+    input: {
+      schoolId: string;
+      gradeId?: string | null;
+      take: number;
+      skip: number;
+      query?: string | null;
+      includeDeleted?: boolean | null;
+    },
+  ) {
+    const schoolId = await this.resolveManagedSchoolId(actor, input.schoolId);
+    const where: Prisma.ClassroomWhereInput = {
+      schoolId,
+      ...(input.gradeId ? { gradeId: input.gradeId } : {}),
+      ...(input.includeDeleted ? {} : { deletedAt: null }),
+      ...(input.query?.trim()
+        ? {
+            OR: [
+              { name: { contains: input.query.trim(), mode: "insensitive" } },
+              { code: { contains: input.query.trim(), mode: "insensitive" } },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await this.prismaService.$transaction([
+      this.prismaService.classroom.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: input.take,
+        skip: input.skip,
+      }),
+      this.prismaService.classroom.count({ where }),
+    ]);
+    return { items, total, take: input.take, skip: input.skip };
+  }
+
+  async enrollStudent(
+    actor: { id: string; role: Role; schoolId: string | null },
+    input: {
+      schoolId: string;
+      classroomId: string;
+      studentId: string;
+      startedAt?: string | null;
+    },
+  ) {
+    const schoolId = await this.resolveManagedSchoolId(actor, input.schoolId);
+    const [classroom, student] = await this.prismaService.$transaction([
+      this.prismaService.classroom.findFirst({
+        where: {
+          id: input.classroomId,
+          schoolId,
+          deletedAt: null,
+        },
+        select: { id: true },
+      }),
+      this.prismaService.user.findFirst({
+        where: {
+          id: input.studentId,
+          schoolId,
+          role: Role.STUDENT,
+          status: UserStatus.ACTIVE,
+        },
+        select: { id: true },
+      }),
+    ]);
+    if (!classroom)
+      throw new BadRequestException("Invalid classroom for this school");
+    if (!student)
+      throw new BadRequestException("Student not found in this school");
+    const enrollment = await this.prismaService.enrollment.create({
+      data: {
+        schoolId,
+        classroomId: input.classroomId,
+        studentId: input.studentId,
+        startedAt: input.startedAt ? new Date(input.startedAt) : new Date(),
+      },
+    });
+    await this.auditService.record({
+      action: AuditAction.ENROLLMENT_CREATE,
+      actorId: actor.id,
+      schoolId,
+      entityType: "Enrollment",
+      entityId: enrollment.id,
+      metadata: {
+        classroomId: enrollment.classroomId,
+        studentId: enrollment.studentId,
+        startedAt: enrollment.startedAt,
+      },
+    });
+    return enrollment;
+  }
+
+  async closeEnrollment(
+    actor: { id: string; role: Role; schoolId: string | null },
+    input: { id: string; endedAt?: string | null },
+  ) {
+    const enrollment = await this.prismaService.enrollment.findUnique({
+      where: { id: input.id },
+    });
+    if (!enrollment) throw new NotFoundException("Enrollment not found");
+    await this.resolveManagedSchoolId(actor, enrollment.schoolId);
+    const endedAt = input.endedAt ? new Date(input.endedAt) : new Date();
+    if (endedAt < enrollment.startedAt)
+      throw new BadRequestException("endedAt must be after startedAt");
+    const updated = await this.prismaService.enrollment.update({
+      where: { id: enrollment.id },
+      data: { endedAt },
+    });
+    await this.auditService.record({
+      action: AuditAction.ENROLLMENT_CLOSE,
+      actorId: actor.id,
+      schoolId: enrollment.schoolId,
+      entityType: "Enrollment",
+      entityId: enrollment.id,
+      metadata: {
+        studentId: enrollment.studentId,
+        classroomId: enrollment.classroomId,
+        startedAt: enrollment.startedAt,
+        endedAt,
+      },
+    });
+    return updated;
+  }
+
+  async enrollmentsByClassroom(
+    actor: { id: string; role: Role; schoolId: string | null },
+    schoolId: string,
+    classroomId: string,
+  ) {
+    const scopedSchoolId = await this.resolveManagedSchoolId(actor, schoolId);
+    const classroom = await this.prismaService.classroom.findFirst({
+      where: { id: classroomId, schoolId: scopedSchoolId },
+      select: { id: true },
+    });
+    if (!classroom) throw new NotFoundException("Classroom not found");
+    return this.prismaService.enrollment.findMany({
+      where: {
+        schoolId: scopedSchoolId,
+        classroomId,
+      },
+      orderBy: { startedAt: "desc" },
+    });
+  }
+
+  // =========== Public User ============
+  async listPublicSchools() {
+    const where = {
+      status: SchoolStatus.ACTIVE,
+    };
+    const [items, total] = await this.prismaService.$transaction([
+      this.prismaService.school.findMany({
+        where,
+        select: {
+          id: true,
+          name: true,
+          code: true,
+        },
+        orderBy: { name: "asc" },
+      }),
+      this.prismaService.school.count({ where }),
+    ]);
+    return { items, total };
+  }
+
   // ========== helpers ==========
   private assertSuperAdmin(actor: { role: Role }) {
     if (actor.role !== Role.SUPER_ADMIN)
@@ -456,5 +949,18 @@ export class SchoolService {
       if (!exists) return username;
     }
     return `${base}-${randomBytes(6).toString("hex")}`;
+  }
+
+  private async resolveManagedSchoolId(
+    actor: { id: string; role: Role; schoolId: string | null },
+    requestedSchoolId: string,
+  ) {
+    if (actor.role === Role.SUPER_ADMIN) return requestedSchoolId;
+    if (actor.role === Role.SCHOOL_ADMIN) {
+      if (!actor.schoolId || actor.schoolId !== requestedSchoolId)
+        throw new ForbiddenException({ code: SchoolErrorCode.FORBIDDEN });
+      return actor.schoolId;
+    }
+    throw new ForbiddenException({ code: SchoolErrorCode.FORBIDDEN });
   }
 }

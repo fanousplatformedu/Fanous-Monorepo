@@ -11,9 +11,29 @@
     "contact": "تماس با ما"
   },
   "cta": {
-    "getStarted": "شروع کنید",
-    "join": "عضویت",
-    "send": "ارسال"
+    "getStarted": "شروع کنید"
+  },
+  "getStarted": {
+    "title": "نحوه ورود خود را انتخاب کنید",
+    "description": "برای ورود امن و درست به سامانه، ابتدا نقش خود را انتخاب کنید.",
+    "roles": {
+      "superAdmin": {
+        "title": "سوپر ادمین",
+        "description": "مدیریت مدارس، ادمین‌های مدارس، لاگ‌های کلی سیستم و حاکمیت پلتفرم.",
+        "action": "ورود به بخش سوپر ادمین"
+      },
+      "schoolAdmin": {
+        "title": "ادمین مدرسه",
+        "description": "بررسی درخواست‌های دسترسی، مدیریت اعضای مدرسه و عملیات داخلی مدرسه.",
+        "action": "ورود به بخش ادمین مدرسه"
+      },
+      "schoolUser": {
+        "title": "کاربر مدرسه",
+        "description": "درخواست دسترسی ثبت کنید یا اگر قبلاً تأیید شده‌اید با کد یکبار مصرف وارد شوید.",
+        "action": "ثبت درخواست دسترسی",
+        "secondaryAction": "قبلاً تأیید شده‌اید؟ ورود با OTP"
+      }
+    }
   },
   "footer": {
     "desc": "پلتفرمی برای جستجو، مسیرسازی و مدیریت یادگیری حرفه‌ای با تجربه کاربری سریع، تمیز و مدرن.",
@@ -39,6 +59,7 @@
   },
   "home": {
     "hero": {
+      "name": "فانوس",
       "title": "راهنمای دانش‌آموزان به آینده‌ای روشن‌تر",
       "desc": "یک پلتفرم جامع راهنمایی شغلی که به مدارس، مشاوران و دانش‌آموزان کمک می‌کند با ارزیابی‌های داده‌محور و پیشنهادهای شخصی‌سازی‌شده، تصمیم‌های آگاهانه‌تری بگیرند.",
       "primaryCta": "شروع کنید",
@@ -149,31 +170,450 @@
       "secondary": "مشاهده دمو"
     }
   },
+  "common": {
+    "all": "همه",
+    "yes": "بله",
+    "no": "خیر",
+    "apply": "اعمال",
+    "reset": "بازنشانی",
+    "edit": "ویرایش",
+    "previous": "قبلی",
+    "next": "بعدی",
+    "loading": "در حال بارگذاری...",
+    "save": "ذخیره",
+    "cancel": "انصراف",
+    "errors": {
+      "generic": "مشکلی رخ داد. لطفاً دوباره تلاش کنید."
+    }
+  },
   "auth": {
-    "continue": "ادامه",
-    "emailLabel": "ایمیل",
-    "resendIn": "ارسال مجدد تا",
-    "phoneLabel": "شماره موبایل",
-    "verifyEmail": "تأیید ایمیل",
-    "codeSent": "کد ارسال شد به",
-    "resendCode": "ارسال مجدد کد",
-    "mobileLabel": "شماره موبایل",
-    "welcome": "به فانس خوش آمدید",
-    "backToCredentials": "بازگشت",
-    "codeSentTo": "کد ارسال شد به",
-    "emailMethod": "ادامه با ایمیل",
-    "backToEmail": "بازگشت به ایمیل",
-    "chooseMethod": "انتخاب روش ورود",
-    "verifyContinue": "تأیید و ادامه",
-    "verifyPhone": "تأیید شماره موبایل",
-    "emailRequired": "ایمیل الزامی است",
-    "verifyMobile": "تأیید شماره موبایل",
-    "phoneMethod": "ادامه با شماره موبایل",
-    "emailInvalid": "ایمیل معتبر وارد کنید",
-    "backToMobile": "بازگشت به شماره موبایل",
-    "enterMobile": "شماره موبایل را وارد کنید",
-    "backToMethod": "بازگشت به انتخاب روش ورود",
-    "mobileRequired": "شماره موبایل الزامی است",
-    "mobileInvalid": "شماره موبایل معتبر وارد کنید"
+    "logoutSuccess": "با موفقیت خارج شدید.",
+    "forcePassword": {
+      "toast": "باید قبل از ادامه، رمز عبور خود را تغییر دهید.",
+      "title": "تغییر رمز عبور الزامی است",
+      "description": "برای حفظ امنیت حساب، باید قبل از دسترسی به سایر بخش‌های داشبورد، رمز عبور موقت خود را تغییر دهید.",
+      "note": "تا زمانی که رمز عبور با موفقیت تغییر نکند، فقط به صفحه تنظیمات دسترسی خواهید داشت.",
+      "goToSettings": "رفتن به تنظیمات"
+    },
+    "login": "ورود",
+    "logout": "خروج از حساب",
+    "backToRoles": "بازگشت به انتخاب نقش",
+    "forgotPassword": "رمز عبور را فراموش کرده‌اید؟",
+    "superAdmin": {
+      "badge": "سوپر ادمین",
+      "title": "ورود سوپر ادمین",
+      "description": "برای دسترسی به پنل مدیریت کل، اطلاعات خود را وارد کنید.",
+      "footer": "دسترسی فقط برای مدیران ارشد سیستم مجاز است."
+    },
+    "schoolAdmin": {
+      "badge": "ادمین مدرسه",
+      "title": "ورود ادمین مدرسه",
+      "description": "برای بررسی درخواست‌ها و مدیریت مدرسه وارد شوید."
+    },
+    "accessRequest": {
+      "badge": "دسترسی به مدرسه",
+      "title": "درخواست دسترسی به مدرسه",
+      "description": "اطلاعات خود را برای درخواست دسترسی به فضای مدرسه ثبت کنید.",
+      "submit": "ارسال درخواست",
+      "success": "درخواست دسترسی شما با موفقیت ثبت شد."
+    },
+    "otp": {
+      "badge": "دریافت کد",
+      "requestTitle": "دریافت کد یکبار مصرف",
+      "requestDescription": "ایمیل یا موبایل تأیید شده خود را وارد کنید تا کد برای شما ارسال شود.",
+      "verifyTitle": "تأیید کد",
+      "verifyDescription": "کد را وارد کنید تا به داشبورد خود هدایت شوید.",
+      "sendCode": "ارسال کد",
+      "verify": "تأیید و ادامه",
+      "sent": "کد با موفقیت ارسال شد."
+    }
+  },
+  "form": {
+    "username": "نام کاربری",
+    "usernamePlaceholder": "نام کاربری را وارد کنید",
+    "password": "رمز عبور",
+    "fullName": "نام و نام خانوادگی",
+    "fullNamePlaceholder": "نام و نام خانوادگی را وارد کنید",
+    "mobile": "موبایل",
+    "mobilePlaceholder": "شماره موبایل را وارد کنید",
+    "email": "ایمیل",
+    "emailPlaceholder": "ایمیل را وارد کنید",
+    "role": "نقش درخواستی",
+    "rolePlaceholder": "نقش را انتخاب کنید",
+    "school": "انتخاب مدرسه",
+    "emailOrMobile": "ایمیل یا موبایل",
+    "emailOrMobilePlaceholder": "ایمیل یا موبایل را وارد کنید",
+    "otp": "کد یکبار مصرف"
+  },
+  "roles": {
+    "student": "دانش‌آموز",
+    "parent": "والدین",
+    "teacher": "معلم",
+    "counselor": "مشاور"
+  },
+  "dashboard": {
+    "superAdmin": {
+      "nav": {
+        "overview": "نمای کلی",
+        "schools": "مدارس",
+        "schoolAdmins": "ادمین‌های مدارس",
+        "accessRequests": "درخواست‌های دسترسی",
+        "auditLogs": "لاگ‌های سیستمی",
+        "settings": "تنظیمات"
+      },
+      "header": {
+        "title": "داشبورد سوپر ادمین",
+        "description": "مدیریت مدارس، ادمین‌های مدارس، درخواست‌ها و لاگ‌های سیستمی."
+      },
+      "sidebar": {
+        "title": "سوپر ادمین",
+        "subtitle": "پنل کنترل سراسری سیستم"
+      },
+      "kpi": {
+        "totalSchools": "تعداد کل مدارس",
+        "schoolAdmins": "ادمین‌های مدارس",
+        "pendingRequests": "درخواست‌های در انتظار",
+        "auditLogs": "لاگ‌های ثبت‌شده",
+        "activeSchools": "مدارس فعال",
+        "suspendedSchools": "مدارس معلق",
+        "activeAdmins": "ادمین‌های فعال",
+        "disabledAdmins": "ادمین‌های غیرفعال"
+      },
+      "sections": {
+        "schoolStatus": {
+          "title": "توزیع وضعیت مدارس",
+          "description": "وضعیت فعلی مدارس سیستم بر اساس استاتوس."
+        },
+        "accessRequests": {
+          "title": "درخواست‌های دسترسی",
+          "description": "وضعیت فعلی بررسی درخواست‌ها در تمام مدارس."
+        }
+      },
+      "trends": {
+        "approvedRequests": "درخواست‌های تاییدشده",
+        "approvedRequestsHint": "با موفقیت پردازش شده‌اند",
+        "rejectedRequests": "درخواست‌های ردشده",
+        "rejectedRequestsHint": "ردشده در سطح همه مدارس",
+        "archivedSchools": "مدارس آرشیوشده",
+        "archivedSchoolsHint": "مدارس غیرفعال و آرشیوشده"
+      },
+      "requests": {
+        "pending": "در انتظار",
+        "approved": "تاییدشده",
+        "rejected": "ردشده"
+      },
+      "charts": {
+        "empty": "داده‌ای برای نمایش وجود ندارد"
+      },
+      "status": {
+        "active": "فعال",
+        "suspended": "معلق",
+        "archived": "آرشیوشده"
+      },
+      "schools": {
+        "filters": {
+          "search": "جستجوی مدرسه",
+          "status": "وضعیت"
+        },
+        "filtersCard": {
+          "title": "فیلتر مدارس",
+          "description": "جستجو و فیلتر مدارس سیستم."
+        },
+        "table": {
+          "title": "مدارس",
+          "description": "ایجاد، ویرایش و مدیریت همه مدارس."
+        },
+        "columns": {
+          "name": "نام",
+          "code": "کد",
+          "status": "وضعیت",
+          "created": "تاریخ ایجاد",
+          "actions": "اقدامات"
+        },
+        "actions": {
+          "createSchool": "ایجاد مدرسه",
+          "activate": "فعال‌سازی",
+          "suspend": "تعلیق",
+          "archive": "آرشیو"
+        },
+        "empty": {
+          "title": "هیچ مدرسه‌ای پیدا نشد",
+          "description": "هیچ مدرسه‌ای با فیلترهای فعلی پیدا نشد."
+        },
+        "pagination": {
+          "summary": "نمایش {{from}} تا {{to}} از {{total}} مورد",
+          "page": "صفحه {{page}} از {{totalPages}}"
+        },
+        "toasts": {
+          "statusUpdated": "وضعیت مدرسه با موفقیت به‌روزرسانی شد",
+          "statusUpdateFailed": "به‌روزرسانی وضعیت مدرسه انجام نشد"
+        }
+      },
+      "schoolsPage": {
+        "header": {
+          "title": "مدارس",
+          "description": "ایجاد، بررسی و مدیریت مدارس سیستم."
+        }
+      },
+      "schoolAdminsPage": {
+        "header": {
+          "title": "ادمین‌های مدارس",
+          "description": "مدیریت حساب‌های ادمین مدارس در سطح همه مدارس."
+        }
+      },
+      "schoolAdmins": {
+        "filters": {
+          "school": "مدرسه",
+          "status": "وضعیت"
+        },
+        "filtersCard": {
+          "title": "فیلتر ادمین‌های مدارس",
+          "description": "ادمین‌ها را بر اساس مدرسه و وضعیت فیلتر کنید."
+        },
+        "table": {
+          "title": "ادمین‌های مدارس",
+          "description": "مدیریت حساب‌های ادمین در سطح همه مدارس."
+        },
+        "columns": {
+          "email": "ایمیل",
+          "username": "نام کاربری",
+          "school": "مدرسه",
+          "status": "وضعیت",
+          "forcePasswordChange": "تغییر رمز اجباری",
+          "created": "تاریخ ایجاد",
+          "actions": "اقدامات"
+        },
+        "actions": {
+          "createAdmin": "ایجاد ادمین",
+          "activate": "فعال‌سازی",
+          "disable": "غیرفعال‌سازی",
+          "delete": "حذف"
+        },
+        "empty": {
+          "title": "ادمینی پیدا نشد",
+          "description": "هیچ ادمین مدرسه‌ای با فیلترهای فعلی پیدا نشد."
+        },
+        "status": {
+          "active": "فعال",
+          "disabled": "غیرفعال",
+          "deleted": "حذف‌شده"
+        },
+        "toasts": {
+          "statusUpdated": "وضعیت ادمین با موفقیت به‌روزرسانی شد",
+          "statusUpdateFailed": "به‌روزرسانی وضعیت ادمین انجام نشد"
+        }
+      },
+      "accessRequestsPage": {
+        "header": {
+          "title": "درخواست‌های دسترسی",
+          "description": "جریان درخواست‌ها را در تمام مدارس بررسی و مدیریت کنید."
+        }
+      },
+      "accessRequests": {
+        "kpis": {
+          "total": "مجموع درخواست‌ها",
+          "pending": "در انتظار",
+          "approved": "تاییدشده",
+          "rejected": "ردشده"
+        },
+        "chart": {
+          "title": "توزیع وضعیت درخواست‌ها",
+          "description": "نمای زنده از جریان بررسی درخواست‌ها."
+        },
+        "table": {
+          "title": "درخواست‌های دسترسی",
+          "description": "همه درخواست‌ها را بررسی، تایید، رد و پایش کنید."
+        },
+        "columns": {
+          "fullName": "نام کامل",
+          "role": "نقش",
+          "status": "وضعیت",
+          "email": "ایمیل",
+          "mobile": "موبایل",
+          "created": "تاریخ ایجاد",
+          "actions": "اقدامات"
+        },
+        "actions": {
+          "view": "مشاهده",
+          "approve": "تایید",
+          "reject": "رد",
+          "defaultRejectReason": "رد شده توسط سوپر ادمین"
+        },
+        "empty": {
+          "title": "درخواستی پیدا نشد",
+          "description": "درخواست‌های مدارس در این بخش نمایش داده می‌شوند."
+        },
+        "drawer": {
+          "title": "جزئیات درخواست",
+          "description": "نمای کامل اطلاعات درخواست انتخاب‌شده",
+          "fullName": "نام کامل",
+          "requestedRole": "نقش درخواستی",
+          "status": "وضعیت",
+          "createdAt": "تاریخ ایجاد",
+          "email": "ایمیل",
+          "mobile": "موبایل",
+          "reviewedBy": "بررسی‌شده توسط",
+          "reviewedAt": "تاریخ بررسی",
+          "rejectReason": "دلیل رد"
+        },
+        "toasts": {
+          "approveSuccess": "درخواست با موفقیت تایید شد",
+          "approveFailed": "تایید درخواست انجام نشد",
+          "rejectSuccess": "درخواست با موفقیت رد شد",
+          "rejectFailed": "رد درخواست انجام نشد"
+        }
+      },
+      "auditLogsPage": {
+        "header": {
+          "title": "لاگ‌های سیستمی",
+          "description": "اقدامات مهم و تاریخچه فعالیت‌های پلتفرم را بررسی کنید."
+        }
+      },
+      "auditLogs": {
+        "kpis": {
+          "createActions": "اکشن‌های ایجاد",
+          "updateActions": "اکشن‌های به‌روزرسانی",
+          "adminActions": "اکشن‌های ادمین"
+        },
+        "filtersCard": {
+          "title": "فیلتر لاگ‌ها",
+          "description": "لاگ‌ها را بر اساس مدرسه، بازیگر، اکشن یا موجودیت فیلتر کنید."
+        },
+        "filters": {
+          "schoolId": "شناسه مدرسه",
+          "actorId": "شناسه بازیگر",
+          "action": "اکشن",
+          "entityType": "نوع موجودیت"
+        },
+        "table": {
+          "title": "لاگ‌های سیستمی",
+          "description": "اقدامات مهم پلتفرم را بررسی کنید و در صورت نیاز لاگ دستی ثبت کنید."
+        },
+        "columns": {
+          "action": "اکشن",
+          "actor": "بازیگر",
+          "school": "مدرسه",
+          "entity": "موجودیت",
+          "created": "تاریخ ایجاد"
+        },
+        "actions": {
+          "create": "ایجاد لاگ"
+        },
+        "empty": {
+          "title": "هیچ لاگی پیدا نشد",
+          "description": "هیچ لاگی با فیلترهای فعلی پیدا نشد."
+        },
+        "dialog": {
+          "title": "ایجاد لاگ سیستمی",
+          "description": "یک ورودی لاگ دستی به سیستم اضافه کنید.",
+          "submit": "ایجاد",
+          "fields": {
+            "action": "اکشن",
+            "schoolId": "شناسه مدرسه",
+            "entityType": "نوع موجودیت",
+            "entityId": "شناسه موجودیت",
+            "metadata": "متادیتا JSON مثل {\"key\":\"value\"}"
+          }
+        },
+        "toasts": {
+          "createSuccess": "لاگ با موفقیت ایجاد شد",
+          "createFailed": "ایجاد لاگ انجام نشد"
+        }
+      },
+      "settingsPage": {
+        "header": {
+          "title": "تنظیمات",
+          "description": "پروفایل فعلی و تنظیمات حساب کاربری شما."
+        }
+      },
+      "settings": {
+        "profileCard": {
+          "title": "پروفایل",
+          "description": "اطلاعات حساب سوپر ادمین خود را مشاهده و ویرایش کنید."
+        },
+        "passwordCard": {
+          "title": "تغییر رمز عبور",
+          "description": "رمز عبور فعلی حساب سوپر ادمین خود را به‌روزرسانی کنید."
+        },
+        "profileInfo": {
+          "role": "نقش",
+          "userId": "شناسه کاربر"
+        },
+        "fields": {
+          "fullName": "نام و نام خانوادگی",
+          "email": "ایمیل",
+          "currentPassword": "رمز عبور فعلی",
+          "newPassword": "رمز عبور جدید"
+        },
+        "actions": {
+          "saveProfile": "ذخیره پروفایل",
+          "updatePassword": "به‌روزرسانی رمز عبور"
+        },
+        "toasts": {
+          "profileUpdateFailed": "به‌روزرسانی پروفایل انجام نشد",
+          "passwordUpdateFailed": "به‌روزرسانی رمز عبور انجام نشد"
+        }
+      }
+    },
+    "schoolAdmin": {
+      "settings": {
+        "account": {
+          "title": "حساب من",
+          "description": "اطلاعات فعلی حساب ادمین مدرسه"
+        },
+        "password": {
+          "title": "تغییر رمز عبور",
+          "description": "رمز عبور ادمین خود را به‌صورت امن به‌روزرسانی کنید",
+          "forceNotice": "شما در حال استفاده از رمز عبور موقت هستید. لطفاً قبل از ادامه، رمز جدیدی برای حساب خود تنظیم کنید."
+        },
+        "fields": {
+          "fullName": "نام و نام خانوادگی",
+          "username": "نام کاربری",
+          "email": "ایمیل",
+          "role": "نقش",
+          "currentPassword": "رمز عبور فعلی",
+          "newPassword": "رمز عبور جدید"
+        },
+        "actions": {
+          "updatePassword": "به‌روزرسانی رمز عبور"
+        },
+        "toasts": {
+          "passwordUpdated": "رمز عبور با موفقیت به‌روزرسانی شد.",
+          "passwordUpdateFailed": "به‌روزرسانی رمز عبور انجام نشد."
+        }
+      },
+      "nav": {
+        "overview": "نمای کلی",
+        "members": "اعضا",
+        "accessRequests": "درخواست‌های دسترسی",
+        "grades": "پایه‌ها",
+        "classrooms": "کلاس‌ها",
+        "enrollments": "ثبت‌نام‌ها",
+        "auditLogs": "لاگ‌ها",
+        "settings": "تنظیمات"
+      }
+    },
+    "user": {
+      "nav": {
+        "overview": "داشبورد",
+        "profile": "پروفایل من",
+        "settings": "تنظیمات"
+      }
+    },
+    "overview": "داشبورد",
+    "myProfile": "پروفایل من"
+  },
+  "tablePagination": {
+    "summary": "صفحه {{page}} از {{totalPages}} — مجموع {{total}} مورد"
+  },
+  "status": {
+    "active": "فعال",
+    "suspended": "معلق",
+    "archived": "آرشیوشده",
+    "disabled": "غیرفعال",
+    "deleted": "حذف‌شده",
+    "pending": "در انتظار",
+    "approved": "تاییدشده",
+    "rejected": "ردشده"
   }
 }

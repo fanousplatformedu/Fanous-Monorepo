@@ -1,0 +1,57 @@
+mutation SubmitAccessRequest($input: SubmitAccessRequestInput!) {
+  submitAccessRequest(input: $input) {
+    id
+    status
+    schoolId
+    requestedRole
+    email
+    mobile
+    fullName
+    createdAt
+  }
+}
+
+mutation RequestOtp($input: RequestOtpInput!) {
+  requestOtp(input: $input) {
+    message
+    resendAfterSeconds
+  }
+}
+
+mutation VerifyOtp($input: VerifyOtpInput!) {
+  verifyOtp(input: $input) {
+    message
+    userId
+    role
+    schoolId
+  }
+}
+
+query SchoolUserMe {
+  me {
+    id
+    role
+    status
+    schoolId
+    email
+    mobile
+    fullName
+    createdAt
+  }
+}
+
+mutation UpdateMe($input: UpdateMeInput!) {
+  updateMe(input: $input) {
+    id
+    fullName
+    email
+    mobile
+    updatedAt
+  }
+}
+
+mutation SchoolUserLogout {
+  logout {
+    message
+  }
+}

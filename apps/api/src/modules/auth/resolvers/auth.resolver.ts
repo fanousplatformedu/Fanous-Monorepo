@@ -1,4 +1,5 @@
 import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { AllowForcePasswordChange } from "@superAdmin/decorators/allow-force-password-change.decorator";
 import { LogoutResultEntity } from "@auth/entities/logout-result.entity";
 import { AuthPayloadEntity } from "@auth/entities/auth-payload.entity";
 import { OtpResponseEntity } from "@auth/entities/otp-response.entity";
@@ -53,6 +54,7 @@ export class AuthResolver {
   }
 
   @UseGuards(JwtAuthGuard)
+  @AllowForcePasswordChange()
   @Mutation(() => LogoutResultEntity, { name: GqlMutationNames.LogoutAll })
   logoutAll(@CurrentUser() user: any, @Context() ctx: any) {
     return this.authService.logoutAll(ctx.req, ctx.res, user.id);

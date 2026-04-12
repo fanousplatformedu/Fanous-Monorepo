@@ -1,0 +1,391 @@
+mutation SchoolAdminLogin($input: AdminLoginInput!) {
+  adminLogin(input: $input) {
+    role
+    userId
+    message
+    schoolId
+    fullName
+  }
+}
+
+query SchoolAdminMe {
+  me {
+    id
+    role
+    email
+    schoolId
+    username
+    fullName
+    avatarUrl
+    forcePasswordChange
+  }
+}
+
+mutation SchoolAdminChangePassword($input: ChangeAdminPasswordInput!) {
+  changeAdminPassword(input: $input) {
+    message
+  }
+}
+
+query SchoolMembers($input: ListSchoolMembersInput!) {
+  schoolMembers(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      role
+      email
+      mobile
+      status
+      fullName
+      createdAt
+    }
+  }
+}
+
+mutation RemoveSchoolMember($input: RemoveSchoolMemberInput!) {
+  removeSchoolMember(input: $input) {
+    id
+    status
+  }
+}
+
+query SchoolAdminAccessRequests($input: ListAccessRequestsInput!) {
+  accessRequests(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      email
+      mobile
+      status
+      fullName
+      createdAt
+      reviewedAt
+      rejectReason
+      reviewedById
+      requestedRole
+      approvedUserId
+    }
+  }
+}
+
+mutation ReviewAccessRequest($input: ReviewAccessRequestInput!) {
+  reviewAccessRequest(input: $input) {
+    message
+    requestId
+    createdUserId
+    notificationError
+  }
+}
+
+query SchoolAdminAuditLogs($input: ListAuditLogsInput!) {
+  auditLogs(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      ip
+      action
+      actorId
+      schoolId
+      entityId
+      metadata
+      userAgent
+      createdAt
+      entityType
+    }
+  }
+}
+
+# ================ Grades ===============
+query Grades($input: ListGradesInput!) {
+  grades(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      name
+      code
+      schoolId
+      deletedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+mutation CreateGrade($input: CreateGradeInput!) {
+  createGrade(input: $input) {
+    id
+    name
+    code
+    schoolId
+    deletedAt
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateGrade($input: UpdateGradeInput!) {
+  updateGrade(input: $input) {
+    id
+    name
+    code
+    schoolId
+    deletedAt
+    createdAt
+    updatedAt
+  }
+}
+
+mutation ArchiveGrade($id: String!) {
+  archiveGrade(id: $id) {
+    id
+    deletedAt
+  }
+}
+
+mutation RestoreGrade($id: String!) {
+  restoreGrade(id: $id) {
+    id
+    deletedAt
+  }
+}
+
+# ================ Classrooms ===============
+query Classrooms($input: ListClassroomsInput!) {
+  classrooms(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      name
+      code
+      year
+      gradeId
+      schoolId
+      deletedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+mutation CreateClassroom($input: CreateClassroomInput!) {
+  createClassroom(input: $input) {
+    id
+    name
+    code
+    year
+    gradeId
+    schoolId
+    deletedAt
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateClassroom($input: UpdateClassroomInput!) {
+  updateClassroom(input: $input) {
+    id
+    name
+    code
+    year
+    gradeId
+    schoolId
+    deletedAt
+    createdAt
+    updatedAt
+  }
+}
+
+mutation ArchiveClassroom($id: String!) {
+  archiveClassroom(id: $id) {
+    id
+    deletedAt
+  }
+}
+
+mutation RestoreClassroom($id: String!) {
+  restoreClassroom(id: $id) {
+    id
+    deletedAt
+  }
+}
+
+# ================ Enrollments ===============
+mutation EnrollStudent($input: EnrollStudentInput!) {
+  enrollStudent(input: $input) {
+    id
+    endedAt
+    schoolId
+    studentId
+    startedAt
+    createdAt
+    updatedAt
+    classroomId
+  }
+}
+
+mutation CloseEnrollment($input: CloseEnrollmentInput!) {
+  closeEnrollment(input: $input) {
+    id
+    endedAt
+    schoolId
+    studentId
+    startedAt
+    createdAt
+    updatedAt
+    classroomId
+  }
+}
+
+query EnrollmentsByClassroom($schoolId: String!, $classroomId: String!) {
+  enrollmentsByClassroom(schoolId: $schoolId, classroomId: $classroomId) {
+    id
+    endedAt
+    schoolId
+    studentId
+    createdAt
+    startedAt
+    updatedAt
+    classroomId
+  }
+}
+
+# ================ Assessment Questions / Assignments ===============
+query AssessmentQuestions {
+  assessmentQuestions {
+    id
+    code
+    text
+    order
+    isActive
+    intelligenceKeys
+  }
+}
+
+mutation CreateAssignment($input: CreateAssignmentInput!) {
+  createAssignment(input: $input) {
+    id
+    title
+    dueAt
+    status
+    schoolId
+    updatedAt
+    createdAt
+    targetMode
+    publishedAt
+    createdById
+    description
+    targetGradeId
+    targetClassroomId
+  }
+}
+
+query Assignments($input: ListAssignmentsInput!) {
+  assignments(input: $input) {
+    skip
+    take
+    total
+    items {
+      id
+      title
+      dueAt
+      status
+      schoolId
+      createdAt
+      updatedAt
+      targetMode
+      description
+      publishedAt
+      createdById
+      targetGradeId
+      targetClassroomId
+    }
+  }
+}
+
+mutation PublishAssignment($id: String!) {
+  publishAssignment(id: $id) {
+    id
+    status
+    updatedAt
+    publishedAt
+  }
+}
+
+mutation AssignAssignmentToStudents($input: AssignAssignmentInput!) {
+  assignAssignmentToStudents(input: $input)
+}
+
+# ================ Assessment Reports ===============
+query AssessmentResults($input: ListAssessmentResultsInput!) {
+  assessmentResults(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      musical
+      schoolId
+      studentId
+      createdAt
+      linguistic
+      logicalMath
+      summaryJson
+      dominantKey
+      naturalistic
+      visualSpatial
+      interpersonal
+      intrapersonal
+      bodilyKinesthetic
+      studentAssignmentId
+      student {
+        id
+        email
+        fullName
+      }
+      studentAssignment {
+        id
+        status
+        startedAt
+        studentId
+        submittedAt
+        evaluatedAt
+        assignmentId
+        completionRate
+        assignment {
+          id
+          title
+        }
+      }
+    }
+  }
+}
+
+query SchoolAssessmentSummary($input: SchoolAssessmentSummaryInput) {
+  schoolAssessmentSummary(input: $input) {
+    avgMusical
+    totalStudents
+    avgLinguistic
+    completionRate
+    avgLogicalMath
+    avgNaturalistic
+    avgVisualSpatial
+    totalAssignments
+    avgInterpersonal
+    avgIntrapersonal
+    publishedAssignments
+    avgBodilyKinesthetic
+    pendingStudentAssignments
+    submittedStudentAssignments
+    evaluatedStudentAssignments
+  }
+}

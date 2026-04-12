@@ -30,6 +30,65 @@ input AdminLoginInput {
   username: String!
 }
 
+type AdminProfileResult {
+  email: String
+  fullName: String
+  id: String!
+  message: String!
+}
+
+type AssessmentQuestion {
+  code: Float!
+  id: String!
+  intelligenceKeys: [String!]!
+  isActive: Boolean!
+  order: Float!
+  text: String!
+}
+
+type AssessmentResult {
+  bodilyKinesthetic: Float!
+  createdAt: DateTime!
+  dominantKey: String
+  id: String!
+  interpersonal: Float!
+  intrapersonal: Float!
+  linguistic: Float!
+  logicalMath: Float!
+  musical: Float!
+  naturalistic: Float!
+  schoolId: String!
+  student: AssessmentStudent
+  studentAssignment: StudentAssignment
+  studentAssignmentId: String!
+  studentId: String!
+  summaryJson: JSON
+  visualSpatial: Float!
+}
+
+type AssessmentResultList {
+  items: [AssessmentResult!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type AssessmentStudent {
+  email: String
+  fullName: String
+  id: String!
+}
+
+input AssignAssignmentInput {
+  assignmentId: String!
+  studentIds: [String!]
+}
+
+type AssignmentRef {
+  id: String!
+  title: String!
+}
+
 type AuditCreateResult {
   log: AuditLog!
   message: String!
@@ -68,12 +127,59 @@ input ChangeAdminPasswordInput {
   newPassword: String!
 }
 
+type Classroom {
+  code: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  gradeId: String!
+  id: String!
+  name: String!
+  schoolId: String!
+  updatedAt: DateTime!
+  year: Int
+}
+
+type ClassroomList {
+  items: [Classroom!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+input CloseEnrollmentInput {
+  endedAt: String
+  id: String!
+}
+
+input CreateAssignmentInput {
+  description: String
+  dueAt: String
+  targetClassroomId: String
+  targetGradeId: String
+  targetMode: String
+  title: String!
+}
+
 input CreateAuditLogInput {
   action: String!
   entityId: String
   entityType: String
   metadata: JSON
   schoolId: String
+}
+
+input CreateClassroomInput {
+  code: String
+  gradeId: String!
+  name: String!
+  schoolId: String!
+  year: Int
+}
+
+input CreateGradeInput {
+  code: String
+  name: String!
+  schoolId: String!
 }
 
 input CreateSchoolAdminInput {
@@ -100,6 +206,41 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input EnrollStudentInput {
+  classroomId: String!
+  schoolId: String!
+  startedAt: String
+  studentId: String!
+}
+
+type Enrollment {
+  classroomId: String!
+  createdAt: DateTime!
+  endedAt: DateTime
+  id: String!
+  schoolId: String!
+  startedAt: DateTime!
+  studentId: String!
+  updatedAt: DateTime!
+}
+
+type Grade {
+  code: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  id: String!
+  name: String!
+  schoolId: String!
+  updatedAt: DateTime!
+}
+
+type GradeList {
+  items: [Grade!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -108,6 +249,20 @@ scalar JSON
 input ListAccessRequestsInput {
   query: String
   schoolId: String
+  skip: Int! = 0
+  status: String
+  take: Int! = 20
+}
+
+input ListAssessmentResultsInput {
+  assignmentId: String
+  query: String
+  skip: Int! = 0
+  take: Int! = 20
+}
+
+input ListAssignmentsInput {
+  query: String
   skip: Int! = 0
   status: String
   take: Int! = 20
@@ -123,6 +278,23 @@ input ListAuditLogsInput {
   skip: Int! = 0
   take: Int! = 30
   to: String
+}
+
+input ListClassroomsInput {
+  gradeId: String
+  includeDeleted: Boolean = false
+  query: String
+  schoolId: String!
+  skip: Int! = 0
+  take: Int! = 20
+}
+
+input ListGradesInput {
+  includeDeleted: Boolean = false
+  query: String
+  schoolId: String!
+  skip: Int! = 0
+  take: Int! = 20
 }
 
 input ListSchoolAdminsInput {
@@ -153,22 +325,37 @@ type LogoutResult {
 
 type Mutation {
   adminLogin(input: AdminLoginInput!): AuthPayload!
+  archiveClassroom(id: String!): Classroom!
+  archiveGrade(id: String!): Grade!
+  assignAssignmentToStudents(input: AssignAssignmentInput!): String!
   changeAdminPassword(input: ChangeAdminPasswordInput!): PasswordResult!
+  closeEnrollment(input: CloseEnrollmentInput!): Enrollment!
+  createAssignment(input: CreateAssignmentInput!): SchoolAssignment!
   createAuditLog(input: CreateAuditLogInput!): AuditCreateResult!
+  createClassroom(input: CreateClassroomInput!): Classroom!
+  createGrade(input: CreateGradeInput!): Grade!
   createSchool(input: CreateSchoolInput!): School!
   createSchoolAdmin(input: CreateSchoolAdminInput!): CreateSchoolAdminResult!
+  enrollStudent(input: EnrollStudentInput!): Enrollment!
   logout: LogoutResult!
   logoutAll: LogoutResult!
+  publishAssignment(id: String!): SchoolAssignment!
   refreshAuth: AuthPayload!
   removeSchoolMember(input: RemoveSchoolMemberInput!): User!
   requestOtp(input: RequestOtpInput!): OtpResponse!
   resetAdminPassword(input: ResetAdminPasswordInput!): PasswordResult!
+  restoreClassroom(id: String!): Classroom!
+  restoreGrade(id: String!): Grade!
   reviewAccessRequest(input: ReviewAccessRequestInput!): ReviewResult!
   sendTestEmail(input: SendTestEmailInput!): NotificationResult!
   sendTestSms(input: SendTestSmsInput!): NotificationResult!
   setAdminStatus(input: SetAdminStatusInput!): String!
   setSchoolStatus(input: SetSchoolStatusInput!): School!
   submitAccessRequest(input: SubmitAccessRequestInput!): AccessRequest!
+  submitStudentAnswers(input: SubmitStudentAnswersInput!): String!
+  updateAdminProfile(input: UpdateAdminProfileInput!): AdminProfileResult!
+  updateClassroom(input: UpdateClassroomInput!): Classroom!
+  updateGrade(input: UpdateGradeInput!): Grade!
   updateMe(input: UpdateMeInput!): User!
   updateSchool(input: UpdateSchoolInput!): School!
   verifyOtp(input: VerifyOtpInput!): AuthPayload!
@@ -195,14 +382,33 @@ type PasswordResult {
   tempPassword: String
 }
 
+type PublicSchoolEntity {
+  code: String
+  id: String!
+  name: String!
+}
+
+type PublicSchoolList {
+  items: [PublicSchoolEntity!]!
+  total: Int!
+}
+
 type Query {
   HealthCheck: String!
   accessRequestById(id: String!): AccessRequest!
   accessRequests(input: ListAccessRequestsInput!): AccessRequestList!
+  assessmentQuestions: [AssessmentQuestion!]!
+  assessmentResults(input: ListAssessmentResultsInput!): AssessmentResultList!
+  assignments(input: ListAssignmentsInput!): SchoolAssignmentList!
   auditLogById(id: String!): AuditLog!
   auditLogs(input: ListAuditLogsInput!): AuditLogList!
+  classrooms(input: ListClassroomsInput!): ClassroomList!
+  enrollmentsByClassroom(classroomId: String!, schoolId: String!): [Enrollment!]!
+  grades(input: ListGradesInput!): GradeList!
   me: User!
+  publicSchools: PublicSchoolList!
   schoolAdmins(input: ListSchoolAdminsInput!): SchoolAdminList!
+  schoolAssessmentSummary(input: SchoolAssessmentSummaryInput): SchoolAssessmentSummary!
   schoolById(schoolId: String!): School!
   schoolMembers(input: ListSchoolMembersInput!): UserList!
   schools(input: ListSchoolsInput!): SchoolList!
@@ -269,6 +475,51 @@ type SchoolAdminList {
   total: Int!
 }
 
+type SchoolAssessmentSummary {
+  avgBodilyKinesthetic: Float!
+  avgInterpersonal: Float!
+  avgIntrapersonal: Float!
+  avgLinguistic: Float!
+  avgLogicalMath: Float!
+  avgMusical: Float!
+  avgNaturalistic: Float!
+  avgVisualSpatial: Float!
+  completionRate: Float!
+  evaluatedStudentAssignments: Int!
+  pendingStudentAssignments: Int!
+  publishedAssignments: Int!
+  submittedStudentAssignments: Int!
+  totalAssignments: Int!
+  totalStudents: Int!
+}
+
+input SchoolAssessmentSummaryInput {
+  assignmentId: String
+}
+
+type SchoolAssignment {
+  createdAt: DateTime!
+  createdById: String!
+  description: String
+  dueAt: DateTime
+  id: String!
+  publishedAt: DateTime
+  schoolId: String!
+  status: String!
+  targetClassroomId: String
+  targetGradeId: String
+  targetMode: String!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type SchoolAssignmentList {
+  items: [SchoolAssignment!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
 type SchoolList {
   items: [School!]!
   skip: Int!
@@ -299,12 +550,53 @@ input SetSchoolStatusInput {
   status: String!
 }
 
+input StudentAnswerInput {
+  questionId: String!
+  value: Int!
+}
+
+type StudentAssignment {
+  assignment: AssignmentRef
+  assignmentId: String!
+  completionRate: Float!
+  evaluatedAt: DateTime
+  id: String!
+  startedAt: DateTime
+  status: String!
+  studentId: String!
+  submittedAt: DateTime
+}
+
 input SubmitAccessRequestInput {
   email: String
   fullName: String
   mobile: String
   requestedRole: String!
   schoolId: String!
+}
+
+input SubmitStudentAnswersInput {
+  answers: [StudentAnswerInput!]!
+  studentAssignmentId: String!
+}
+
+input UpdateAdminProfileInput {
+  email: String
+  fullName: String
+}
+
+input UpdateClassroomInput {
+  code: String
+  gradeId: String
+  id: String!
+  name: String
+  year: Int
+}
+
+input UpdateGradeInput {
+  code: String
+  id: String!
+  name: String
 }
 
 input UpdateMeInput {
@@ -325,6 +617,7 @@ type User {
   avatarUrl: String
   createdAt: DateTime!
   email: String
+  forcePasswordChange: Boolean
   fullName: String
   id: String!
   mobile: String

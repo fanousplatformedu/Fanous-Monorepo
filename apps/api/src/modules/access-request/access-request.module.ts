@@ -2,10 +2,11 @@ import { AccessRequestResolver } from "@accessRequest/resolvers/access-request.r
 import { AccessRequestService } from "@accessRequest/services/access-request.service";
 import { NotificationModule } from "@notif/notif.module";
 import { PrismaModule } from "@prisma/prisma.module";
+import { AuditModule } from "@audit/audit.module";
 import { Module } from "@nestjs/common";
 
 @Module({
-  imports: [PrismaModule, NotificationModule],
+  imports: [PrismaModule, NotificationModule, AuditModule],
   providers: [AccessRequestResolver, AccessRequestService],
   exports: [AccessRequestService],
 })

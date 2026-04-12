@@ -1,0 +1,199 @@
+mutation SuperAdminLogin($input: AdminLoginInput!) {
+  adminLogin(input: $input) {
+    message
+    userId
+    role
+    schoolId
+    fullName
+  }
+}
+
+query SuperAdminMe {
+  me {
+    id
+    role
+    status
+    schoolId
+    email
+    mobile
+    fullName
+    createdAt
+  }
+}
+
+mutation SuperAdminChangePassword($input: ChangeAdminPasswordInput!) {
+  changeAdminPassword(input: $input) {
+    message
+  }
+}
+
+mutation CreateSchool($input: CreateSchoolInput!) {
+  createSchool(input: $input) {
+    id
+    name
+    code
+    status
+    createdAt
+  }
+}
+
+query Schools($input: ListSchoolsInput!) {
+  schools(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      name
+      code
+      status
+      createdAt
+    }
+  }
+}
+
+mutation UpdateSchool($input: UpdateSchoolInput!) {
+  updateSchool(input: $input) {
+    id
+    name
+    code
+    status
+    updatedAt
+  }
+}
+
+mutation SetSchoolStatus($input: SetSchoolStatusInput!) {
+  setSchoolStatus(input: $input) {
+    id
+    status
+    archivedAt
+  }
+}
+
+mutation CreateSchoolAdmin($input: CreateSchoolAdminInput!) {
+  createSchoolAdmin(input: $input) {
+    message
+    tempPassword
+    notificationError
+    admin {
+      id
+      schoolId
+      schoolName
+      username
+      email
+      status
+      forcePasswordChange
+      createdAt
+    }
+  }
+}
+
+query SchoolAdmins($input: ListSchoolAdminsInput!) {
+  schoolAdmins(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      schoolId
+      schoolName
+      username
+      email
+      status
+      forcePasswordChange
+      createdAt
+    }
+  }
+}
+
+mutation SetAdminStatus($input: SetAdminStatusInput!) {
+  setAdminStatus(input: $input)
+}
+
+query SuperAdminAccessRequests($input: ListAccessRequestsInput!) {
+  accessRequests(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      status
+      requestedRole
+      email
+      mobile
+      fullName
+      reviewedById
+      reviewedAt
+      rejectReason
+      approvedUserId
+      createdAt
+    }
+  }
+}
+
+query SuperAdminAuditLogs($input: ListAuditLogsInput!) {
+  auditLogs(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      action
+      actorId
+      schoolId
+      entityType
+      entityId
+      metadata
+      ip
+      userAgent
+      createdAt
+    }
+  }
+}
+
+mutation CreateAuditLog($input: CreateAuditLogInput!) {
+  createAuditLog(input: $input) {
+    message
+    log {
+      id
+      action
+      actorId
+      schoolId
+      entityType
+      entityId
+      metadata
+      createdAt
+    }
+  }
+}
+
+mutation SuperAdminReviewAccessRequest($input: ReviewAccessRequestInput!) {
+  reviewAccessRequest(input: $input) {
+    message
+    requestId
+    createdUserId
+    notificationError
+  }
+}
+
+query SchoolById($schoolId: String!) {
+  schoolById(schoolId: $schoolId) {
+    id
+    name
+    code
+    status
+    settings
+    createdAt
+    updatedAt
+    archivedAt
+  }
+}
+
+mutation UpdateAdminProfile($input: UpdateAdminProfileInput!) {
+  updateAdminProfile(input: $input) {
+    id
+    email
+    message
+    fullName
+  }
+}

@@ -11,9 +11,29 @@
     "contact": "Contact"
   },
   "cta": {
-    "getStarted": "Get Started",
-    "join": "Join",
-    "send": "Send"
+    "getStarted": "Get Started"
+  },
+  "getStarted": {
+    "title": "Choose how you want to continue",
+    "description": "Select your role to follow the correct and secure entry flow for your school.",
+    "roles": {
+      "superAdmin": {
+        "title": "Super Admin",
+        "description": "Manage schools, school admins, global activity logs and platform governance.",
+        "action": "Continue as Super Admin"
+      },
+      "schoolAdmin": {
+        "title": "School Admin",
+        "description": "Review access requests, manage school members, and handle school operations.",
+        "action": "Continue as School Admin"
+      },
+      "schoolUser": {
+        "title": "School User",
+        "description": "Submit an access request or log in with OTP if your request has already been approved.",
+        "action": "Request Access",
+        "secondaryAction": "Already approved? Log in with OTP"
+      }
+    }
   },
   "footer": {
     "desc": "A clean, modern platform for career guidance, learning discovery, and professional growth.",
@@ -39,6 +59,7 @@
   },
   "home": {
     "hero": {
+      "name": "Fanuos",
       "title": "Guiding Students to Their Brightest Future",
       "desc": "A comprehensive career guidance platform helping schools, counselors, and students make informed decisions through data-driven assessments and personalized recommendations.",
       "primaryCta": "Get Started",
@@ -149,31 +170,450 @@
       "secondary": "View Demo"
     }
   },
+  "common": {
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "apply": "Apply",
+    "reset": "Reset",
+    "edit": "Edit",
+    "previous": "Previous",
+    "next": "Next",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "errors": {
+      "generic": "Something went wrong. Please try again."
+    }
+  },
   "auth": {
-    "emailLabel": "Email",
-    "continue": "Continue",
-    "resendIn": "Resend in",
-    "codeSent": "Code sent to",
-    "resendCode": "Resend Code",
-    "backToCredentials": "Back",
-    "codeSentTo": "Code sent to",
-    "phoneLabel": "Mobile Number",
-    "verifyEmail": "Verify Email",
-    "mobileLabel": "Mobile Number",
-    "backToEmail": "Back to Email",
-    "welcome": "Welcome to Fanous",
-    "enterMobile": "Enter Mobile Number",
-    "emailMethod": "Continue with Email",
-    "emailRequired": "Email is required",
-    "verifyContinue": "Verify & Continue",
-    "chooseMethod": "Choose Login Method",
-    "verifyPhone": "Verify Mobile Number",
-    "verifyMobile": "Verify Mobile Number",
-    "backToMobile": "Back to Mobile Number",
-    "backToMethod": "Back to Method Selection",
-    "phoneMethod": "Continue with Mobile Number",
-    "mobileRequired": "Mobile number is required",
-    "mobileInvalid": "Enter a valid mobile number",
-    "emailInvalid": "Please enter a valid email address"
+    "logoutSuccess": "Logged out successfully.",
+    "forcePassword": {
+      "toast": "You must change your password before continuing.",
+      "title": "Password change required",
+      "description": "For security reasons, you must change your temporary password before accessing the rest of the dashboard.",
+      "note": "You can only access your settings page until the password is updated successfully.",
+      "goToSettings": "Go to settings"
+    },
+    "login": "Login",
+    "logout": "Logout",
+    "backToRoles": "Back to role selection",
+    "forgotPassword": "Forgot your password?",
+    "superAdmin": {
+      "badge": "Super Admin",
+      "title": "Super Admin Login",
+      "description": "Enter your credentials to access the super admin dashboard.",
+      "footer": "Access is restricted to system super administrators only."
+    },
+    "schoolAdmin": {
+      "badge": "School Admin",
+      "title": "School Admin Login",
+      "description": "Log in to review requests and manage your school."
+    },
+    "accessRequest": {
+      "badge": "Access Request",
+      "title": "School Access Request",
+      "description": "Submit your information to request access to your school workspace.",
+      "submit": "Submit Request",
+      "success": "Your access request has been submitted successfully."
+    },
+    "otp": {
+      "badge": "Request OTP",
+      "requestTitle": "Request OTP",
+      "requestDescription": "Enter your approved email or mobile to receive a one-time code.",
+      "verifyTitle": "Verify OTP",
+      "verifyDescription": "Enter the code to continue to your dashboard.",
+      "sendCode": "Send Code",
+      "verify": "Verify and Continue",
+      "sent": "OTP sent successfully."
+    }
+  },
+  "form": {
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "password": "Password",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Enter full name",
+    "mobile": "Mobile",
+    "mobilePlaceholder": "Enter mobile number",
+    "email": "Email",
+    "emailPlaceholder": "Enter email",
+    "role": "Requested role",
+    "rolePlaceholder": "Select role",
+    "emailOrMobile": "Email or mobile",
+    "school": "Choose School",
+    "emailOrMobilePlaceholder": "Enter email or mobile",
+    "otp": "OTP code"
+  },
+  "roles": {
+    "student": "Student",
+    "parent": "Parent",
+    "teacher": "Teacher",
+    "counselor": "Counselor"
+  },
+  "dashboard": {
+    "superAdmin": {
+      "nav": {
+        "schools": "Schools",
+        "overview": "Overview",
+        "settings": "Settings",
+        "auditLogs": "Audit Logs",
+        "schoolAdmins": "School Admins",
+        "accessRequests": "Access Requests"
+      },
+      "header": {
+        "title": "Super Admin Dashboard",
+        "description": "Manage schools, school admins, requests, and system audit logs."
+      },
+      "sidebar": {
+        "title": "Super Admin",
+        "subtitle": "System-wide control panel"
+      },
+      "kpi": {
+        "totalSchools": "Total Schools",
+        "schoolAdmins": "School Admins",
+        "pendingRequests": "Pending Requests",
+        "auditLogs": "Audit Logs",
+        "activeSchools": "Active Schools",
+        "suspendedSchools": "Suspended Schools",
+        "activeAdmins": "Active Admins",
+        "disabledAdmins": "Disabled Admins"
+      },
+      "sections": {
+        "schoolStatus": {
+          "title": "School Status Distribution",
+          "description": "Current distribution of tenant schools by status."
+        },
+        "accessRequests": {
+          "title": "Access Requests",
+          "description": "Current review status across all schools."
+        }
+      },
+      "trends": {
+        "approvedRequests": "Approved Requests",
+        "approvedRequestsHint": "Processed successfully",
+        "rejectedRequests": "Rejected Requests",
+        "rejectedRequestsHint": "Rejected across all schools",
+        "archivedSchools": "Archived Schools",
+        "archivedSchoolsHint": "Inactive archived tenants"
+      },
+      "status": {
+        "active": "Active",
+        "suspended": "Suspended",
+        "archived": "Archived"
+      },
+      "requests": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "charts": {
+        "empty": "No data available"
+      },
+      "schools": {
+        "filters": {
+          "search": "Search school",
+          "status": "Status"
+        },
+        "filtersCard": {
+          "title": "Schools Filters",
+          "description": "Search and filter tenant schools."
+        },
+        "table": {
+          "title": "Schools",
+          "description": "Create, edit, and manage all schools."
+        },
+        "columns": {
+          "name": "Name",
+          "code": "Code",
+          "status": "Status",
+          "created": "Created",
+          "actions": "Actions"
+        },
+        "actions": {
+          "createSchool": "Create School",
+          "activate": "Activate",
+          "suspend": "Suspend",
+          "archive": "Archive"
+        },
+        "empty": {
+          "title": "No schools found",
+          "description": "There are no schools matching your current filters."
+        },
+        "pagination": {
+          "summary": "Showing {{from}} to {{to}} of {{total}} items",
+          "page": "Page {{page}} of {{totalPages}}"
+        },
+        "toasts": {
+          "statusUpdated": "School status updated successfully",
+          "statusUpdateFailed": "Failed to update school status"
+        }
+      },
+      "schoolsPage": {
+        "header": {
+          "title": "Schools",
+          "description": "Create, inspect, and manage school tenants."
+        }
+      },
+      "schoolAdminsPage": {
+        "header": {
+          "title": "School Admins",
+          "description": "Manage admin accounts across all schools."
+        }
+      },
+      "schoolAdmins": {
+        "filters": {
+          "school": "School",
+          "status": "Status"
+        },
+        "filtersCard": {
+          "title": "School Admin Filters",
+          "description": "Filter admins by school and status."
+        },
+        "table": {
+          "title": "School Admins",
+          "description": "Manage admin accounts across all schools."
+        },
+        "columns": {
+          "email": "Email",
+          "username": "Username",
+          "school": "School",
+          "status": "Status",
+          "forcePasswordChange": "Force Password Change",
+          "created": "Created",
+          "actions": "Actions"
+        },
+        "actions": {
+          "createAdmin": "Create Admin",
+          "activate": "Activate",
+          "disable": "Disable",
+          "delete": "Delete"
+        },
+        "empty": {
+          "title": "No admins found",
+          "description": "There are no school admins matching your current filters."
+        },
+        "status": {
+          "active": "Active",
+          "disabled": "Disabled",
+          "deleted": "Deleted"
+        },
+        "toasts": {
+          "statusUpdated": "Admin status updated successfully",
+          "statusUpdateFailed": "Failed to update admin status"
+        }
+      },
+      "accessRequestsPage": {
+        "header": {
+          "title": "Access Requests",
+          "description": "Monitor and manage request traffic across all schools."
+        }
+      },
+      "accessRequests": {
+        "kpis": {
+          "total": "Total Requests",
+          "pending": "Pending",
+          "approved": "Approved",
+          "rejected": "Rejected"
+        },
+        "chart": {
+          "title": "Request Status Distribution",
+          "description": "Live request pipeline overview."
+        },
+        "table": {
+          "title": "Access Requests",
+          "description": "Approve, reject, inspect, and monitor all requests."
+        },
+        "columns": {
+          "fullName": "Full Name",
+          "role": "Role",
+          "status": "Status",
+          "email": "Email",
+          "mobile": "Mobile",
+          "created": "Created",
+          "actions": "Actions"
+        },
+        "actions": {
+          "view": "View",
+          "approve": "Approve",
+          "reject": "Reject",
+          "defaultRejectReason": "Rejected by super admin"
+        },
+        "empty": {
+          "title": "No access requests",
+          "description": "Request traffic across schools will appear here."
+        },
+        "drawer": {
+          "title": "Request Details",
+          "description": "Detailed view of selected access request",
+          "fullName": "Full Name",
+          "requestedRole": "Requested Role",
+          "status": "Status",
+          "createdAt": "Created At",
+          "email": "Email",
+          "mobile": "Mobile",
+          "reviewedBy": "Reviewed By",
+          "reviewedAt": "Reviewed At",
+          "rejectReason": "Reject Reason"
+        },
+        "toasts": {
+          "approveSuccess": "Request approved successfully",
+          "approveFailed": "Failed to approve request",
+          "rejectSuccess": "Request rejected successfully",
+          "rejectFailed": "Failed to reject request"
+        }
+      },
+      "auditLogsPage": {
+        "header": {
+          "title": "Audit Logs",
+          "description": "Review critical platform actions and history."
+        }
+      },
+      "auditLogs": {
+        "kpis": {
+          "createActions": "Create Actions",
+          "updateActions": "Update Actions",
+          "adminActions": "Admin Actions"
+        },
+        "filtersCard": {
+          "title": "Audit Filters",
+          "description": "Filter logs by school, actor, action, or entity."
+        },
+        "filters": {
+          "schoolId": "School ID",
+          "actorId": "Actor ID",
+          "action": "Action",
+          "entityType": "Entity Type"
+        },
+        "table": {
+          "title": "Audit Logs",
+          "description": "Review critical platform actions and create logs manually when needed."
+        },
+        "columns": {
+          "action": "Action",
+          "actor": "Actor",
+          "school": "School",
+          "entity": "Entity",
+          "created": "Created"
+        },
+        "actions": {
+          "create": "Create Audit Log"
+        },
+        "empty": {
+          "title": "No audit logs found",
+          "description": "No log matches the current filters."
+        },
+        "dialog": {
+          "title": "Create Audit Log",
+          "description": "Add a manual audit entry to the system.",
+          "submit": "Create",
+          "fields": {
+            "action": "Action",
+            "schoolId": "School ID",
+            "entityType": "Entity Type",
+            "entityId": "Entity ID",
+            "metadata": "Metadata JSON e.g. {\"key\":\"value\"}"
+          }
+        },
+        "toasts": {
+          "createSuccess": "Audit log created successfully",
+          "createFailed": "Failed to create audit log"
+        }
+      },
+      "settingsPage": {
+        "header": {
+          "title": "Settings",
+          "description": "Your current profile and account settings."
+        }
+      },
+      "settings": {
+        "profileCard": {
+          "title": "Profile",
+          "description": "View and update your current super admin account information."
+        },
+        "passwordCard": {
+          "title": "Change Password",
+          "description": "Update your current super admin password."
+        },
+        "profileInfo": {
+          "role": "Role",
+          "userId": "User ID"
+        },
+        "fields": {
+          "fullName": "Full Name",
+          "email": "Email",
+          "currentPassword": "Current Password",
+          "newPassword": "New Password"
+        },
+        "actions": {
+          "saveProfile": "Save Profile",
+          "updatePassword": "Update Password"
+        },
+        "toasts": {
+          "profileUpdateFailed": "Failed to update profile",
+          "passwordUpdateFailed": "Failed to update password"
+        }
+      }
+    },
+    "schoolAdmin": {
+      "nav": {
+        "grades": "Grades",
+        "members": "Members",
+        "settings": "Settings",
+        "overview": "Overview",
+        "auditLogs": "Audit Logs",
+        "classrooms": "Classrooms",
+        "enrollments": "Enrollments",
+        "accessRequests": "Access Requests"
+      },
+      "settings": {
+        "account": {
+          "title": "My Account",
+          "description": "Current school admin profile"
+        },
+        "password": {
+          "title": "Change Password",
+          "description": "Update your admin password securely",
+          "forceNotice": "You are using a temporary password. Please set a new password before continuing."
+        },
+        "fields": {
+          "fullName": "Full Name",
+          "username": "Username",
+          "email": "Email",
+          "role": "Role",
+          "currentPassword": "Current Password",
+          "newPassword": "New Password"
+        },
+        "actions": {
+          "updatePassword": "Update Password"
+        },
+        "toasts": {
+          "passwordUpdated": "Password updated successfully.",
+          "passwordUpdateFailed": "Failed to update password."
+        }
+      }
+    },
+    "user": {
+      "nav": {
+        "overview": "Overview",
+        "settings": "Settings",
+        "profile": "My Profile"
+      }
+    },
+    "overview": "Dashboard",
+    "myProfile": "My Profile"
+  },
+  "tablePagination": {
+    "summary": "Page {{page}} of {{totalPages}} — Total {{total}} items"
+  },
+  "status": {
+    "active": "Active",
+    "suspended": "Suspended",
+    "archived": "Archived",
+    "disabled": "Disabled",
+    "deleted": "Deleted",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
   }
 }

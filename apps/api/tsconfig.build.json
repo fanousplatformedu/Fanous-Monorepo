@@ -12,7 +12,8 @@
       "@audit/*": ["src/modules/audit/*"],
       "@notif/*": ["src/modules/notif/*"],
       "@school/*": ["src/modules/school/*"],
-      "@adminPassword/*": ["src/modules/admin-password/*"],
+      "@assessment/*": ["src/modules/assessment/*"],
+      "@superAdmin/*": ["src/modules/super-admin/*"],
       "@accessRequest/*": ["src/modules/access-request/*"],
 
       "@config/*": ["src/config/*"],

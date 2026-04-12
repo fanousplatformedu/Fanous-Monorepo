@@ -108,6 +108,10 @@ export const HOME_ROLES = [
 ] as const;
 
 // ============= Auth =============
-
 export const OTP_LENGTH = 6;
 export const RESEND_SECONDS = 30;
+
+// ============= Dashboard ==============
+export const PAGE_SIZE = 10;
+
+export const RETURN_TO_KEY = "force_password_return_to";

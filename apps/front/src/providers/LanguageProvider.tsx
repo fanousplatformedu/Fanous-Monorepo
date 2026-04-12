@@ -11,23 +11,25 @@ const STORAGE_KEY = "app_language";
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<TLanguage>("en");
-
   useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (saved === "en" || saved === "fa") setLanguageState(saved);
   }, []);
-
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, language);
     document.documentElement.lang = language;
     document.documentElement.dir = language === "fa" ? "rtl" : "ltr";
   }, [language]);
-
   const value = useMemo<I18nContextValue>(() => {
     const dict = dictionaries[language];
-    const t: I18nContextValue["t"] = (key, fallback = "") => {
-      const v = getByKey(dict, key);
-      return typeof v === "string" ? v : fallback;
+    const t: I18nContextValue["t"] = (key, params = {}, fallback = "") => {
+      const value = getByKey(dict, key);
+      if (typeof value !== "string") return fallback;
+      let text: string = value;
+      Object.entries(params).forEach(([paramKey, paramValue]) => {
+        text = text.replace(`{{${paramKey}}}`, String(paramValue));
+      });
+      return text;
     };
     const ta: I18nContextValue["ta"] = (key) => {
       const v = getByKey(dict, key);
@@ -42,6 +44,5 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       ta,
     };
   }, [language]);
-
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 };

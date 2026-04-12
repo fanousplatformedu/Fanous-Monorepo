@@ -1,22 +1,12 @@
-import {
-  Role,
-  SchoolStatus,
-  SessionStatus,
-  UserStatus,
-  OtpChannel,
-  OtpPurpose,
-} from "@prisma/client";
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { BadRequestException, ForbiddenException } from "@nestjs/common";
+import { UserStatus, OtpChannel, OtpPurpose } from "@prisma/client";
+import { Role, SchoolStatus, SessionStatus } from "@prisma/client";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { setAuthCookies, clearAuthCookies } from "@auth/utils/auth.cookies";
 import { randomBytes, createHash } from "crypto";
-import type { Request, Response } from "express";
-import { AuthPayloadEntity } from "@auth/entities/auth-payload.entity";
 import { LogoutResultEntity } from "@auth/entities/logout-result.entity";
+import { AuthPayloadEntity } from "@auth/entities/auth-payload.entity";
+import { Request, Response } from "express";
 import { OtpResponseEntity } from "@auth/entities/otp-response.entity";
 import { AdminLoginInput } from "@auth/dtos/admin-login.input";
 import { RequestOtpInput } from "@auth/dtos/request-otp.input";
@@ -25,6 +15,7 @@ import { AuthErrorCode } from "@auth/enums/auth-error-code.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { AuthMessage } from "@auth/enums/auth-message.enum";
 import { JwtService } from "@nestjs/jwt";
+
 import * as argon2 from "argon2";
 
 @Injectable()
@@ -156,8 +147,8 @@ export class AuthService {
       data: {
         schoolId: user.schoolId!,
         userId: user.id,
-        channel, // ✅ OtpChannel
-        purpose: OtpPurpose.LOGIN, // ✅ OtpPurpose
+        channel,
+        purpose: OtpPurpose.LOGIN,
         destination,
         codeHash,
         expiresAt,
@@ -319,7 +310,7 @@ export class AuthService {
     };
   }
 
-  // ===================== Logout (NEW RESULT) =====================
+  // ===================== Logout =====================
   async logout(req: Request, res: Response): Promise<LogoutResultEntity> {
     const sid: string | undefined = req.cookies?.sid;
 

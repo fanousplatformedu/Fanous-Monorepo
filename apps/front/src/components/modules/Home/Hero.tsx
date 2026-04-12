@@ -31,7 +31,7 @@ const HeroSection = () => {
             <div className="h-10 w-10 rounded-2xl bg-white/15 flex items-center justify-center">
               <Compass className="h-5 w-5" />
             </div>
-            <span className="font-semibold">Fanous</span>
+            <span className="font-semibold"> {t("home.hero.name")}</span>
           </motion.div>
 
           <motion.h1
@@ -57,7 +57,7 @@ const HeroSection = () => {
               variant="brand"
               className="h-11 rounded-2xl px-6 font-semibold"
             >
-              <Link href="/sign-in" className="gap-2">
+              <Link href="/get-started" className="gap-2">
                 {t("home.hero.primaryCta")}
                 <ArrowRight
                   className={cn(

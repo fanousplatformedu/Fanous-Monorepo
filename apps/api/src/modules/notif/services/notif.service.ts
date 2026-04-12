@@ -4,8 +4,8 @@ import { ServiceUnavailableException } from "@nestjs/common";
 import { NotificationResultEntity } from "@notif/entities/notif-result.entity";
 import { NotificationErrorCode } from "@notif/enums/notif-error-code.enum";
 import { NotificationTemplate } from "@notif/enums/notif-template.enum";
-import { TNotifyTemplateArgs } from "@notif/types/notif.types";
 import { NotificationChannel } from "@notif/enums/notif-channel.enum";
+import { TNotifyTemplateArgs } from "@notif/types/notif.types";
 import { NotificationMessage } from "@notif/enums/notif-message.enum";
 
 import nodemailer from "nodemailer";
@@ -15,8 +15,10 @@ import axios from "axios";
 export class NotificationService {
   private readonly appName = process.env.APP_NAME ?? "App";
   private readonly baseUrl = process.env.APP_BASE_URL ?? "";
+
   private readonly kavenegarKey = process.env.KAVENEGAR_API_KEY ?? "";
   private readonly kavenegarSender = process.env.KAVENEGAR_SENDER ?? "";
+
   private readonly mailHost = process.env.MAIL_HOST ?? "";
   private readonly mailPort = parseInt(process.env.MAIL_PORT ?? "465", 10);
   private readonly mailUser = process.env.MAIL_USER ?? "";
@@ -26,17 +28,18 @@ export class NotificationService {
 
   private smtpTransport = this.createTransport();
 
-  // ---------- Public methods used by other modules ----------
   async notifyByTemplate(
     args: TNotifyTemplateArgs,
   ): Promise<NotificationResultEntity> {
     const rendered = this.renderTemplate(args);
+
     if (args.channel === NotificationChannel.SMS) {
       return this.sendSms({
         to: this.normalizeMobile(args.destination),
         message: rendered.text,
       });
     }
+
     return this.sendEmail({
       to: this.normalizeEmail(args.destination),
       subject: rendered.subject ?? this.appName,
@@ -51,44 +54,52 @@ export class NotificationService {
         code: NotificationErrorCode.PROVIDER_NOT_CONFIGURED,
       });
     }
+
     const to = this.normalizeMobile(args.to);
-    if (!to)
+
+    if (!to) {
       throw new BadRequestException({
         code: NotificationErrorCode.INVALID_DESTINATION,
       });
+    }
 
     const sender = args.sender ?? this.kavenegarSender;
+
     if (!sender) {
       throw new ServiceUnavailableException({
         code: NotificationErrorCode.PROVIDER_NOT_CONFIGURED,
-        message: "KAVENEGAR_SENDER missing",
+        message: "KAVENEGAR_SENDER environment variable is missing",
       });
     }
 
     try {
       const url = `https://api.kavenegar.com/v1/${this.kavenegarKey}/sms/send.json`;
+
       const resp = await axios.get(url, {
         params: {
           receptor: to,
           sender,
           message: args.message,
         },
-        timeout: 12_000,
+        timeout: 12000,
       });
 
       const data = resp.data;
       const status = data?.return?.status;
+
       if (status !== 200) {
         return {
           message: NotificationMessage.FAILED,
           channel: NotificationChannel.SMS,
           destination: to,
           errorCode: NotificationErrorCode.KAVENEGAR_ERROR,
-          errorMessage: data?.return?.message ?? "Kavenegar error",
+          errorMessage:
+            data?.return?.message ?? "Kavenegar provider returned an error",
         };
       }
 
       const messageId = data?.entries?.[0]?.messageid?.toString?.();
+
       return {
         message: NotificationMessage.SENT,
         channel: NotificationChannel.SMS,
@@ -101,7 +112,7 @@ export class NotificationService {
         channel: NotificationChannel.SMS,
         destination: to,
         errorCode: NotificationErrorCode.PROVIDER_ERROR,
-        errorMessage: e?.message ?? "SMS provider error",
+        errorMessage: e?.message ?? "Unexpected SMS provider error",
       };
     }
   }
@@ -117,11 +128,15 @@ export class NotificationService {
         code: NotificationErrorCode.PROVIDER_NOT_CONFIGURED,
       });
     }
+
     const to = this.normalizeEmail(args.to);
-    if (!to)
+
+    if (!to) {
       throw new BadRequestException({
         code: NotificationErrorCode.INVALID_DESTINATION,
       });
+    }
+
     try {
       const info = await this.smtpTransport.sendMail({
         from: `"${this.mailFromName}" <${this.mailFromAddress}>`,
@@ -130,6 +145,7 @@ export class NotificationService {
         text: args.text,
         html: args.html,
       });
+
       return {
         message: NotificationMessage.SENT,
         channel: NotificationChannel.EMAIL,
@@ -142,19 +158,22 @@ export class NotificationService {
         channel: NotificationChannel.EMAIL,
         destination: to,
         errorCode: NotificationErrorCode.SMTP_ERROR,
-        errorMessage: e?.message ?? "SMTP error",
+        errorMessage: e?.message ?? "SMTP provider error",
       };
     }
   }
 
-  // ============ Internal ============
   private createTransport() {
     const secure = this.mailPort === 465;
+
     return nodemailer.createTransport({
       host: this.mailHost,
       port: this.mailPort,
       secure,
-      auth: { user: this.mailUser, pass: this.mailPass },
+      auth: {
+        user: this.mailUser,
+        pass: this.mailPass,
+      },
     });
   }
 
@@ -164,46 +183,94 @@ export class NotificationService {
     html?: string;
   } {
     const app = args.appName ?? this.appName;
+
     switch (args.template) {
       case NotificationTemplate.OTP_LOGIN: {
-        const text = `${app}\nکد ورود شما: ${args.otpCode}\nاگر شما درخواست نداده‌اید، این پیام را نادیده بگیرید.`;
-        const html = `<p><b>${app}</b></p><p>کد ورود شما: <b>${args.otpCode}</b></p><p>اگر شما درخواست نداده‌اید، این پیام را نادیده بگیرید.</p>`;
-        return { subject: `${app} - کد ورود`, text, html };
+        const text =
+          `${app}\n` +
+          `Your login verification code is: ${args.otpCode}\n` +
+          `If you did not request this code, please ignore this message.`;
+
+        const html =
+          `<p><strong>${app}</strong></p>` +
+          `<p>Your login verification code is: <strong>${args.otpCode}</strong></p>` +
+          `<p>If you did not request this code, please ignore this message.</p>`;
+
+        return {
+          subject: `${app} - Login Verification Code`,
+          text,
+          html,
+        };
       }
 
       case NotificationTemplate.ADMIN_CREDENTIALS: {
         const loginUrl = this.baseUrl ? `${this.baseUrl}/auth/login` : "";
+
         const text =
           `${app}\n` +
-          `حساب ادمین مدرسه برای شما ساخته شد.\n` +
-          `مدرسه: ${args.schoolName}\n` +
+          `A school administrator account has been created for you.\n` +
+          `School: ${args.schoolName}\n` +
           `Username: ${args.username}\n` +
           `Password: ${args.password}\n` +
           (loginUrl ? `Login: ${loginUrl}\n` : "") +
-          `لطفاً بعد از ورود، رمز را تغییر دهید.`;
+          `For security reasons, please change your password after logging in.`;
 
         const html =
-          `<p><b>${app}</b></p>` +
-          `<p>حساب ادمین مدرسه برای شما ساخته شد.</p>` +
-          `<p>مدرسه: <b>${args.schoolName}</b></p>` +
-          `<p>Username: <b>${args.username}</b></p>` +
-          `<p>Password: <b>${args.password}</b></p>` +
-          (loginUrl ? `<p><a href="${loginUrl}">ورود به پنل</a></p>` : "") +
-          `<p>لطفاً بعد از ورود، رمز را تغییر دهید.</p>`;
-        return { subject: `${app} - اطلاعات ورود ادمین`, text, html };
+          `<p><strong>${app}</strong></p>` +
+          `<p>A school administrator account has been created for you.</p>` +
+          `<p>School: <strong>${args.schoolName}</strong></p>` +
+          `<p>Username: <strong>${args.username}</strong></p>` +
+          `<p>Password: <strong>${args.password}</strong></p>` +
+          (loginUrl
+            ? `<p><a href="${loginUrl}">Login to the dashboard</a></p>`
+            : "") +
+          `<p>Please change your password after your first login.</p>`;
+
+        return {
+          subject: `${app} - Administrator Account Credentials`,
+          text,
+          html,
+        };
       }
 
       case NotificationTemplate.ACCESS_REQUEST_APPROVED: {
-        const text = `${app}\nدرخواست شما در مدرسه «${args.schoolName}» تایید شد.\nنقش: ${args.roleTitle}\nاکنون می‌توانید وارد شوید.`;
-        const html = `<p><b>${app}</b></p><p>درخواست شما در مدرسه «<b>${args.schoolName}</b>» تایید شد.</p><p>نقش: <b>${args.roleTitle}</b></p><p>اکنون می‌توانید وارد شوید.</p>`;
-        return { subject: `${app} - تایید درخواست`, text, html };
+        const text =
+          `${app}\n` +
+          `Your access request for the school "${args.schoolName}" has been approved.\n` +
+          `Assigned role: ${args.roleTitle}\n` +
+          `You can now log in to the system.`;
+
+        const html =
+          `<p><strong>${app}</strong></p>` +
+          `<p>Your access request for the school "<strong>${args.schoolName}</strong>" has been approved.</p>` +
+          `<p>Assigned role: <strong>${args.roleTitle}</strong></p>` +
+          `<p>You can now log in to the system.</p>`;
+
+        return {
+          subject: `${app} - Access Request Approved`,
+          text,
+          html,
+        };
       }
 
       case NotificationTemplate.ACCESS_REQUEST_REJECTED: {
-        const reasonLine = args.reason ? `\nدلیل: ${args.reason}` : "";
-        const text = `${app}\nدرخواست شما در مدرسه «${args.schoolName}» رد شد.${reasonLine}`;
-        const html = `<p><b>${app}</b></p><p>درخواست شما در مدرسه «<b>${args.schoolName}</b>» رد شد.</p>${args.reason ? `<p>دلیل: ${args.reason}</p>` : ""}`;
-        return { subject: `${app} - رد درخواست`, text, html };
+        const reasonLine = args.reason ? `\nReason: ${args.reason}` : "";
+
+        const text =
+          `${app}\n` +
+          `Your access request for the school "${args.schoolName}" has been rejected.` +
+          reasonLine;
+
+        const html =
+          `<p><strong>${app}</strong></p>` +
+          `<p>Your access request for the school "<strong>${args.schoolName}</strong>" has been rejected.</p>` +
+          (args.reason ? `<p>Reason: ${args.reason}</p>` : "");
+
+        return {
+          subject: `${app} - Access Request Rejected`,
+          text,
+          html,
+        };
       }
     }
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { DotBackground } from "@elements/DotBackground";
+import { DotBackground } from "@elements/dot-background";
 import { homeStyles } from "@/utils/style";
 import { cn } from "@/lib/utils";
 
