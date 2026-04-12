@@ -4,7 +4,7 @@ import { DashboardShell } from "@elements/dashboard-shell";
 import { schoolAdminNav } from "@/utils/dashboard-nav.config";
 import { Background } from "@elements/background";
 
-import SchoolAdminAssignmentsPage from "@modules/Dashboard/SchoolAdmin/Assignments";
+import SchoolAdminOverview from "@modules/Dashboard/SchoolAdmin/Overview";
 
 const AssignmentsSchoolAdminDashboard = () => {
   return (
@@ -24,7 +24,7 @@ const AssignmentsSchoolAdminDashboard = () => {
       }
     >
       <Background />
-      <SchoolAdminAssignmentsPage />
+      <SchoolAdminOverview />
     </DashboardShell>
   );
 };

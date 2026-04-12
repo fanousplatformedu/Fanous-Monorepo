@@ -246,6 +246,8 @@
     "otp": "OTP code"
   },
   "roles": {
+    "superAdmin": "Super Admin",
+    "schoolAdmin": "School Admin",
     "student": "Student",
     "parent": "Parent",
     "teacher": "Teacher",
@@ -556,17 +558,86 @@
       }
     },
     "schoolAdmin": {
+      "sidebar": {
+        "title": "School Admin",
+        "subtitle": "School operations panel"
+      },
+      "auditLogs": {
+        "header": {
+          "title": "Audit Logs",
+          "description": "Track important actions inside your school."
+        },
+        "empty": {
+          "title": "No audit logs",
+          "description": "Audit records for your school will appear here."
+        },
+        "table": {
+          "title": "Audit Logs",
+          "description": "School-level audit history.",
+          "columns": {
+            "action": "Action",
+            "actor": "Actor",
+            "entity": "Entity",
+            "ip": "IP",
+            "created": "Created"
+          }
+        }
+      },
       "nav": {
         "grades": "Grades",
+        "reports": "Reports",
         "members": "Members",
         "settings": "Settings",
         "overview": "Overview",
         "auditLogs": "Audit Logs",
         "classrooms": "Classrooms",
+        "assignments": "Assignments",
         "enrollments": "Enrollments",
         "accessRequests": "Access Requests"
       },
+      "members": {
+        "header": {
+          "title": "Members",
+          "description": "List and manage members in your school."
+        },
+        "table": {
+          "title": "School Members",
+          "description": "Users currently assigned to your school."
+        },
+        "columns": {
+          "fullName": "Full Name",
+          "role": "Role",
+          "status": "Status",
+          "email": "Email",
+          "mobile": "Mobile",
+          "created": "Created",
+          "actions": "Actions"
+        },
+        "actions": {
+          "disable": "Disable"
+        },
+        "empty": {
+          "title": "No members found",
+          "description": "School members will appear here."
+        },
+        "toasts": {
+          "disableSuccess": "Member disabled successfully.",
+          "disableFailed": "Failed to disable member."
+        },
+        "roles": {
+          "superAdmin": "Super Admin",
+          "schoolAdmin": "School Admin",
+          "student": "Student",
+          "parent": "Parent",
+          "teacher": "Teacher",
+          "counselor": "Counselor"
+        }
+      },
       "settings": {
+        "header": {
+          "title": "Settings",
+          "description": "Your current school admin profile."
+        },
         "account": {
           "title": "My Account",
           "description": "Current school admin profile"

@@ -66,13 +66,13 @@ export const schoolAdminNav: TDashboardNavItem[] = [
   },
   {
     key: "assignments",
-    labelKey: "Assignments",
+    labelKey: "dashboard.schoolAdmin.nav.assignments",
     href: "/school-admin/dashboard/assignments",
     icon: "FileText",
   },
   {
     key: "reports",
-    labelKey: "Reports",
+    labelKey: "dashboard.schoolAdmin.nav.reports",
     href: "/school-admin/dashboard/reports",
     icon: "ChartColumnBig",
   },

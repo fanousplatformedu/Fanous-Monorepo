@@ -39,8 +39,11 @@ const ForcePasswordChangeEnforcer = () => {
       setPending(F.getForcePasswordPending());
       setLoginPath(F.getForcePasswordLoginPath());
     };
+
     syncFromStorage();
+
     window.addEventListener(F.FORCE_PASSWORD_EVENT, syncFromStorage);
+
     return () => {
       window.removeEventListener(F.FORCE_PASSWORD_EVENT, syncFromStorage);
     };
@@ -50,7 +53,7 @@ const ForcePasswordChangeEnforcer = () => {
     return Boolean(
       currentUser &&
         F.isAdminForcePasswordRole(currentUser.role) &&
-        currentUser.forcePasswordChange,
+        currentUser.forcePasswordChange === true,
     );
   }, [currentUser]);
 
@@ -60,35 +63,26 @@ const ForcePasswordChangeEnforcer = () => {
 
   useEffect(() => {
     if (isLoading || isFetching) return;
+
     if (!mustChangePassword) {
       setOpen(false);
       hasShownToastRef.current = false;
       F.clearForcePasswordFlow();
       return;
     }
+
     if (!pending) {
       setOpen(false);
       return;
     }
+
     if (isSettingsPath) {
       setOpen(false);
       return;
     }
-    if (loginPath && pathname === loginPath) {
-      setOpen(true);
-      if (!hasShownToastRef.current) {
-        toast.warning(
-          t(
-            "auth.forcePassword.toast",
-            {},
-            "You must change your password before continuing.",
-          ),
-        );
-        hasShownToastRef.current = true;
-      }
-      return;
-    }
+
     setOpen(true);
+
     if (!hasShownToastRef.current) {
       toast.warning(
         t(
@@ -99,19 +93,11 @@ const ForcePasswordChangeEnforcer = () => {
       );
       hasShownToastRef.current = true;
     }
-  }, [
-    isLoading,
-    isFetching,
-    mustChangePassword,
-    pending,
-    loginPath,
-    pathname,
-    isSettingsPath,
-    t,
-  ]);
+  }, [isLoading, isFetching, mustChangePassword, pending, isSettingsPath, t]);
 
   const handleGoToSettings = () => {
     if (!currentUser?.role) return;
+
     setOpen(false);
     router.push(F.getSettingsPathByRole(currentUser.role));
   };
@@ -128,6 +114,19 @@ const ForcePasswordChangeEnforcer = () => {
       toast.error(t("common.errors.generic"));
     }
   };
+
+  console.log("FORCE FLOW DEBUG", {
+    currentUser,
+    forcePasswordChange: currentUser?.forcePasswordChange,
+    mustChangePassword,
+    pending,
+    loginPath,
+    pathname,
+    isSettingsPath,
+    open,
+    isLoading,
+    isFetching,
+  });
 
   if (!mustChangePassword || !pending || isSettingsPath) return null;
 

@@ -246,8 +246,10 @@
     "otp": "کد یکبار مصرف"
   },
   "roles": {
+    "superAdmin": "سوپر ادمین",
+    "schoolAdmin": "ادمین مدرسه",
     "student": "دانش‌آموز",
-    "parent": "والدین",
+    "parent": "والد",
     "teacher": "معلم",
     "counselor": "مشاور"
   },
@@ -556,7 +558,83 @@
       }
     },
     "schoolAdmin": {
+      "sidebar": {
+        "title": "مدیریت مدرسه",
+        "subtitle": "پنل مدیریت عملیات مدرسه"
+      },
+      "auditLogs": {
+        "header": {
+          "title": "گزارش‌های حسابرسی",
+          "description": "پیگیری رویدادهای مهم داخل مدرسه."
+        },
+        "empty": {
+          "title": "گزارش حسابرسی یافت نشد",
+          "description": "سوابق حسابرسی مدرسه در اینجا نمایش داده می‌شوند."
+        },
+        "table": {
+          "title": "گزارش‌های حسابرسی",
+          "description": "تاریخچه عملیات سطح مدرسه.",
+          "columns": {
+            "action": "عملیات",
+            "actor": "اجراکننده",
+            "entity": "موجودیت",
+            "ip": "آی‌پی",
+            "created": "تاریخ ایجاد"
+          }
+        }
+      },
+      "members": {
+        "header": {
+          "title": "اعضا",
+          "description": "لیست و مدیریت اعضای مدرسه"
+        },
+        "table": {
+          "title": "اعضای مدرسه",
+          "description": "کاربران متصل به مدرسه شما.",
+          "columns": {
+            "fullName": "نام و نام خانوادگی",
+            "role": "نقش",
+            "status": "وضعیت",
+            "email": "ایمیل",
+            "mobile": "موبایل",
+            "created": "تاریخ ایجاد",
+            "actions": "عملیات"
+          }
+        },
+        "columns": {
+          "fullName": "نام کامل",
+          "role": "نقش",
+          "status": "وضعیت",
+          "email": "ایمیل",
+          "mobile": "موبایل",
+          "created": "تاریخ ایجاد",
+          "actions": "عملیات"
+        },
+        "actions": {
+          "disable": "غیرفعال کردن"
+        },
+        "empty": {
+          "title": "عضوی پیدا نشد",
+          "description": "اعضای مدرسه در اینجا نمایش داده می‌شوند."
+        },
+        "toasts": {
+          "disableSuccess": "عضو با موفقیت غیرفعال شد.",
+          "disableFailed": "غیرفعال‌سازی عضو انجام نشد."
+        },
+        "roles": {
+          "superAdmin": "سوپر ادمین",
+          "schoolAdmin": "مدیر مدرسه",
+          "student": "دانش‌آموز",
+          "parent": "والد",
+          "teacher": "معلم",
+          "counselor": "مشاور"
+        }
+      },
       "settings": {
+        "header": {
+          "title": "تنظیمات",
+          "description": "پروفایل فعلی مدیریت مدرسه شما."
+        },
         "account": {
           "title": "حساب من",
           "description": "اطلاعات فعلی حساب ادمین مدرسه"
@@ -589,6 +667,8 @@
         "grades": "پایه‌ها",
         "classrooms": "کلاس‌ها",
         "enrollments": "ثبت‌نام‌ها",
+        "reports": "گزارش ها",
+        "assignments": "واگزاری ها",
         "auditLogs": "لاگ‌ها",
         "settings": "تنظیمات"
       }

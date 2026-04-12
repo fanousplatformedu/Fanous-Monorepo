@@ -1,16 +1,18 @@
 "use client";
 
 import { useSchoolAdminAuditLogsQuery } from "@/lib/redux/api";
-import { DashboardEmptyState } from "@elements/dashboard-empty-state";
 import { DashboardLoadingCard } from "@elements/dashboard-loading-card";
+import { DashboardEmptyState } from "@elements/dashboard-empty-state";
 import { DashboardTableCard } from "@elements/dashboard-table-card";
 import { TablePagination } from "@elements/table-pagination";
+import { PAGE_SIZE } from "@/utils/constant";
 import { useState } from "react";
+import { useI18n } from "@/hooks/useI18n";
 
 import * as L from "lucide-react";
-import { PAGE_SIZE } from "@/utils/constant";
 
 const SchoolAdminAuditLogsPage = () => {
+  const { t } = useI18n();
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useSchoolAdminAuditLogsQuery({
@@ -27,25 +29,63 @@ const SchoolAdminAuditLogsPage = () => {
     return (
       <DashboardEmptyState
         icon={L.ScrollText}
-        title="No audit logs"
-        description="Audit records for your school will appear here."
+        title={t(
+          "dashboard.schoolAdmin.auditLogs.empty.title",
+          {},
+          "No audit logs",
+        )}
+        description={t(
+          "dashboard.schoolAdmin.auditLogs.empty.description",
+          {},
+          "Audit records for your school will appear here.",
+        )}
       />
     );
 
   return (
     <DashboardTableCard
-      title="Audit Logs"
-      description="School-level audit history."
+      title={t("dashboard.schoolAdmin.auditLogs.table.title", {}, "Audit Logs")}
+      description={t(
+        "dashboard.schoolAdmin.auditLogs.table.description",
+        {},
+        "School-level audit history.",
+      )}
     >
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="bg-secondary/30 text-left">
             <tr>
-              <th className="px-4 py-3 font-medium">Action</th>
-              <th className="px-4 py-3 font-medium">Actor</th>
-              <th className="px-4 py-3 font-medium">Entity</th>
-              <th className="px-4 py-3 font-medium">IP</th>
-              <th className="px-4 py-3 font-medium">Created</th>
+              <th className="px-4 py-3 font-medium">
+                {t(
+                  "dashboard.schoolAdmin.auditLogs.columns.action",
+                  {},
+                  "Action",
+                )}
+              </th>
+              <th className="px-4 py-3 font-medium">
+                {t(
+                  "dashboard.schoolAdmin.auditLogs.columns.actor",
+                  {},
+                  "Actor",
+                )}
+              </th>
+              <th className="px-4 py-3 font-medium">
+                {t(
+                  "dashboard.schoolAdmin.auditLogs.columns.entity",
+                  {},
+                  "Entity",
+                )}
+              </th>
+              <th className="px-4 py-3 font-medium">
+                {t("dashboard.schoolAdmin.auditLogs.columns.ip", {}, "IP")}
+              </th>
+              <th className="px-4 py-3 font-medium">
+                {t(
+                  "dashboard.schoolAdmin.auditLogs.columns.created",
+                  {},
+                  "Created",
+                )}
+              </th>
             </tr>
           </thead>
 

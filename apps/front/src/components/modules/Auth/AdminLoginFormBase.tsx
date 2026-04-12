@@ -50,20 +50,17 @@ const AdminLoginFormBase = <TMutationResult,>({
   const onSubmit: SubmitHandler<TFormValues> = async (values) => {
     try {
       const res = await submit(values);
-
       dispatch(
         baseApi.util.invalidateTags([
           { type: "Auth", id: "SESSION" },
           { type: "Me", id: "CURRENT" },
         ]),
       );
-
       const refetchAction = dispatch(
         headerAuthApi.endpoints.currentUserHeader.initiate(undefined, {
           forceRefetch: true,
         }),
       );
-
       let currentUser: {
         id: string;
         role: string;
@@ -73,7 +70,6 @@ const AdminLoginFormBase = <TMutationResult,>({
         schoolId?: string | null;
         forcePasswordChange?: boolean | null;
       } | null = null;
-
       try {
         currentUser = await refetchAction.unwrap();
       } catch {
@@ -81,34 +77,24 @@ const AdminLoginFormBase = <TMutationResult,>({
       } finally {
         refetchAction.unsubscribe();
       }
-
       toast.success(
         getSuccessMessage?.(res) ??
           t("auth.loginSuccess", {}, "Logged in successfully."),
       );
-
       const mustForceChange = Boolean(
         currentUser &&
           FP.isAdminForcePasswordRole(currentUser.role) &&
-          currentUser.forcePasswordChange,
+          currentUser.forcePasswordChange === true,
       );
-
       if (mustForceChange && currentUser?.role) {
         FP.setForcePasswordFlow({
           role: currentUser.role,
           returnTo: redirectTo,
           loginPath: pathname,
         });
-
         form.reset();
-
-        setTimeout(() => {
-          router.refresh();
-        }, 50);
-
         return;
       }
-
       FP.clearForcePasswordFlow();
       router.replace(redirectTo);
       router.refresh();
