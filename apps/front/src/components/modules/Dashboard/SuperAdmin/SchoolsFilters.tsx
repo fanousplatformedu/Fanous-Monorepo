@@ -50,9 +50,9 @@ const SchoolsFilters = ({ value, onApply, onReset }: TSchoolsFiltersProps) => {
         <div className="min-w-0">
           <FloatingInputField
             name="query"
+            inputClassName="h-14"
             control={form.control}
             label={t("dashboard.superAdmin.schools.filters.search")}
-            inputClassName="h-14"
           />
         </div>
 
@@ -71,8 +71,8 @@ const SchoolsFilters = ({ value, onApply, onReset }: TSchoolsFiltersProps) => {
                     <Button
                       key={String(option.value || "ALL")}
                       type="button"
-                      variant="brandChip"
                       size="default"
+                      variant="brandChip"
                       data-state={active ? "active" : "inactive"}
                       className="h-11 rounded-2xl px-4"
                       onClick={() =>
@@ -100,7 +100,7 @@ const SchoolsFilters = ({ value, onApply, onReset }: TSchoolsFiltersProps) => {
 
               <Button
                 type="button"
-                variant="brandOutline"
+                variant="brandSoft"
                 className="h-11 min-w-[130px] rounded-2xl"
                 onClick={() => {
                   const resetValues: TSchoolFilterValues = {

@@ -50,12 +50,7 @@ export const seedSchoolUsers = async (
   schools: TSeededSchool[],
 ) => {
   const { prisma, faker, cfg } = ctx;
-  const roles: Role[] = [
-    Role.STUDENT,
-    Role.PARENT,
-    Role.TEACHER,
-    Role.COUNSELOR,
-  ];
+  const roles: Role[] = [Role.STUDENT, Role.PARENT, Role.COUNSELOR];
   const tasks: Prisma.PrismaPromise<TSeededSchoolUser>[] = [];
   for (const school of schools) {
     for (let i = 0; i < cfg.usersPerSchool; i++) {

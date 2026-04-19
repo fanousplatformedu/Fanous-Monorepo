@@ -14,6 +14,7 @@ export enum SchoolGqlInputNames {
   CreateClassroomInput = "CreateClassroomInput",
   ListSchoolAdminsInput = "ListSchoolAdminsInput",
   CreateSchoolAdminInput = "CreateSchoolAdminInput",
+  ListEnrollmentsByClassroomInput = "ListEnrollmentsByClassroomInput",
 }
 
 export enum SchoolGqlObjectNames {
@@ -26,6 +27,7 @@ export enum SchoolGqlObjectNames {
   SchoolAdmin = "SchoolAdmin",
   PublicSchool = "PublicSchool",
   ClassroomList = "ClassroomList",
+  EnrollmentList = "EnrollmentList",
   SchoolAdminList = "SchoolAdminList",
   PublicSchoolList = "PublicSchoolList",
   CreateSchoolAdminResult = "CreateSchoolAdminResult",

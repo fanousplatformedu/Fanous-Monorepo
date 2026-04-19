@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { ListEnrollmentsByClassroomInput } from "@school/dtos/list-enrolls-by-classname";
 import { CreateSchoolAdminResultEntity } from "@school/entities/create-school-admin-result.entity";
 import { SchoolGqlMutationNames } from "@school/enums/gql-names.enum";
 import { CreateSchoolAdminInput } from "@school/dtos/create-school-admin.input";
@@ -8,6 +9,7 @@ import { SchoolAdminListEntity } from "@school/entities/school-admin-list.entity
 import { SetSchoolStatusInput } from "@school/dtos/set-school-status.input";
 import { CreateClassroomInput } from "@school/dtos/create-classroom.input";
 import { UpdateClassroomInput } from "@school/dtos/update-classroom.input";
+import { EnrollmentListEntity } from "@school/entities/enrollment-list.entity";
 import { CloseEnrollmentInput } from "@school/dtos/close-enrollment.input";
 import { SetAdminStatusInput } from "@school/dtos/set-admin-status.input";
 import { SchoolGqlQueryNames } from "@school/enums/gql-names.enum";
@@ -316,21 +318,18 @@ export class SchoolResolver {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SUPER_ADMIN, Role.SCHOOL_ADMIN)
-  @Query(() => [EnrollmentEntity], {
+  @Query(() => EnrollmentListEntity, {
     name: SchoolGqlQueryNames.EnrollmentsByClassroom,
   })
   enrollmentsByClassroom(
     @CurrentUser() user: any,
-    @Args("schoolId") schoolId: string,
-    @Args("classroomId") classroomId: string,
+    @Args("input") input: ListEnrollmentsByClassroomInput,
   ) {
     return this.schoolsService.enrollmentsByClassroom(
       { id: user.id, role: user.role, schoolId: user.schoolId },
-      schoolId,
-      classroomId,
+      input,
     );
   }
-
   // ============= Public ===============
   @Public()
   @Query(() => PublicSchoolListEntity, {

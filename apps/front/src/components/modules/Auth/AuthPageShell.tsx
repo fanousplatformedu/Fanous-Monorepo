@@ -29,7 +29,7 @@ const AuthPageShell = ({
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_40%)] dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_38%)]" />
       </div>
       <FloatingParticles />
-      <section className="container relative mx-auto flex min-h-screen items-center justify-center px-4 py-14 md:px-6">
+      <section className="relative mx-auto flex min-h-screen items-center justify-center px-4 py-14 md:px-6">
         <motion.div
           variants={MOTION.fadeUpStagger({ y: 16, stagger: 0.08 })}
           initial="hidden"

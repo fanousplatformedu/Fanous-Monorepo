@@ -1,11 +1,11 @@
 "use client";
 
 import { useSetAdminStatusMutation } from "@/lib/redux/api";
-import { SchoolAdminFormDialog } from "@elements/school-admin-form-dialog";
-import { SuperAdminSectionCard } from "@elements/super-admin-section-card";
+import { SchoolAdminFormDialog } from "@modules/Dashboard/SchoolAdmin/parts/school-admin-form-dialog";
+import { SuperAdminSectionCard } from "@modules/Dashboard/SuperAdmin/parts/super-section-card";
 import { useSchoolAdminsQuery } from "@/lib/redux/api";
-import { DashboardLoadingCard } from "@elements/dashboard-loading-card";
-import { DashboardEmptyState } from "@elements/dashboard-empty-state";
+import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
+import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
 import { getApiErrorMessage } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
 import { TableActionButton } from "@elements/table-action-button";
@@ -227,8 +227,8 @@ const SchoolAdmins = () => {
 
               <TablePagination
                 page={page}
-                pageSize={PAGE_SIZE}
                 total={total}
+                pageSize={PAGE_SIZE}
                 onPageChange={(nextPage) => {
                   if (isFetching) return;
                   setPage(nextPage);

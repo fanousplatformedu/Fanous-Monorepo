@@ -1,215 +1,229 @@
 "use client";
 
-import { useGradesQuery } from "@/lib/redux/api";
-import { useCreateGradeMutation } from "@/lib/redux/api";
-import { useUpdateGradeMutation } from "@/lib/redux/api";
-import { useArchiveGradeMutation } from "@/lib/redux/api";
-import { useRestoreGradeMutation } from "@/lib/redux/api";
-import { DashboardEmptyState } from "@elements/dashboard-empty-state";
-import { DashboardLoadingCard } from "@elements/dashboard-loading-card";
-import { DashboardTableCard } from "@elements/dashboard-table-card";
-import { DashboardSection } from "@elements/dashboard-section";
-import { TablePagination } from "@elements/table-pagination";
-import { FloatingInputField } from "@elements/floating-input-field";
+import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
+import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
 import { getApiErrorMessage } from "@/utils/function-helper";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button } from "@ui/button";
-import { toast } from "sonner";
-import { z } from "zod";
-
-import * as F from "@ui/form";
-import * as L from "lucide-react";
+import { TGradeDialogState } from "@/types/modules";
+import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
+import { GradeEditDialog } from "@modules/Dashboard/SchoolAdmin/parts/grade-dialog";
+import { GradeFilters } from "@modules/Dashboard/SchoolAdmin/parts/grade-filter";
+import { GradeTable } from "@modules/Dashboard/SchoolAdmin/parts/grade-table";
 import { PAGE_SIZE } from "@/utils/constant";
+import { GradeForm } from "@modules/Dashboard/SchoolAdmin/parts/grade-form";
+import { useI18n } from "@/hooks/useI18n";
+import { toast } from "sonner";
 
-const gradeSchema = z.object({
-  name: z.string().min(1, "Grade name is required"),
-  code: z.string().optional(),
-});
+import * as API from "@/lib/redux/api";
+import * as L from "lucide-react";
 
-type TGradeForm = z.infer<typeof gradeSchema>;
+const SchoolAdminGradesPage = () => {
+  const { t } = useI18n();
 
-const SchoolAdminGrades = () => {
   const [page, setPage] = useState(1);
+  const [includeArchived, setIncludeArchived] = useState(false);
+  const [editTarget, setEditTarget] = useState<TGradeDialogState>(null);
 
-  const { data, isLoading } = useGradesQuery({
-    take: PAGE_SIZE,
-    skip: (page - 1) * PAGE_SIZE,
-  });
+  const { data: me, isLoading: isMeLoading } = API.useSchoolAdminMeQuery();
+  const schoolId = me?.schoolId ?? "";
 
-  const [createGrade, { isLoading: creating }] = useCreateGradeMutation();
-  const [updateGrade, { isLoading: updating }] = useUpdateGradeMutation();
-  const [archiveGrade, { isLoading: archiving }] = useArchiveGradeMutation();
-  const [restoreGrade, { isLoading: restoring }] = useRestoreGradeMutation();
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const {
+    data,
+    isLoading: isGradesLoading,
+    isFetching,
+  } = API.useGradesQuery(
+    {
+      schoolId,
+      take: PAGE_SIZE,
+      skip,
+      includeDeleted: includeArchived,
+    },
+    {
+      skip: !schoolId,
+    },
+  );
+
+  const [createGrade, { isLoading: isCreating }] = API.useCreateGradeMutation();
+  const [updateGrade, { isLoading: isUpdating }] = API.useUpdateGradeMutation();
+  const [archiveGrade, { isLoading: isArchiving }] =
+    API.useArchiveGradeMutation();
+  const [restoreGrade, { isLoading: isRestoring }] =
+    API.useRestoreGradeMutation();
 
   const items = useMemo(() => data?.items ?? [], [data]);
   const total = data?.total ?? 0;
 
-  const form = useForm<TGradeForm>({
-    resolver: zodResolver(gradeSchema),
-    defaultValues: {
-      name: "",
-      code: "",
-    },
-  });
+  const activeCount = useMemo(
+    () => items.filter((item) => !item.deletedAt).length,
+    [items],
+  );
 
-  const onSubmit = async (values: TGradeForm) => {
+  const archivedCount = useMemo(
+    () => items.filter((item) => Boolean(item.deletedAt)).length,
+    [items],
+  );
+
+  const handleCreateGrade = async (values: { name: string; code: string }) => {
+    if (!schoolId) {
+      toast.error(t("dashboard.schoolAdmin.grades.toasts.schoolMissing"));
+      return;
+    }
+
     try {
       await createGrade({
+        schoolId,
         name: values.name.trim(),
-        code: values.code?.trim() || undefined,
+        code: values.code.trim() || undefined,
       }).unwrap();
-      toast.success("Grade created successfully.");
-      form.reset();
+
+      toast.success(t("dashboard.schoolAdmin.grades.toasts.createSuccess"));
       setPage(1);
     } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error, "Failed to create grade."));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("dashboard.schoolAdmin.grades.toasts.createFailed"),
+        ),
+      );
     }
   };
 
-  const handleEdit = async (grade: {
+  const handleEditGrade = async (values: {
     id: string;
     name: string;
-    code?: string | null;
+    code: string;
   }) => {
-    const nextName = window.prompt("Update grade name", grade.name);
-    const nextCode = window.prompt("Update grade code", grade.code || "");
-    if (!nextName?.trim()) return;
     try {
       await updateGrade({
-        id: grade.id,
-        name: nextName.trim(),
-        code: nextCode?.trim() || undefined,
+        id: values.id,
+        name: values.name.trim(),
+        code: values.code.trim() || undefined,
       }).unwrap();
-      toast.success("Grade updated successfully.");
+      toast.success(t("dashboard.schoolAdmin.grades.toasts.updateSuccess"));
+      setEditTarget(null);
     } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error, "Failed to update grade."));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("dashboard.schoolAdmin.grades.toasts.updateFailed"),
+        ),
+      );
     }
   };
 
-  const handleToggleArchive = async (id: string, deletedAt?: string | null) => {
+  const handleToggleArchive = async (id: string, deletedAt: string | null) => {
     try {
       if (deletedAt) {
         await restoreGrade(id).unwrap();
-        toast.success("Grade restored successfully.");
+        toast.success(t("dashboard.schoolAdmin.grades.toasts.restoreSuccess"));
       } else {
         await archiveGrade(id).unwrap();
-        toast.success("Grade archived successfully.");
+        toast.success(t("dashboard.schoolAdmin.grades.toasts.archiveSuccess"));
       }
     } catch (error: unknown) {
-      toast.error(getApiErrorMessage(error, "Failed to update grade status."));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("dashboard.schoolAdmin.grades.toasts.statusFailed"),
+        ),
+      );
     }
   };
 
+  if (isMeLoading || isGradesLoading) return <DashboardLoadingCard rows={8} />;
+
   return (
-    <div className="space-y-6">
-      <DashboardSection
-        title="Create Grade"
-        description="Create and manage academic grade levels."
-      >
-        <F.Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 md:grid-cols-[1fr_220px_180px]"
-          >
-            <FloatingInputField
-              control={form.control}
-              name="name"
-              label="Grade name"
-            />
-            <FloatingInputField
-              control={form.control}
-              name="code"
-              label="Code"
-            />
-            <Button
-              type="submit"
-              variant="brand"
-              className="h-14 rounded-2xl"
-              disabled={creating}
-            >
-              {creating ? "Creating..." : "Create Grade"}
-            </Button>
-          </form>
-        </F.Form>
-      </DashboardSection>
-
-      {isLoading ? (
-        <DashboardLoadingCard rows={7} />
-      ) : !items.length ? (
-        <DashboardEmptyState
-          icon={L.GraduationCap}
-          title="No grades found"
-          description="Create the first grade for this school."
-        />
-      ) : (
-        <DashboardTableCard
-          title="Grades"
-          description="Manage school grade levels."
+    <>
+      <div className="space-y-6">
+        <DashboardSection
+          title={t("dashboard.schoolAdmin.grades.form.title")}
+          description={t("dashboard.schoolAdmin.grades.form.description")}
         >
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-secondary/30 text-left">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Code</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Created</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
+          <GradeForm isSubmitting={isCreating} onSubmit={handleCreateGrade} />
+        </DashboardSection>
 
-              <tbody>
-                {items.map((grade) => (
-                  <tr key={grade.id} className="border-t border-border/40">
-                    <td className="px-4 py-3">{grade.name}</td>
-                    <td className="px-4 py-3">{grade.code || "-"}</td>
-                    <td className="px-4 py-3">
-                      {grade.deletedAt ? "Archived" : "Active"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {new Date(grade.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="brandOutline"
-                          size="sm"
-                          disabled={updating}
-                          onClick={() => handleEdit(grade)}
-                        >
-                          Edit
-                        </Button>
+        <div className="grid gap-4 md:grid-cols-3">
+          <DashboardSection
+            description={String(total)}
+            title={t("dashboard.schoolAdmin.grades.kpis.total.title")}
+          >
+            <p className="text-2xl font-bold">{total}</p>
+          </DashboardSection>
 
-                        <Button
-                          variant="brandSoft"
-                          size="sm"
-                          disabled={archiving || restoring}
-                          onClick={() =>
-                            handleToggleArchive(grade.id, grade.deletedAt)
-                          }
-                        >
-                          {grade.deletedAt ? "Restore" : "Archive"}
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DashboardSection
+            title={t("dashboard.schoolAdmin.grades.kpis.active.title")}
+            description={t(
+              "dashboard.schoolAdmin.grades.kpis.active.description",
+            )}
+          >
+            <p className="text-2xl font-bold">{activeCount}</p>
+          </DashboardSection>
 
-          <TablePagination
-            page={page}
-            pageSize={PAGE_SIZE}
-            total={total}
-            onPageChange={setPage}
+          <DashboardSection
+            title={t("dashboard.schoolAdmin.grades.kpis.archived.title")}
+            description={t(
+              "dashboard.schoolAdmin.grades.kpis.archived.description",
+            )}
+          >
+            <p className="text-2xl font-bold">{archivedCount}</p>
+          </DashboardSection>
+        </div>
+
+        <DashboardSection
+          title={t("dashboard.schoolAdmin.grades.filters.title")}
+          description={t("dashboard.schoolAdmin.grades.filters.description")}
+        >
+          <GradeFilters
+            includeArchived={includeArchived}
+            onIncludeArchivedChange={(value) => {
+              setIncludeArchived(value);
+              setPage(1);
+            }}
           />
-        </DashboardTableCard>
-      )}
-    </div>
+        </DashboardSection>
+
+        {!items.length ? (
+          <DashboardEmptyState
+            icon={L.GraduationCap}
+            title={t("dashboard.schoolAdmin.grades.empty.title")}
+            description={t("dashboard.schoolAdmin.grades.empty.description")}
+          />
+        ) : (
+          <GradeTable
+            page={page}
+            items={items}
+            total={total}
+            pageSize={PAGE_SIZE}
+            isFetching={isFetching}
+            isUpdating={isUpdating}
+            isArchiving={isArchiving}
+            isRestoring={isRestoring}
+            onPageChange={setPage}
+            onEdit={(grade) =>
+              setEditTarget({
+                id: grade.id,
+                name: grade.name,
+                code: grade.code ?? "",
+              })
+            }
+            onToggleArchive={handleToggleArchive}
+          />
+        )}
+      </div>
+
+      <GradeEditDialog
+        open={Boolean(editTarget)}
+        isSubmitting={isUpdating}
+        initialValues={editTarget}
+        onOpenChange={(open) => {
+          if (!open) setEditTarget(null);
+        }}
+        onSubmit={handleEditGrade}
+      />
+    </>
   );
 };
 
-export default SchoolAdminGrades;
+export default SchoolAdminGradesPage;

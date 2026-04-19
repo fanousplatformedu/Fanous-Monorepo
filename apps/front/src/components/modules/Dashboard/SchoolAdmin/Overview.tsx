@@ -2,78 +2,174 @@
 
 import { AssignmentCompletionBars } from "@modules/Dashboard/Charts/AssignmentCompletionBars";
 import { IntelligenceAverageBars } from "@modules/Dashboard/Charts/IntelligenceAvaragBars";
+import { SchoolActivityTrendLine } from "@modules/Dashboard/SchoolAdmin/parts/activity-trend-line";
 import { AssignmentStatusDonut } from "@modules/Dashboard/Charts/AssessmentStatusDonut";
-import { DashboardChartCard } from "@elements/dashboard-chart-card";
-import { DashboardStatCard } from "@elements/dashboard-stat-card";
+import { SchoolMemberRoleDonut } from "@modules/Dashboard/SchoolAdmin/parts/member-role-donut";
+import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
+import { DashboardChartCard } from "@modules/Dashboard/parts/dashboard-chart-card";
+import { DashboardStatCard } from "@modules/Dashboard/parts/dashboard-stat-card";
+import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
+import { formatShortDate } from "@/utils/function-helper";
+import { TTrendPoint } from "@/types/modules";
+import { useI18n } from "@/hooks/useI18n";
+import { useMemo } from "react";
 
 import * as API from "@/lib/redux/api";
 import * as L from "lucide-react";
 
 const SchoolAdminOverview = () => {
-  const { data: membersData } = API.useSchoolMembersQuery({
-    take: 100,
-    skip: 0,
-  });
+  const { t } = useI18n();
 
-  const { data: requestsData } = API.useSchoolAdminAccessRequestsQuery({
-    take: 100,
-    skip: 0,
-  });
+  const { data: membersData, isLoading: isMembersLoading } =
+    API.useSchoolMembersQuery({
+      take: 200,
+      skip: 0,
+    });
 
-  const { data: auditData } = API.useSchoolAdminAuditLogsQuery({
-    take: 100,
-    skip: 0,
-  });
+  const { data: requestsData, isLoading: isRequestsLoading } =
+    API.useSchoolAdminAccessRequestsQuery({
+      take: 200,
+      skip: 0,
+    });
 
-  const { data: assignmentsData } = API.useAssignmentsQuery({
-    take: 100,
-    skip: 0,
-  });
+  const { data: auditData, isLoading: isAuditLoading } =
+    API.useSchoolAdminAuditLogsQuery({
+      take: 200,
+      skip: 0,
+    });
 
-  const { data: summary } = API.useSchoolAssessmentSummaryQuery();
+  const { data: assignmentsData, isLoading: isAssignmentsLoading } =
+    API.useAssignmentsQuery({
+      take: 200,
+      skip: 0,
+    });
 
-  const members = membersData?.items ?? [];
-  const requests = requestsData?.items ?? [];
-  const assignments = assignmentsData?.items ?? [];
+  const { data: summary, isLoading: isSummaryLoading } =
+    API.useSchoolAssessmentSummaryQuery({});
 
-  const students = members.filter((m) => m.role === "STUDENT").length;
-  const counselors = members.filter((m) => m.role === "COUNSELOR").length;
-  const teachers = members.filter((m) => m.role === "TEACHER").length;
-  const parents = members.filter((m) => m.role === "PARENT").length;
-  const pendingRequests = requests.filter((r) => r.status === "PENDING").length;
+  const isLoading =
+    isMembersLoading ||
+    isRequestsLoading ||
+    isAuditLoading ||
+    isAssignmentsLoading ||
+    isSummaryLoading;
+
+  const members = useMemo(() => membersData?.items ?? [], [membersData]);
+  const requests = useMemo(() => requestsData?.items ?? [], [requestsData]);
+  const assignments = useMemo(
+    () => assignmentsData?.items ?? [],
+    [assignmentsData],
+  );
+
+  const studentsCount = members.filter(
+    (member) => member.role === "STUDENT",
+  ).length;
+  const counselorsCount = members.filter(
+    (member) => member.role === "COUNSELOR",
+  ).length;
+  const parentsCount = members.filter(
+    (member) => member.role === "PARENT",
+  ).length;
+
+  const activeMembersCount = members.filter(
+    (member) => member.status === "ACTIVE",
+  ).length;
+
+  const pendingRequestsCount = requests.filter(
+    (request) => request.status === "PENDING",
+  ).length;
+
+  const approvedRequestsCount = requests.filter(
+    (request) => request.status === "APPROVED",
+  ).length;
+
+  const rejectedRequestsCount = requests.filter(
+    (request) => request.status === "REJECTED",
+  ).length;
 
   const assignmentStatusData = [
     {
-      name: "Draft",
-      value: assignments.filter((a) => a.status === "DRAFT").length,
+      name: t("dashboard.schoolAdmin.overview.charts.assignmentStatus.draft"),
+      value: assignments.filter((item) => item.status === "DRAFT").length,
     },
     {
-      name: "Published",
-      value: assignments.filter((a) => a.status === "PUBLISHED").length,
+      name: t(
+        "dashboard.schoolAdmin.overview.charts.assignmentStatus.published",
+      ),
+      value: assignments.filter((item) => item.status === "PUBLISHED").length,
     },
     {
-      name: "Closed",
-      value: assignments.filter((a) => a.status === "CLOSED").length,
+      name: t("dashboard.schoolAdmin.overview.charts.assignmentStatus.closed"),
+      value: assignments.filter((item) => item.status === "CLOSED").length,
+    },
+  ].filter((item) => item.value > 0);
+
+  const memberRoleData = [
+    {
+      name: t("roles.student"),
+      value: studentsCount,
+    },
+    {
+      name: t("roles.parent"),
+      value: parentsCount,
+    },
+    {
+      name: t("roles.counselor"),
+      value: counselorsCount,
     },
   ].filter((item) => item.value > 0);
 
   const intelligenceData = summary
     ? [
-        { name: "Linguistic", value: summary.avgLinguistic },
-        { name: "Logical", value: summary.avgLogicalMath },
-        { name: "Musical", value: summary.avgMusical },
-        { name: "Bodily", value: summary.avgBodilyKinesthetic },
-        { name: "Visual", value: summary.avgVisualSpatial },
-        { name: "Natural", value: summary.avgNaturalistic },
-        { name: "Social", value: summary.avgInterpersonal },
-        { name: "Self", value: summary.avgIntrapersonal },
+        {
+          name: t(
+            "dashboard.schoolAdmin.overview.charts.intelligence.linguistic",
+          ),
+          value: summary.avgLinguistic,
+        },
+        {
+          name: t(
+            "dashboard.schoolAdmin.overview.charts.intelligence.logicalMath",
+          ),
+          value: summary.avgLogicalMath,
+        },
+        {
+          name: t("dashboard.schoolAdmin.overview.charts.intelligence.musical"),
+          value: summary.avgMusical,
+        },
+        {
+          name: t("dashboard.schoolAdmin.overview.charts.intelligence.bodily"),
+          value: summary.avgBodilyKinesthetic,
+        },
+        {
+          name: t("dashboard.schoolAdmin.overview.charts.intelligence.visual"),
+          value: summary.avgVisualSpatial,
+        },
+        {
+          name: t(
+            "dashboard.schoolAdmin.overview.charts.intelligence.naturalistic",
+          ),
+          value: summary.avgNaturalistic,
+        },
+        {
+          name: t(
+            "dashboard.schoolAdmin.overview.charts.intelligence.interpersonal",
+          ),
+          value: summary.avgInterpersonal,
+        },
+        {
+          name: t(
+            "dashboard.schoolAdmin.overview.charts.intelligence.intrapersonal",
+          ),
+          value: summary.avgIntrapersonal,
+        },
       ]
     : [];
 
   const completionBars = summary
     ? [
         {
-          name: "Assessment Flow",
+          name: t("dashboard.schoolAdmin.overview.charts.assessmentFlow.name"),
           pending: summary.pendingStudentAssignments,
           submitted: summary.submittedStudentAssignments,
           evaluated: summary.evaluatedStudentAssignments,
@@ -81,84 +177,230 @@ const SchoolAdminOverview = () => {
       ]
     : [];
 
+  const trendMap = useMemo(() => {
+    const map = new Map<string, TTrendPoint>();
+    const ensure = (dateKey: string) => {
+      if (!map.has(dateKey)) {
+        map.set(dateKey, {
+          audits: 0,
+          requests: 0,
+          name: dateKey,
+          assignments: 0,
+        });
+      }
+      return map.get(dateKey)!;
+    };
+    assignments.forEach((item) => {
+      const key = formatShortDate(item.createdAt);
+      ensure(key).assignments += 1;
+    });
+    requests.forEach((item) => {
+      const key = formatShortDate(item.createdAt);
+      ensure(key).requests += 1;
+    });
+    (auditData?.items ?? []).forEach((item) => {
+      const key = formatShortDate(item.createdAt);
+      ensure(key).audits += 1;
+    });
+    return Array.from(map.values()).slice(-7);
+  }, [assignments, requests, auditData]);
+
+  const recentActivity = useMemo(() => {
+    const logs = auditData?.items ?? [];
+    return logs.slice(0, 6);
+  }, [auditData]);
+
+  if (isLoading) return <DashboardLoadingCard rows={10} />;
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <DashboardStatCard
-          value={students}
-          title="Total Students"
+          value={studentsCount}
           icon={L.GraduationCap}
+          title={t("dashboard.schoolAdmin.overview.stats.students")}
         />
+
         <DashboardStatCard
-          title="Counselors"
-          value={counselors}
-          icon={L.BadgeHelp}
+          icon={L.UserCheck}
+          value={activeMembersCount}
+          title={t("dashboard.schoolAdmin.overview.stats.activeMembers")}
         />
+
         <DashboardStatCard
           icon={L.UserPlus2}
-          title="Pending Requests"
-          value={pendingRequests}
+          value={pendingRequestsCount}
+          title={t("dashboard.schoolAdmin.overview.stats.pendingRequests")}
         />
+
         <DashboardStatCard
-          title="Completion Rate"
           icon={L.ChartColumnBig}
           value={`${summary?.completionRate ?? 0}%`}
+          title={t("dashboard.schoolAdmin.overview.stats.completionRate")}
+        />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <DashboardStatCard
+          icon={L.FileText}
+          value={summary?.totalAssignments ?? assignments.length}
+          title={t("dashboard.schoolAdmin.overview.stats.totalAssignments")}
+        />
+
+        <DashboardStatCard
+          icon={L.Send}
+          value={summary?.publishedAssignments ?? 0}
+          title={t("dashboard.schoolAdmin.overview.stats.publishedAssignments")}
+        />
+
+        <DashboardStatCard
+          icon={L.CheckCircle2}
+          value={summary?.evaluatedStudentAssignments ?? 0}
+          title={t("dashboard.schoolAdmin.overview.stats.evaluatedAssignments")}
+        />
+
+        <DashboardStatCard
+          icon={L.ScrollText}
+          value={auditData?.total ?? 0}
+          title={t("dashboard.schoolAdmin.overview.stats.auditLogs")}
         />
       </div>
 
       <div className="grid gap-5 xl:grid-cols-2">
         <DashboardChartCard
-          title="Assignment Status"
-          description="Distribution of draft, published, and closed assignments."
+          title={t("dashboard.schoolAdmin.overview.charts.memberRoles.title")}
+          description={t(
+            "dashboard.schoolAdmin.overview.charts.memberRoles.description",
+          )}
         >
-          <AssignmentStatusDonut data={assignmentStatusData} />
+          <SchoolMemberRoleDonut data={memberRoleData} />
         </DashboardChartCard>
 
         <DashboardChartCard
-          title="Assessment Progress"
-          description="Pending, submitted, and evaluated student assignments."
+          title={t(
+            "dashboard.schoolAdmin.overview.charts.assignmentStatus.title",
+          )}
+          description={t(
+            "dashboard.schoolAdmin.overview.charts.assignmentStatus.description",
+          )}
+        >
+          <AssignmentStatusDonut data={assignmentStatusData} />
+        </DashboardChartCard>
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-2">
+        <DashboardChartCard
+          title={t(
+            "dashboard.schoolAdmin.overview.charts.assessmentFlow.title",
+          )}
+          description={t(
+            "dashboard.schoolAdmin.overview.charts.assessmentFlow.description",
+          )}
         >
           <AssignmentCompletionBars data={completionBars} />
+        </DashboardChartCard>
+
+        <DashboardChartCard
+          title={t("dashboard.schoolAdmin.overview.charts.activityTrend.title")}
+          description={t(
+            "dashboard.schoolAdmin.overview.charts.activityTrend.description",
+          )}
+        >
+          <SchoolActivityTrendLine data={trendMap} />
         </DashboardChartCard>
       </div>
 
       <DashboardChartCard
-        title="Average Intelligence Profile"
-        description="School-wide average score by intelligence dimension."
+        title={t("dashboard.schoolAdmin.overview.charts.intelligence.title")}
+        description={t(
+          "dashboard.schoolAdmin.overview.charts.intelligence.description",
+        )}
       >
         <IntelligenceAverageBars data={intelligenceData} />
       </DashboardChartCard>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         <DashboardStatCard
-          icon={L.FileText}
-          title="Assignments"
-          value={summary?.totalAssignments ?? assignments.length}
+          icon={L.UserRound}
+          value={parentsCount}
+          title={t("dashboard.schoolAdmin.overview.stats.parents")}
         />
+
         <DashboardStatCard
-          icon={L.Send}
-          title="Published"
-          value={summary?.publishedAssignments ?? 0}
-        />
-        <DashboardStatCard
-          title="Evaluated"
-          icon={L.CheckCircle2}
-          value={summary?.evaluatedStudentAssignments ?? 0}
-        />
-        <DashboardStatCard
-          title="Audit Logs"
-          icon={L.ScrollText}
-          value={auditData?.total ?? 0}
+          icon={L.BadgeHelp}
+          value={counselorsCount}
+          title={t("dashboard.schoolAdmin.overview.stats.counselors")}
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <DashboardStatCard title="Teachers" value={teachers} icon={L.Users} />
-        <DashboardStatCard title="Parents" value={parents} icon={L.UserRound} />
+      <DashboardSection
+        title={t("dashboard.schoolAdmin.overview.recentActivity.title")}
+        description={t(
+          "dashboard.schoolAdmin.overview.recentActivity.description",
+        )}
+      >
+        {!recentActivity.length ? (
+          <p className="text-sm text-muted-foreground">
+            {t("dashboard.schoolAdmin.overview.recentActivity.empty")}
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {recentActivity.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-start justify-between rounded-2xl border border-border/60 bg-card/60 p-4"
+              >
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">{item.action}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.entityType || "-"} / {item.entityId || "-"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("dashboard.schoolAdmin.overview.recentActivity.actor")}:{" "}
+                    {item.actorId || "-"}
+                  </p>
+                </div>
+
+                <div className="text-right text-xs text-muted-foreground">
+                  {new Date(item.createdAt).toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </DashboardSection>
+
+      <div className="grid gap-4 sm:grid-cols-3">
         <DashboardStatCard
-          title="Submitted"
-          value={summary?.submittedStudentAssignments ?? 0}
+          icon={L.Clock3}
+          value={summary?.pendingStudentAssignments ?? 0}
+          title={t("dashboard.schoolAdmin.overview.stats.pending")}
+        />
+
+        <DashboardStatCard
           icon={L.SendHorizontal}
+          value={summary?.submittedStudentAssignments ?? 0}
+          title={t("dashboard.schoolAdmin.overview.stats.submitted")}
+        />
+
+        <DashboardStatCard
+          icon={L.ThumbsUp}
+          value={approvedRequestsCount}
+          title={t("dashboard.schoolAdmin.overview.stats.approvedRequests")}
+        />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <DashboardStatCard
+          icon={L.ThumbsDown}
+          value={rejectedRequestsCount}
+          title={t("dashboard.schoolAdmin.overview.stats.rejectedRequests")}
+        />
+
+        <DashboardStatCard
+          icon={L.Users2}
+          value={members.length}
+          title={t("dashboard.schoolAdmin.overview.stats.totalMembers")}
         />
       </div>
     </div>

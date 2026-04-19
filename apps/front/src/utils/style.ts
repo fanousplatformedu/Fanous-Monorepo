@@ -251,7 +251,7 @@ export const schoolAdminLoginStyles = {
   gridPattern:
     "absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem]",
   contentContainer:
-    "container relative mx-auto flex min-h-screen items-center justify-center px-4 py-16",
+    "relative mx-auto flex min-h-screen items-center justify-center px-4 py-16",
   formWrapper: "w-full max-w-md",
   badgeContainer: "mb-8 flex items-center justify-center gap-2",
   badgeIconWrapper: "rounded-full bg-emerald-500/8 p-2 backdrop-blur-sm",
@@ -397,7 +397,7 @@ export const accessRequestStyles = {
   gridPattern:
     "absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:3.5rem_3.5rem]",
   contentContainer:
-    "container relative mx-auto flex min-h-screen items-center justify-center px-4 py-16",
+    "relative mx-auto flex min-h-screen items-center justify-center px-4 py-16",
   formWrapper: "w-full max-w-2xl",
   badgeContainer: "mb-8 flex items-center justify-center gap-2",
   badgeIconWrapper: "rounded-full bg-amber-500/8 p-2 backdrop-blur-sm",

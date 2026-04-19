@@ -133,15 +133,6 @@
             "Notification preferences"
           ]
         },
-        "teachers": {
-          "title": "Teachers",
-          "desc": "Monitor class progress and support student development.",
-          "bullets": [
-            "Class overview",
-            "Student insights",
-            "Performance reports"
-          ]
-        },
         "super": {
           "title": "Super Admin",
           "desc": "Manage tenants, billing, and platform-wide settings.",
@@ -171,17 +162,19 @@
     }
   },
   "common": {
+    "no": "No",
     "all": "All",
     "yes": "Yes",
-    "no": "No",
-    "apply": "Apply",
-    "reset": "Reset",
     "edit": "Edit",
-    "previous": "Previous",
     "next": "Next",
-    "loading": "Loading...",
     "save": "Save",
+    "reset": "Reset",
+    "apply": "Apply",
+    "close": "Close",
     "cancel": "Cancel",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "refreshing": "Refreshing...",
     "errors": {
       "generic": "Something went wrong. Please try again."
     }
@@ -250,7 +243,6 @@
     "schoolAdmin": "School Admin",
     "student": "Student",
     "parent": "Parent",
-    "teacher": "Teacher",
     "counselor": "Counselor"
   },
   "dashboard": {
@@ -558,11 +550,36 @@
       }
     },
     "schoolAdmin": {
+      "shell": {
+        "title": "School Admin",
+        "subtitle": "School operations panel"
+      },
       "sidebar": {
         "title": "School Admin",
         "subtitle": "School operations panel"
       },
       "auditLogs": {
+        "kpis": {
+          "createActions": "Create Actions",
+          "updateActions": "Update Actions",
+          "deleteArchiveActions": "Delete / Archive Actions"
+        },
+        "filtersCard": {
+          "title": "Audit Log Filters",
+          "description": "Filter school audit logs by actor, action, and entity type."
+        },
+        "filters": {
+          "actorId": "Actor ID",
+          "action": "Action",
+          "entityType": "Entity Type"
+        },
+        "columns": {
+          "action": "Action",
+          "actor": "Actor",
+          "entity": "Entity",
+          "ip": "IP",
+          "created": "Created"
+        },
         "header": {
           "title": "Audit Logs",
           "description": "Track important actions inside your school."
@@ -629,8 +646,46 @@
           "schoolAdmin": "School Admin",
           "student": "Student",
           "parent": "Parent",
-          "teacher": "Teacher",
           "counselor": "Counselor"
+        },
+        "kpis": {
+          "total": {
+            "title": "Total members",
+            "description": "All members in this school"
+          },
+          "active": {
+            "title": "Active members",
+            "description": "Currently active users"
+          },
+          "disabled": {
+            "title": "Disabled members",
+            "description": "Users disabled from access"
+          }
+        },
+        "filters": {
+          "title": "Filters",
+          "description": "Filter members by name, role, or status.",
+          "fields": {
+            "query": "Search by full name",
+            "role": "Role",
+            "status": "Status"
+          },
+          "options": {
+            "allRoles": "All roles",
+            "allStatuses": "All statuses"
+          }
+        },
+        "status": {
+          "ACTIVE": "Active",
+          "DISABLED": "Disabled",
+          "DELETED": "Deleted"
+        },
+        "disableDialog": {
+          "title": "Disable Member",
+          "description": "Are you sure you want to disable this member?",
+          "fullName": "Full name",
+          "email": "Email",
+          "role": "Role"
         }
       },
       "settings": {
@@ -662,13 +717,996 @@
           "passwordUpdated": "Password updated successfully.",
           "passwordUpdateFailed": "Failed to update password."
         }
+      },
+      "layout": {
+        "title": "School Admin",
+        "subtitle": "School operations panel"
+      },
+      "enrollments": {
+        "page": {
+          "title": "Enrollments",
+          "description": "Manage classroom enrollments and student assignments."
+        },
+        "form": {
+          "title": "Enrollment Management",
+          "description": "Assign students to classrooms and manage enrollment records.",
+          "classroom": "Select classroom",
+          "student": "Select student"
+        },
+        "filters": {
+          "search": "Search",
+          "grade": "Grade filter",
+          "allGrades": "All grades",
+          "searching": "Searching ...",
+          "studentSearch": "Student search",
+          "studentSearchPlaceholder": "Search by student name, email or mobile"
+        },
+        "kpis": {
+          "classrooms": "Available classrooms",
+          "students": "Available students",
+          "selectedClassroom": "Selected classroom"
+        },
+        "summary": {
+          "classroom": "Current classroom",
+          "active": "Active enrollments",
+          "closed": "Closed enrollments"
+        },
+        "table": {
+          "title": "Enrollments",
+          "description": "Enrollment history for the selected classroom.",
+          "columns": {
+            "student": "Student",
+            "email": "Email",
+            "classroom": "Classroom",
+            "started": "Started",
+            "ended": "Ended",
+            "status": "Status",
+            "actions": "Actions"
+          }
+        },
+        "actions": {
+          "enroll": "Enroll student",
+          "enrolling": "Enrolling...",
+          "close": "Close"
+        },
+        "status": {
+          "active": "Active",
+          "closed": "Closed",
+          "alreadyEnrolled": "Already actively enrolled"
+        },
+        "messages": {
+          "duplicateActive": "This student already has an active enrollment in the selected classroom."
+        },
+        "empty": {
+          "selectClassroom": {
+            "title": "Select a classroom",
+            "description": "Choose a classroom to view its enrollment records."
+          },
+          "noData": {
+            "title": "No enrollments found",
+            "description": "This classroom has no enrollment records yet."
+          }
+        },
+        "closeDialog": {
+          "title": "Close enrollment",
+          "description": "Are you sure you want to close this enrollment record?",
+          "student": "Student",
+          "classroom": "Classroom",
+          "confirm": "Confirm close"
+        },
+        "toasts": {
+          "schoolMissing": "School information is missing.",
+          "duplicateActive": "This student already has an active enrollment.",
+          "enrollSuccess": "Student enrolled successfully.",
+          "enrollFailed": "Failed to enroll student.",
+          "closeSuccess": "Enrollment closed successfully.",
+          "closeFailed": "Failed to close enrollment."
+        },
+        "common": {
+          "notSelected": "Not selected"
+        }
+      },
+      "classrooms": {
+        "page": {
+          "title": "Classrooms",
+          "description": "Create and manage school classrooms."
+        },
+        "createCard": {
+          "title": "Create Classroom",
+          "description": "Add a new classroom under an existing grade."
+        },
+        "filtersCard": {
+          "title": "Filters",
+          "description": "Search and filter classroom records."
+        },
+        "table": {
+          "title": "Classrooms",
+          "description": "Manage classroom records and archive states."
+        },
+        "empty": {
+          "title": "No classrooms found",
+          "description": "Create the first classroom for this school."
+        },
+        "form": {
+          "grade": "Select grade",
+          "name": "Classroom name",
+          "code": "Code",
+          "year": "Academic year"
+        },
+        "filters": {
+          "query": "Search classroom",
+          "grade": "Grade",
+          "scope": "Visibility",
+          "scopeActiveOnly": "Active only",
+          "scopeAll": "All classrooms",
+          "allGrades": "All grades"
+        },
+        "columns": {
+          "name": "Name",
+          "grade": "Grade",
+          "code": "Code",
+          "year": "Year",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "status": {
+          "active": "Active",
+          "archived": "Archived"
+        },
+        "actions": {
+          "create": "Create Classroom",
+          "creating": "Creating...",
+          "edit": "Edit",
+          "archive": "Archive",
+          "restore": "Restore",
+          "save": "Save Changes",
+          "saving": "Saving..."
+        },
+        "editDialog": {
+          "title": "Edit Classroom",
+          "description": "Update classroom details."
+        },
+        "kpis": {
+          "total": "Total classrooms",
+          "active": "Active classrooms",
+          "archived": "Archived classrooms"
+        },
+        "toasts": {
+          "schoolMissing": "School information is missing.",
+          "createSuccess": "Classroom created successfully.",
+          "createFailed": "Failed to create classroom.",
+          "updateSuccess": "Classroom updated successfully.",
+          "updateFailed": "Failed to update classroom.",
+          "archiveSuccess": "Classroom archived successfully.",
+          "restoreSuccess": "Classroom restored successfully.",
+          "statusFailed": "Failed to update classroom status.",
+          "duplicateCode": "This classroom code already exists in the school."
+        }
+      },
+      "accessRequests": {
+        "page": {
+          "title": "Access Requests",
+          "description": "Review and manage school user requests."
+        },
+        "kpis": {
+          "pending": { "title": "Pending Requests" },
+          "approved": { "title": "Approved Requests" },
+          "rejected": { "title": "Rejected Requests" }
+        },
+        "filtersCard": {
+          "title": "Filters",
+          "description": "Filter access requests by name, status, or requested role."
+        },
+        "filters": {
+          "query": "Full name / email / mobile",
+          "status": "Status",
+          "requestedRole": "Requested role",
+          "statusAll": "All statuses",
+          "roleAll": "All roles"
+        },
+        "table": {
+          "title": "Access Requests",
+          "description": "Review and manage school member access requests.",
+          "columns": {
+            "fullName": "Full Name",
+            "requestedRole": "Requested Role",
+            "status": "Status",
+            "email": "Email",
+            "mobile": "Mobile",
+            "createdAt": "Created",
+            "reviewedAt": "Reviewed",
+            "actions": "Actions"
+          }
+        },
+        "actions": {
+          "approve": "Approve",
+          "reject": "Reject"
+        },
+        "roles": {
+          "STUDENT": "Student",
+          "PARENT": "Parent",
+          "COUNSELOR": "Counselor"
+        },
+        "status": {
+          "PENDING": "Pending",
+          "APPROVED": "Approved",
+          "REJECTED": "Rejected",
+          "CANCELED": "Canceled"
+        },
+        "empty": {
+          "title": "No access requests",
+          "description": "Requests submitted to your school will appear here."
+        },
+        "dialog": {
+          "common": {
+            "fullName": "Full Name",
+            "requestedRole": "Requested Role",
+            "email": "Email"
+          },
+          "approve": {
+            "title": "Approve Request",
+            "description": "Approve this request and assign the final role.",
+            "finalRole": "Final role"
+          },
+          "reject": {
+            "title": "Reject Request",
+            "description": "Reject this request and provide a reason.",
+            "reason": "Reject reason",
+            "defaultReason": "Rejected by school admin"
+          }
+        },
+        "toasts": {
+          "approveSuccess": "Request approved successfully.",
+          "approveFailed": "Failed to approve request.",
+          "rejectSuccess": "Request rejected successfully.",
+          "rejectFailed": "Failed to reject request."
+        }
+      },
+      "grades": {
+        "page": {
+          "title": "Grades",
+          "description": "Manage school grade levels."
+        },
+        "form": {
+          "title": "Create Grade",
+          "description": "Create and manage academic grade levels.",
+          "fields": {
+            "name": "Grade name",
+            "code": "Code"
+          }
+        },
+        "filters": {
+          "title": "Filters",
+          "description": "Control which grade records are visible.",
+          "includeArchived": "Show archived grades"
+        },
+        "table": {
+          "title": "Grades",
+          "description": "Manage school grade levels and archive state.",
+          "columns": {
+            "name": "Name",
+            "code": "Code",
+            "status": "Status",
+            "createdAt": "Created",
+            "actions": "Actions"
+          }
+        },
+        "editDialog": {
+          "title": "Edit Grade",
+          "description": "Update the selected grade information."
+        },
+        "empty": {
+          "title": "No grades found",
+          "description": "Create the first grade for this school."
+        },
+        "kpis": {
+          "total": {
+            "title": "Total grades"
+          },
+          "active": {
+            "title": "Active grades",
+            "description": "Currently available grade levels"
+          },
+          "archived": {
+            "title": "Archived grades",
+            "description": "Hidden or archived grade levels"
+          }
+        },
+        "status": {
+          "active": "Active",
+          "archived": "Archived"
+        },
+        "actions": {
+          "create": "Create Grade",
+          "creating": "Creating...",
+          "edit": "Edit",
+          "archive": "Archive",
+          "restore": "Restore",
+          "save": "Save",
+          "saving": "Saving..."
+        },
+        "toasts": {
+          "schoolMissing": "School information is missing.",
+          "createSuccess": "Grade created successfully.",
+          "createFailed": "Failed to create grade.",
+          "updateSuccess": "Grade updated successfully.",
+          "updateFailed": "Failed to update grade.",
+          "archiveSuccess": "Grade archived successfully.",
+          "restoreSuccess": "Grade restored successfully.",
+          "statusFailed": "Failed to update grade status."
+        }
+      },
+      "assignments": {
+        "page": {
+          "title": "Assignments",
+          "description": "Create, publish and distribute school assessments."
+        },
+        "summary": {
+          "totalAssignments": "Total assignments",
+          "totalAssignmentsDescription": "All created assessment assignments",
+          "publishedAssignments": "Published assignments",
+          "publishedAssignmentsDescription": "Assignments ready for delivery",
+          "totalStudents": "Students",
+          "totalStudentsDescription": "Total school students",
+          "pendingAssignments": "Pending student assignments",
+          "pendingAssignmentsDescription": "Assignments not completed yet",
+          "activeQuestions": "Active questions",
+          "activeQuestionsDescription": "Assessment questions currently active"
+        },
+        "form": {
+          "title": "Create Assignment",
+          "description": "Create, publish, and dispatch assessment assignments. Active questions: {{count}}",
+          "fields": {
+            "title": "Assignment title",
+            "description": "Description",
+            "targetMode": "Target mode",
+            "dueAt": "Due date"
+          }
+        },
+        "table": {
+          "title": "Assignments",
+          "description": "Manage created assignments and dispatch them to students.",
+          "columns": {
+            "title": "Title",
+            "status": "Status",
+            "target": "Target",
+            "due": "Due",
+            "published": "Published",
+            "actions": "Actions"
+          }
+        },
+        "results": {
+          "title": "Assessment Results",
+          "description": "Review submitted and evaluated student assessment records.",
+          "empty": {
+            "title": "No assessment results found",
+            "description": "Assessment results will appear here after students submit their assignments."
+          },
+          "columns": {
+            "student": "Student",
+            "assignment": "Assignment",
+            "status": "Status",
+            "completionRate": "Completion",
+            "dominantKey": "Dominant intelligence",
+            "createdAt": "Created"
+          }
+        },
+        "dialog": {
+          "common": {
+            "title": "Assignment title",
+            "status": "Current status"
+          },
+          "publish": {
+            "title": "Publish Assignment",
+            "description": "Are you sure you want to publish this assignment?"
+          },
+          "assign": {
+            "title": "Assign to Students",
+            "description": "Are you sure you want to dispatch this assignment to students?"
+          }
+        },
+        "actions": {
+          "create": "Create Assignment",
+          "creating": "Creating...",
+          "publish": "Publish",
+          "assign": "Assign"
+        },
+        "status": {
+          "DRAFT": "Draft",
+          "PUBLISHED": "Published",
+          "CLOSED": "Closed"
+        },
+        "targetMode": {
+          "ALL_STUDENTS": "All students",
+          "BY_GRADE": "By grade",
+          "BY_CLASSROOM": "By classroom",
+          "BY_STUDENT_IDS": "Specific students"
+        },
+        "empty": {
+          "title": "No assignments found",
+          "description": "Create your first assessment assignment to get started."
+        },
+        "toasts": {
+          "createSuccess": "Assignment created successfully.",
+          "createFailed": "Failed to create assignment.",
+          "publishSuccess": "Assignment published successfully.",
+          "publishFailed": "Failed to publish assignment.",
+          "assignSuccess": "Assignment assigned successfully.",
+          "assignFailed": "Failed to assign assessment to students."
+        }
+      },
+      "overview": {
+        "page": {
+          "title": "Overview",
+          "description": "Track school activity, requests, members, and assessment performance."
+        },
+        "stats": {
+          "students": "Students",
+          "activeMembers": "Active members",
+          "pendingRequests": "Pending requests",
+          "completionRate": "Completion rate",
+          "totalAssignments": "Assignments",
+          "publishedAssignments": "Published assignments",
+          "evaluatedAssignments": "Evaluated assignments",
+          "auditLogs": "Audit logs",
+          "parents": "Parents",
+          "counselors": "Counselors",
+          "pending": "Pending",
+          "submitted": "Submitted",
+          "approvedRequests": "Approved requests",
+          "rejectedRequests": "Rejected requests",
+          "totalMembers": "Total members"
+        },
+        "charts": {
+          "memberRoles": {
+            "title": "Member role distribution",
+            "description": "Breakdown of school members by role."
+          },
+          "assignmentStatus": {
+            "title": "Assignment status",
+            "description": "Distribution of draft, published, and closed assignments.",
+            "draft": "Draft",
+            "published": "Published",
+            "closed": "Closed"
+          },
+          "assessmentFlow": {
+            "title": "Assessment progress",
+            "description": "Pending, submitted, and evaluated student assignments.",
+            "name": "Assessment flow"
+          },
+          "activityTrend": {
+            "title": "Weekly activity trend",
+            "description": "Recent trend of assignments, access requests, and audit activity."
+          },
+          "intelligence": {
+            "title": "Average intelligence profile",
+            "description": "School-wide average score by intelligence dimension.",
+            "linguistic": "Linguistic",
+            "logicalMath": "Logical Math",
+            "musical": "Musical",
+            "bodily": "Bodily",
+            "visual": "Visual",
+            "naturalistic": "Naturalistic",
+            "interpersonal": "Interpersonal",
+            "intrapersonal": "Intrapersonal"
+          }
+        },
+        "recentActivity": {
+          "title": "Recent activity",
+          "description": "Latest recorded actions inside your school panel.",
+          "empty": "No recent activity found.",
+          "actor": "Actor"
+        }
       }
     },
-    "user": {
+    "student": {
+      "shell": {
+        "title": "Student Dashboard",
+        "subtitle": "Your learning and assessment panel"
+      },
+      "overview": {
+        "empty": {
+          "title": "No dashboard data found",
+          "description": "Your student overview will appear here."
+        },
+        "common": {
+          "notAvailable": "Not available"
+        },
+        "stats": {
+          "role": "My role",
+          "accountStatus": "Account status",
+          "totalAssignments": "Total assignments",
+          "pendingAssignments": "Pending assignments",
+          "inProgressAssignments": "In progress assignments",
+          "evaluatedAssignments": "Evaluated assignments",
+          "unreadNotifications": "Unread notifications"
+        },
+        "cards": {
+          "assignmentFlow": {
+            "title": "Assignment flow",
+            "description": "Distribution of your current assignment statuses."
+          },
+          "progressTimeline": {
+            "title": "Progress timeline",
+            "description": "Your recent overall assessment progress."
+          },
+          "actionCenter": {
+            "title": "Action center",
+            "description": "Items that currently need your attention."
+          },
+          "performance": {
+            "title": "Performance summary",
+            "description": "Quick insights from your current assessment status."
+          }
+        },
+        "performance": {
+          "latestOverall": "Latest overall score",
+          "dominantIntelligence": "Dominant intelligence",
+          "pendingCounseling": "Pending counseling sessions",
+          "submittedAssignments": "Submitted assignments"
+        },
+        "charts": {
+          "assignmentFlow": {
+            "pending": "Pending",
+            "inProgress": "In progress",
+            "submitted": "Submitted",
+            "evaluated": "Evaluated"
+          },
+          "actionCenter": {
+            "notifications": "Notifications",
+            "counseling": "Counseling",
+            "pending": "Pending assignments"
+          }
+        },
+        "emptyCharts": {
+          "assignmentFlow": {
+            "title": "No assignment flow data",
+            "description": "There is not enough assignment data to draw this chart yet."
+          },
+          "progressTimeline": {
+            "title": "No progress timeline data",
+            "description": "Your progress timeline will appear after assessment results are generated."
+          },
+          "actionCenter": {
+            "title": "No action items",
+            "description": "There are currently no pending actions to display."
+          }
+        },
+        "intelligences": {
+          "MUSICAL": "Musical",
+          "LINGUISTIC": "Linguistic",
+          "NATURALISTIC": "Naturalistic",
+          "INTERPERSONAL": "Interpersonal",
+          "INTRAPERSONAL": "Intrapersonal",
+          "VISUAL_SPATIAL": "Visual spatial",
+          "BODILY_KINESTHETIC": "Bodily kinesthetic",
+          "LOGICAL_MATHEMATICAL": "Logical mathematical"
+        }
+      },
+      "assignments": {
+        "page": {
+          "title": "My Assignments",
+          "description": "View, track, and submit your school assignments."
+        },
+        "filtersCard": {
+          "title": "Filters",
+          "description": "Search and filter your assignments."
+        },
+        "detail": {
+          "title": "Assignment Detail",
+          "description": "Review the questions and submit your answers.",
+          "readOnly": "Already submitted",
+          "questionLabel": "Question",
+          "validation": {
+            "required": "Please answer all questions before submitting."
+          },
+          "summary": {
+            "status": "Status",
+            "dueAt": "Due date",
+            "questions": "Questions",
+            "assignmentId": "Assignment ID"
+          },
+          "scale": {
+            "1": "Very low",
+            "2": "Low",
+            "3": "Medium",
+            "4": "High",
+            "5": "Very high"
+          }
+        },
+        "empty": {
+          "title": "No assignments found",
+          "description": "Your available assignments will appear here."
+        },
+        "common": {
+          "noDescription": "No description provided."
+        },
+        "kpis": {
+          "pending": {
+            "title": "Pending"
+          },
+          "inProgress": {
+            "title": "In Progress"
+          },
+          "evaluated": {
+            "title": "Evaluated"
+          }
+        },
+        "filters": {
+          "search": "Search",
+          "status": "Status",
+          "statusAll": "All statuses"
+        },
+        "table": {
+          "title": "Assignments",
+          "description": "Track your current and past assignments.",
+          "columns": {
+            "title": "Title",
+            "status": "Status",
+            "target": "Target",
+            "completion": "Completion",
+            "dueAt": "Due date",
+            "actions": "Actions"
+          }
+        },
+        "detailDialog": {
+          "title": "Assignment Details",
+          "description": "Review the assignment and submit your answers.",
+          "empty": "No assignment details found.",
+          "questionLabel": "Question",
+          "summary": {
+            "title": "Title",
+            "status": "Status",
+            "answered": "Answered",
+            "dueAt": "Due date"
+          }
+        },
+        "actions": {
+          "view": "View",
+          "submit": "Submit Answers"
+        },
+        "toasts": {
+          "submitSuccess": "Assignment submitted successfully.",
+          "submitFailed": "Failed to submit assignment answers."
+        },
+        "status": {
+          "NOT_STARTED": "Not started",
+          "PENDING": "Pending",
+          "IN_PROGRESS": "In progress",
+          "SUBMITTED": "Submitted",
+          "EVALUATED": "Evaluated"
+        },
+        "targetModes": {
+          "ALL_STUDENTS": "All students",
+          "BY_GRADE": "By grade",
+          "BY_CLASSROOM": "By classroom",
+          "BY_STUDENT_IDS": "Specific students"
+        }
+      },
       "nav": {
         "overview": "Overview",
-        "settings": "Settings",
-        "profile": "My Profile"
+        "assignments": "Assignments",
+        "results": "Results",
+        "notifications": "Notifications",
+        "counselingSessions": "Counseling Sessions",
+        "profileSettings": "Profile & Settings"
+      },
+      "results": {
+        "page": {
+          "title": "Assessment Results",
+          "description": "Review your completed assessments, compare outcomes, and explore career matches."
+        },
+        "common": {
+          "notAvailable": "Not available"
+        },
+        "filters": {
+          "dominantIntelligence": "Dominant intelligence",
+          "all": "All intelligences"
+        },
+        "filtersCard": {
+          "title": "Filters",
+          "description": "Filter your result records by dominant intelligence."
+        },
+        "empty": {
+          "title": "No results found",
+          "description": "There are no assessment results for the selected filter."
+        },
+        "kpis": {
+          "total": {
+            "title": "Total Results",
+            "description": "All completed result records"
+          },
+          "average": {
+            "title": "Average Score",
+            "description": "Average score of listed results"
+          },
+          "compare": {
+            "title": "Compare Queue",
+            "description": "Selected results for comparison"
+          }
+        },
+        "table": {
+          "title": "My Results",
+          "description": "Browse your result history and open detailed insights.",
+          "columns": {
+            "compare": "Compare",
+            "assignment": "Assignment",
+            "dominant": "Dominant Intelligence",
+            "createdAt": "Created At",
+            "actions": "Actions"
+          }
+        },
+        "actions": {
+          "view": "View Detail",
+          "compare": "Compare",
+          "compareSelected": "Compare Selected"
+        },
+        "detail": {
+          "title": "Result Detail",
+          "description": "Detailed intelligence profile, summary, and recommended career matches.",
+          "assignment": "Assignment",
+          "dominant": "Dominant Intelligence",
+          "summary": "Summary",
+          "careerMatches": "Career Matches",
+          "noCareerMatches": "No career matches available for this result."
+        },
+        "compare": {
+          "title": "Compare Results",
+          "description": "Compare two result records and review score deltas across all intelligences.",
+          "current": "Current",
+          "previous": "Previous",
+          "delta": "Delta",
+          "result": "Selected Result",
+          "clearSelection": "Clear Selection",
+          "needTwoResults": "Please select two results to compare."
+        },
+        "intelligences": {
+          "LINGUISTIC": "Linguistic",
+          "LOGICAL_MATHEMATICAL": "Logical / Mathematical",
+          "MUSICAL": "Musical",
+          "BODILY_KINESTHETIC": "Bodily / Kinesthetic",
+          "VISUAL_SPATIAL": "Visual / Spatial",
+          "NATURALISTIC": "Naturalistic",
+          "INTERPERSONAL": "Interpersonal",
+          "INTRAPERSONAL": "Intrapersonal"
+        }
+      },
+      "notifications": {
+        "page": {
+          "title": "Notifications",
+          "description": "Review your latest notifications and manage unread items."
+        },
+        "filters": {
+          "visibility": "Visibility",
+          "all": "All notifications",
+          "unread": "Unread only"
+        },
+        "filtersCard": {
+          "title": "Filters",
+          "description": "Filter the notifications list by read status."
+        },
+        "kpis": {
+          "total": {
+            "title": "Total Notifications",
+            "description": "All notification records"
+          },
+          "unread": {
+            "title": "Unread",
+            "description": "Unread notification items"
+          },
+          "read": {
+            "title": "Read",
+            "description": "Read notification items"
+          }
+        },
+        "empty": {
+          "title": "No notifications found",
+          "description": "There are no notifications for the selected filter."
+        },
+        "table": {
+          "title": "My Notifications",
+          "description": "Review your notification history and open details.",
+          "columns": {
+            "title": "Title",
+            "type": "Type",
+            "status": "Status",
+            "createdAt": "Created At",
+            "actions": "Actions"
+          }
+        },
+        "detail": {
+          "title": "Notification Detail",
+          "description": "Review the full content of the selected notification.",
+          "fields": {
+            "type": "Type",
+            "status": "Status",
+            "createdAt": "Created At",
+            "readAt": "Read At",
+            "title": "Title",
+            "message": "Message",
+            "actionUrl": "Action URL"
+          }
+        },
+        "actions": {
+          "view": "View",
+          "markAsRead": "Mark as read"
+        },
+        "status": {
+          "read": "Read",
+          "unread": "Unread"
+        },
+        "types": {
+          "GENERAL": "General",
+          "RESULT_READY": "Result Ready",
+          "ASSIGNMENT_DUE": "Assignment Due",
+          "ASSIGNMENT_PUBLISHED": "Assignment Published"
+        },
+        "toasts": {
+          "markReadSuccess": "Notification marked as read successfully.",
+          "markReadFailed": "Failed to mark notification as read."
+        }
+      },
+      "counseling": {
+        "page": {
+          "title": "Counseling Sessions",
+          "description": "Manage your counseling requests and session history."
+        },
+        "actionsCard": {
+          "title": "Actions",
+          "description": "Create a new counseling request or manage your existing sessions."
+        },
+        "filtersCard": {
+          "title": "Filters",
+          "description": "Filter the counseling sessions list."
+        },
+        "filters": {
+          "search": "Search by title or note",
+          "status": "Status",
+          "statusAll": "All statuses"
+        },
+        "kpis": {
+          "requested": {
+            "title": "Requested",
+            "description": "Sessions waiting for confirmation"
+          },
+          "confirmed": {
+            "title": "Confirmed",
+            "description": "Upcoming confirmed sessions"
+          },
+          "completed": {
+            "title": "Completed",
+            "description": "Finished counseling sessions"
+          }
+        },
+        "table": {
+          "title": "My Counseling Sessions",
+          "description": "Review your counseling history and current requests.",
+          "columns": {
+            "title": "Title",
+            "status": "Status",
+            "scheduledAt": "Scheduled At",
+            "meetingUrl": "Meeting Link",
+            "actions": "Actions"
+          }
+        },
+        "form": {
+          "title": "Session Title",
+          "note": "Note",
+          "meetingUrl": "Meeting URL",
+          "scheduledAt": "Scheduled At",
+          "counselorId": "Counselor ID"
+        },
+        "requestDialog": {
+          "title": "Request New Session",
+          "description": "Submit a new counseling session request."
+        },
+        "cancelDialog": {
+          "title": "Cancel Session",
+          "description": "You are about to cancel this counseling session.",
+          "sessionTitle": "Session Title",
+          "scheduledAt": "Scheduled At",
+          "reason": "Cancel Reason"
+        },
+        "actions": {
+          "requestNew": "Request New Session",
+          "submitRequest": "Submit Request",
+          "cancel": "Cancel Session",
+          "openLink": "Open link"
+        },
+        "status": {
+          "REQUESTED": "Requested",
+          "CONFIRMED": "Confirmed",
+          "COMPLETED": "Completed",
+          "CANCELED": "Canceled"
+        },
+        "empty": {
+          "title": "No counseling sessions found",
+          "description": "There are no counseling sessions for the selected filter."
+        },
+        "toasts": {
+          "requestSuccess": "Counseling session request submitted successfully.",
+          "requestFailed": "Failed to submit counseling session request.",
+          "cancelSuccess": "Counseling session canceled successfully.",
+          "cancelFailed": "Failed to cancel counseling session."
+        }
+      },
+      "profile": {
+        "page": {
+          "title": "Profile & Settings",
+          "description": "Manage your profile information and account settings."
+        },
+        "summaryCard": {
+          "title": "Profile Overview",
+          "description": "Quick summary of your account and profile completion."
+        },
+        "formCard": {
+          "title": "Edit Profile",
+          "description": "Update your personal information."
+        },
+        "accountCard": {
+          "title": "Account Information",
+          "description": "View your account identifiers and current role."
+        },
+        "logoutCard": {
+          "title": "Session",
+          "description": "Sign out from your current account session."
+        },
+        "summary": {
+          "fullName": "Full Name",
+          "role": "Role",
+          "status": "Account Status",
+          "profileCompletion": "Profile Completion"
+        },
+        "form": {
+          "fields": {
+            "fullName": "Full Name",
+            "email": "Email",
+            "mobile": "Mobile",
+            "avatarUrl": "Avatar URL"
+          }
+        },
+        "account": {
+          "id": "User ID",
+          "schoolId": "School ID",
+          "role": "Role",
+          "createdAt": "Created At"
+        },
+        "logout": {
+          "title": "Logout",
+          "description": "Sign out from your student account."
+        },
+        "actions": {
+          "save": "Save Changes",
+          "saving": "Saving...",
+          "logout": "Logout",
+          "loggingOut": "Logging out..."
+        },
+        "toasts": {
+          "updateSuccess": "Profile updated successfully.",
+          "updateFailed": "Failed to update profile.",
+          "logoutSuccess": "Logged out successfully.",
+          "logoutFailed": "Failed to logout."
+        },
+        "roles": {
+          "STUDENT": "Student",
+          "PARENT": "Parent",
+          "COUNSELOR": "Counselor",
+          "SCHOOL_ADMIN": "School Admin",
+          "SUPER_ADMIN": "Super Admin"
+        },
+        "status": {
+          "ACTIVE": "Active",
+          "DISABLED": "Disabled",
+          "DELETED": "Deleted"
+        },
+        "common": {
+          "notSet": "Not set",
+          "notAvailable": "Not available"
+        },
+        "empty": {
+          "title": "Profile not found",
+          "description": "We could not load your profile information."
+        }
       }
     },
     "overview": "Dashboard",

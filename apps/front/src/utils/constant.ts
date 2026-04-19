@@ -8,6 +8,8 @@ import * as UiLucide from "lucide-react";
 export const DEFAULT_PAGE_SIZE = 12;
 export const PAGE_SIZE_DEFAULT = 12;
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_URL?.trim();
+export const GRAPHQL_ENDPOINT = endpoint || "/graphql";
 
 // =========== Poviders ===========
 export const Ctx = createContext<TLanguage | null>(null);
@@ -94,12 +96,6 @@ export const HOME_ROLES = [
     bulletsKey: "home.roles.items.parents.bullets",
   },
   {
-    colorClass: "bg-pink-500",
-    titleKey: "home.roles.items.teachers.title",
-    descKey: "home.roles.items.teachers.desc",
-    bulletsKey: "home.roles.items.teachers.bullets",
-  },
-  {
     colorClass: "bg-violet-500",
     titleKey: "home.roles.items.super.title",
     descKey: "home.roles.items.super.desc",
@@ -115,3 +111,13 @@ export const RESEND_SECONDS = 30;
 export const PAGE_SIZE = 10;
 
 export const RETURN_TO_KEY = "force_password_return_to";
+
+export const ALL_GRADES_VALUE = "__ALL_GRADES__";
+
+// ============== Dialog ================
+export const sizeClassMap = {
+  sm: "sm:max-w-md",
+  md: "sm:max-w-lg",
+  lg: "sm:max-w-2xl",
+  xl: "sm:max-w-4xl",
+};

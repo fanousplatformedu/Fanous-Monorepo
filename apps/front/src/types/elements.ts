@@ -203,3 +203,35 @@ export type TStatusBadgeProps = {
   className?: string;
   value?: TStatusValue | null;
 };
+
+// =============== Dialog ================
+type TAppDialogSize = "sm" | "md" | "lg" | "xl";
+
+export type TAppDialogProps = {
+  open: boolean;
+  title: ReactNode;
+  icon?: ReactNode;
+  footer?: ReactNode;
+  className?: string;
+  children: ReactNode;
+  size?: TAppDialogSize;
+  bodyClassName?: string;
+  preventClose?: boolean;
+  description?: ReactNode;
+  hideCloseButton?: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
+export type TAppDialogActionsProps = {
+  cancelText: string;
+  confirmText: string;
+  isLoading?: boolean;
+  loadingText?: string;
+  onCancel?: () => void;
+  onConfirm?: () => void;
+  cancelDisabled?: boolean;
+  confirmDisabled?: boolean;
+  confirmType?: "button" | "submit";
+  cancelVariant?: "brandSoft" | "brandOutline" | "ghost";
+  confirmVariant?: "brand" | "brandSoft" | "brandOutline";
+};

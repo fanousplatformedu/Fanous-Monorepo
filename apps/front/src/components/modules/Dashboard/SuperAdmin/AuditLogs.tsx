@@ -1,18 +1,17 @@
 "use client";
 
 import { useSuperAdminAuditLogsQuery } from "@/lib/redux/api";
-import { SuperAdminSectionCard } from "@elements/super-admin-section-card";
-import { DashboardLoadingCard } from "@elements/dashboard-loading-card";
-import { CreateAuditLogDialog } from "@elements/super-admin-audit-dialog";
-import { DashboardEmptyState } from "@elements/dashboard-empty-state";
+import { SuperAdminSectionCard } from "@modules/Dashboard/SuperAdmin/parts/super-section-card";
+import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
+import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
+import { SuperAuditLogDialog } from "@modules/Dashboard/SuperAdmin/parts/super-audit-dialog";
 import { useMemo, useState } from "react";
+import { AuditLogsFilters } from "@modules/Dashboard/SuperAdmin/parts/audit-filters";
 import { TablePagination } from "@elements/table-pagination";
 import { TrendWidget } from "@elements/trend-wighet";
 import { PAGE_SIZE } from "@/utils/constant";
 import { useI18n } from "@/hooks/useI18n";
 import { Button } from "@ui/button";
-
-import AuditLogsFilters from "@modules/Dashboard/SuperAdmin/AuditLogsFilters";
 
 import * as L from "lucide-react";
 
@@ -162,15 +161,15 @@ const AuditLogs = () => {
               <TablePagination
                 page={page}
                 pageSize={PAGE_SIZE}
-                total={data?.total ?? 0}
                 onPageChange={setPage}
+                total={data?.total ?? 0}
               />
             </div>
           )}
         </SuperAdminSectionCard>
       </div>
 
-      <CreateAuditLogDialog open={open} onOpenChange={setOpen} />
+      <SuperAuditLogDialog open={open} onOpenChange={setOpen} />
     </>
   );
 };

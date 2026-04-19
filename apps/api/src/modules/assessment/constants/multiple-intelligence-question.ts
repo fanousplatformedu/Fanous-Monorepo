@@ -34,7 +34,7 @@ export const MULTIPLE_INTELLIGENCE_QUESTIONS: Array<{
     code: 5,
     text: "مدیریت مالی و دخل و خرج برایم راحت است.",
     order: 5,
-    intelligenceKeys: [IntelligenceKey.LOGICAL_MATH],
+    intelligenceKeys: [IntelligenceKey.LOGICAL_MATHEMATICAL],
   },
   {
     code: 6,
@@ -64,13 +64,13 @@ export const MULTIPLE_INTELLIGENCE_QUESTIONS: Array<{
     code: 10,
     text: "در مدرسه از حل سوالات ریاضی لذت می‌بردم.",
     order: 10,
-    intelligenceKeys: [IntelligenceKey.LOGICAL_MATH],
+    intelligenceKeys: [IntelligenceKey.LOGICAL_MATHEMATICAL],
   },
   {
     code: 11,
     text: "از بازی‌های منطقی ریاضی مثل جدول سودوکو و شطرنج لذت می‌برم.",
     order: 11,
-    intelligenceKeys: [IntelligenceKey.LOGICAL_MATH],
+    intelligenceKeys: [IntelligenceKey.LOGICAL_MATHEMATICAL],
   },
   {
     code: 12,
@@ -119,7 +119,7 @@ export const MULTIPLE_INTELLIGENCE_QUESTIONS: Array<{
     text: "از ابهام خوشم نمی‌آید. دوست دارم همه چیز واضح و شفاف باشد.",
     order: 19,
     intelligenceKeys: [
-      IntelligenceKey.LOGICAL_MATH,
+      IntelligenceKey.LOGICAL_MATHEMATICAL,
       IntelligenceKey.INTRAPERSONAL,
     ],
   },
@@ -139,7 +139,7 @@ export const MULTIPLE_INTELLIGENCE_QUESTIONS: Array<{
     code: 22,
     text: "از آدم‌های غیرمنطقی خوشم نمی‌آید.",
     order: 22,
-    intelligenceKeys: [IntelligenceKey.LOGICAL_MATH],
+    intelligenceKeys: [IntelligenceKey.LOGICAL_MATHEMATICAL],
   },
   {
     code: 23,
@@ -151,7 +151,7 @@ export const MULTIPLE_INTELLIGENCE_QUESTIONS: Array<{
     code: 24,
     text: "دوست دارم قاعده‌مند و منظم باشم.",
     order: 24,
-    intelligenceKeys: [IntelligenceKey.LOGICAL_MATH],
+    intelligenceKeys: [IntelligenceKey.LOGICAL_MATHEMATICAL],
   },
   {
     code: 25,
@@ -202,7 +202,7 @@ export const MULTIPLE_INTELLIGENCE_QUESTIONS: Array<{
     code: 32,
     text: "محاسبات ذهنی برایم ساده است.",
     order: 32,
-    intelligenceKeys: [IntelligenceKey.LOGICAL_MATH],
+    intelligenceKeys: [IntelligenceKey.LOGICAL_MATHEMATICAL],
   },
   {
     code: 33,
@@ -226,7 +226,7 @@ export const MULTIPLE_INTELLIGENCE_QUESTIONS: Array<{
     code: 36,
     text: "دوست دارم در مورد همهٔ جوانب مشکلات با دقت و در نظر گرفتن همهٔ پیشامدهای ممکن فکر کنم.",
     order: 36,
-    intelligenceKeys: [IntelligenceKey.LOGICAL_MATH],
+    intelligenceKeys: [IntelligenceKey.LOGICAL_MATHEMATICAL],
   },
   {
     code: 37,
@@ -427,7 +427,7 @@ export const MULTIPLE_INTELLIGENCE_QUESTIONS: Array<{
     code: 69,
     text: "هنگام شمارش از انگشت‌هایم کمک نمی‌گیرم.",
     order: 69,
-    intelligenceKeys: [IntelligenceKey.LOGICAL_MATH],
+    intelligenceKeys: [IntelligenceKey.LOGICAL_MATHEMATICAL],
   },
   {
     code: 70,

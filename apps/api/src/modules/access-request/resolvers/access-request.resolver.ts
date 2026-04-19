@@ -9,6 +9,7 @@ import { AccessRequestService } from "@accessRequest/services/access-request.ser
 import { AccessRequestEntity } from "@accessRequest/entities/access-request.entity";
 import { ReviewResultEntity } from "@accessRequest/entities/review-result.entity";
 import { JwtAuthGuard } from "@auth/guards/jwt-auth.guard";
+import { TCurrentUser } from "@accessRequest/types/access-request.types";
 import { CurrentUser } from "@auth/decorators/current-user.decorator";
 import { RolesGuard } from "@auth/guards/roles.guard";
 import { UseGuards } from "@nestjs/common";
@@ -20,7 +21,6 @@ import { Role } from "@prisma/client";
 export class AccessRequestResolver {
   constructor(private readonly accessService: AccessRequestService) {}
 
-  // ======= Public submit ========
   @Public()
   @Mutation(() => AccessRequestEntity, {
     name: AccessRequestGqlMutationNames.SubmitAccessRequest,
@@ -36,21 +36,20 @@ export class AccessRequestResolver {
     return res.request;
   }
 
-  // ========= List requests: SCHOOL_ADMIN ===========
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SCHOOL_ADMIN, Role.SUPER_ADMIN)
   @Query(() => AccessRequestListEntity, {
     name: AccessRequestGqlQueryNames.AccessRequests,
   })
   accessRequests(
-    @CurrentUser() user: any,
+    @CurrentUser() user: TCurrentUser,
     @Args("input") input: ListAccessRequestsInput,
   ) {
-    return this.accessService.list({
+    return this.accessService.listAccessRequests({
       actor: { id: user.id, role: user.role, schoolId: user.schoolId },
-      schoolId: input.schoolId ?? null,
-      status: input.status ?? null,
       query: input.query ?? null,
+      status: input.status ?? null,
+      requestedRole: input.requestedRole ?? null,
       take: input.take,
       skip: input.skip,
     });
@@ -61,30 +60,28 @@ export class AccessRequestResolver {
   @Query(() => AccessRequestEntity, {
     name: AccessRequestGqlQueryNames.AccessRequestById,
   })
-  accessRequestById(@CurrentUser() user: any, @Args("id") id: string) {
+  accessRequestById(@CurrentUser() user: TCurrentUser, @Args("id") id: string) {
     return this.accessService.byId(
       { role: user.role, schoolId: user.schoolId },
       id,
     );
   }
 
-  // ======== Review: SCHOOL_ADMIN =========
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SCHOOL_ADMIN, Role.SUPER_ADMIN)
   @Mutation(() => ReviewResultEntity, {
     name: AccessRequestGqlMutationNames.ReviewAccessRequest,
   })
   reviewAccessRequest(
-    @CurrentUser() user: any,
+    @CurrentUser() user: TCurrentUser,
     @Args("input") input: ReviewAccessRequestInput,
   ) {
     return this.accessService.review({
       actor: { id: user.id, role: user.role, schoolId: user.schoolId },
       requestId: input.requestId,
       approve: input.approve,
+      notifyVia: input.notifyVia ?? "AUTO",
       rejectReason: input.rejectReason ?? null,
-      finalRole: input.finalRole ?? null,
-      notifyVia: (input.notifyVia as any) ?? "AUTO",
     });
   }
 }

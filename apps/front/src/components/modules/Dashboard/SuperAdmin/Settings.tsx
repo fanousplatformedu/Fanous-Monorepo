@@ -1,8 +1,12 @@
 "use client";
 
-import { superAdminChangePasswordSchema } from "@/lib/validation/super-admin";
+import {
+  PasswordValues,
+  ProfileValues,
+  superAdminChangePasswordSchema,
+} from "@/lib/validation/super-admin";
 import { FloatingPasswordField } from "@elements/floating-password-field";
-import { SuperAdminSectionCard } from "@elements/super-admin-section-card";
+import { SuperAdminSectionCard } from "@modules/Dashboard/SuperAdmin/parts/super-section-card";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { getApiErrorMessage } from "@/utils/function-helper";
 import { profileSchema } from "@/lib/validation/super-admin";
@@ -12,13 +16,9 @@ import { useI18n } from "@/hooks/useI18n";
 import { useForm } from "react-hook-form";
 import { Button } from "@ui/button";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import * as API from "@/lib/redux/api";
 import * as F from "@ui/form";
-
-type PasswordValues = z.infer<typeof superAdminChangePasswordSchema>;
-type ProfileValues = z.infer<typeof profileSchema>;
 
 const Settings = () => {
   const { t } = useI18n();
@@ -115,20 +115,20 @@ const Settings = () => {
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <FloatingInputField
-                  control={profileForm.control}
                   name="fullName"
+                  control={profileForm.control}
                   label={t("dashboard.superAdmin.settings.fields.fullName")}
                 />
 
                 <FloatingInputField
-                  control={profileForm.control}
                   name="email"
-                  label={t("dashboard.superAdmin.settings.fields.email")}
                   type="email"
+                  control={profileForm.control}
+                  label={t("dashboard.superAdmin.settings.fields.email")}
                 />
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
                 <Button
                   type="submit"
                   variant="brand"
@@ -157,18 +157,18 @@ const Settings = () => {
             className="space-y-5"
           >
             <FloatingPasswordField
-              control={passwordForm.control}
               name="currentPassword"
+              control={passwordForm.control}
               label={t("dashboard.superAdmin.settings.fields.currentPassword")}
             />
 
             <FloatingPasswordField
-              control={passwordForm.control}
               name="newPassword"
+              control={passwordForm.control}
               label={t("dashboard.superAdmin.settings.fields.newPassword")}
             />
 
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
               <Button
                 type="submit"
                 variant="brand"

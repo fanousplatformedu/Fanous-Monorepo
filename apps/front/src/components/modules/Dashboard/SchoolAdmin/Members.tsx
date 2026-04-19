@@ -2,73 +2,85 @@
 
 import { useRemoveSchoolMemberMutation } from "@/lib/redux/api";
 import { useSchoolMembersQuery } from "@/lib/redux/api";
-import { DashboardLoadingCard } from "@elements/dashboard-loading-card";
-import { DashboardEmptyState } from "@elements/dashboard-empty-state";
-import { DashboardTableCard } from "@elements/dashboard-table-card";
+import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
+import { MemberDisableDialog } from "@modules/Dashboard/SchoolAdmin/parts/member-dialog";
+import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
+import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-card";
 import { getApiErrorMessage } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
+import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
 import { TablePagination } from "@elements/table-pagination";
-import { StatusBadge } from "@elements/status-badge";
+import { MembersFilters } from "@modules/Dashboard/SchoolAdmin/parts/member-filter";
 import { PAGE_SIZE } from "@/utils/constant";
 import { useI18n } from "@/hooks/useI18n";
-import { Button } from "@ui/button";
 import { toast } from "sonner";
 
 import * as L from "lucide-react";
+import * as T from "@/types/modules";
+
+const DEFAULT_FILTERS: T.TSchoolMemberFilterValues = {
+  query: "",
+  role: "ALL",
+  status: "ALL",
+};
 
 const SchoolAdminMembersPage = () => {
   const { t } = useI18n();
-  const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useSchoolMembersQuery({
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] =
+    useState<T.TSchoolMemberFilterValues>(DEFAULT_FILTERS);
+  const [selectedMember, setSelectedMember] =
+    useState<T.TSchoolMemberRow | null>(null);
+
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const { data, isLoading, isFetching } = useSchoolMembersQuery({
+    skip,
     take: PAGE_SIZE,
-    skip: (page - 1) * PAGE_SIZE,
+    query: filters.query.trim() || undefined,
+    role: filters.role === "ALL" ? undefined : filters.role,
+    status: filters.status === "ALL" ? undefined : filters.status,
   });
 
   const [removeMember, { isLoading: isRemoving }] =
     useRemoveSchoolMemberMutation();
 
-  const items = useMemo(() => data?.items ?? [], [data]);
+  const items = useMemo<T.TSchoolMemberRow[]>(
+    () => (data?.items ?? []) as T.TSchoolMemberRow[],
+    [data],
+  );
+
   const total = data?.total ?? 0;
 
-  const getRoleLabel = (role?: string | null) => {
-    if (!role) return "-";
+  const activeCount = useMemo(
+    () => items.filter((item) => item.status === "ACTIVE").length,
+    [items],
+  );
 
-    const roleKeyMap: Record<string, string> = {
-      SUPER_ADMIN: "roles.superAdmin",
-      SCHOOL_ADMIN: "roles.schoolAdmin",
-      STUDENT: "roles.student",
-      PARENT: "roles.parent",
-      TEACHER: "roles.teacher",
-      COUNSELOR: "roles.counselor",
-    };
+  const disabledCount = useMemo(
+    () => items.filter((item) => item.status === "DISABLED").length,
+    [items],
+  );
 
-    const key = roleKeyMap[role];
-    return key ? t(key) : role;
+  const getRoleLabel = (role: T.TSchoolMemberRole) => {
+    return t(`dashboard.schoolAdmin.members.roles.${role}`);
   };
 
-  const handleDisableMember = async (userId: string) => {
+  const handleDisableConfirm = async () => {
+    if (!selectedMember) return;
     try {
       await removeMember({
-        userId,
+        userId: selectedMember.id,
         hardDelete: false,
       }).unwrap();
-      toast.success(
-        t(
-          "dashboard.schoolAdmin.members.toasts.disableSuccess",
-          {},
-          "Member disabled successfully.",
-        ),
-      );
+      toast.success(t("dashboard.schoolAdmin.members.toasts.disableSuccess"));
+      setSelectedMember(null);
     } catch (error: unknown) {
       toast.error(
         getApiErrorMessage(
           error,
-          t(
-            "dashboard.schoolAdmin.members.toasts.disableFailed",
-            {},
-            "Failed to disable member.",
-          ),
+          t("dashboard.schoolAdmin.members.toasts.disableFailed"),
         ),
       );
     }
@@ -76,128 +88,176 @@ const SchoolAdminMembersPage = () => {
 
   if (isLoading) return <DashboardLoadingCard rows={8} />;
 
-  if (!items.length) {
-    return (
-      <DashboardEmptyState
-        icon={L.Users}
-        title={t(
-          "dashboard.schoolAdmin.members.empty.title",
-          {},
-          "No members found",
-        )}
-        description={t(
-          "dashboard.schoolAdmin.members.empty.description",
-          {},
-          "School members will appear here.",
-        )}
-      />
-    );
-  }
-
   return (
-    <DashboardTableCard
-      title={t(
-        "dashboard.schoolAdmin.members.table.title",
-        {},
-        "School Members",
-      )}
-      description={t(
-        "dashboard.schoolAdmin.members.table.description",
-        {},
-        "Users currently assigned to your school.",
-      )}
-    >
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="bg-secondary/30 text-left">
-            <tr>
-              <th className="px-4 py-3 font-medium">
-                {t(
-                  "dashboard.schoolAdmin.members.columns.fullName",
-                  {},
-                  "Full Name",
-                )}
-              </th>
-              <th className="px-4 py-3 font-medium">
-                {t("dashboard.schoolAdmin.members.columns.role", {}, "Role")}
-              </th>
-              <th className="px-4 py-3 font-medium">
-                {t(
-                  "dashboard.schoolAdmin.members.columns.status",
-                  {},
-                  "Status",
-                )}
-              </th>
-              <th className="px-4 py-3 font-medium">
-                {t("dashboard.schoolAdmin.members.columns.email", {}, "Email")}
-              </th>
-              <th className="px-4 py-3 font-medium">
-                {t(
-                  "dashboard.schoolAdmin.members.columns.mobile",
-                  {},
-                  "Mobile",
-                )}
-              </th>
-              <th className="px-4 py-3 font-medium">
-                {t(
-                  "dashboard.schoolAdmin.members.columns.created",
-                  {},
-                  "Created",
-                )}
-              </th>
-              <th className="px-4 py-3 text-right font-medium">
-                {t(
-                  "dashboard.schoolAdmin.members.columns.actions",
-                  {},
-                  "Actions",
-                )}
-              </th>
-            </tr>
-          </thead>
+    <>
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          <DashboardSection
+            title={t("dashboard.schoolAdmin.members.kpis.total.title")}
+            description={t(
+              "dashboard.schoolAdmin.members.kpis.total.description",
+            )}
+          >
+            <p className="text-2xl font-bold">{total}</p>
+          </DashboardSection>
 
-          <tbody>
-            {items.map((member) => (
-              <tr key={member.id} className="border-t border-border/40">
-                <td className="px-4 py-3">{member.fullName || "-"}</td>
-                <td className="px-4 py-3">{getRoleLabel(member.role)}</td>
-                <td className="px-4 py-3">
-                  <StatusBadge value={member.status} />
-                </td>
-                <td className="px-4 py-3">{member.email || "-"}</td>
-                <td className="px-4 py-3">{member.mobile || "-"}</td>
-                <td className="px-4 py-3">
-                  {new Date(member.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex justify-end">
-                    <Button
-                      size="sm"
-                      variant="brandSoft"
-                      className="rounded-2xl"
-                      disabled={isRemoving || member.status !== "ACTIVE"}
-                      onClick={() => handleDisableMember(member.id)}
-                    >
-                      {t(
-                        "dashboard.schoolAdmin.members.actions.disable",
-                        {},
-                        "Disable",
-                      )}
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          <DashboardSection
+            title={t("dashboard.schoolAdmin.members.kpis.active.title")}
+            description={t(
+              "dashboard.schoolAdmin.members.kpis.active.description",
+            )}
+          >
+            <p className="text-2xl font-bold">{activeCount}</p>
+          </DashboardSection>
+
+          <DashboardSection
+            title={t("dashboard.schoolAdmin.members.kpis.disabled.title")}
+            description={t(
+              "dashboard.schoolAdmin.members.kpis.disabled.description",
+            )}
+          >
+            <p className="text-2xl font-bold">{disabledCount}</p>
+          </DashboardSection>
+        </div>
+
+        <DashboardSection
+          title={t("dashboard.schoolAdmin.members.filters.title")}
+          description={t("dashboard.schoolAdmin.members.filters.description")}
+        >
+          <MembersFilters
+            value={filters}
+            onApply={(nextFilters) => {
+              setPage(1);
+              setFilters(nextFilters);
+            }}
+            onReset={() => {
+              setPage(1);
+              setFilters(DEFAULT_FILTERS);
+            }}
+          />
+        </DashboardSection>
+
+        {!items.length ? (
+          <DashboardEmptyState
+            icon={L.Users}
+            title={t("dashboard.schoolAdmin.members.empty.title")}
+            description={t("dashboard.schoolAdmin.members.empty.description")}
+          />
+        ) : (
+          <DashboardTableCard
+            title={t("dashboard.schoolAdmin.members.table.title")}
+            description={t("dashboard.schoolAdmin.members.table.description")}
+          >
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead className="bg-secondary/30 text-left">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">
+                      {t("dashboard.schoolAdmin.members.columns.fullName")}
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      {t("dashboard.schoolAdmin.members.columns.role")}
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      {t("dashboard.schoolAdmin.members.columns.status")}
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      {t("dashboard.schoolAdmin.members.columns.email")}
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      {t("dashboard.schoolAdmin.members.columns.mobile")}
+                    </th>
+                    <th className="px-4 py-3 font-medium">
+                      {t("dashboard.schoolAdmin.members.columns.created")}
+                    </th>
+                    <th className="px-4 py-3 text-right font-medium">
+                      {t("dashboard.schoolAdmin.members.columns.actions")}
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {items.map((member) => {
+                    const canDisable = member.status === "ACTIVE";
+                    return (
+                      <tr key={member.id} className="border-t border-border/40">
+                        <td className="px-4 py-3">
+                          <div className="font-medium">
+                            {member.fullName || "-"}
+                          </div>
+                        </td>
+
+                        <td className="px-4 py-3">
+                          {getRoleLabel(member.role)}
+                        </td>
+
+                        <td className="px-4 py-3">
+                          <span
+                            className={
+                              member.status === "ACTIVE"
+                                ? "inline-flex rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300"
+                                : "inline-flex rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground"
+                            }
+                          >
+                            {t(
+                              `dashboard.schoolAdmin.members.status.${member.status}`,
+                            )}
+                          </span>
+                        </td>
+
+                        <td className="px-4 py-3">{member.email || "-"}</td>
+
+                        <td className="px-4 py-3">{member.mobile || "-"}</td>
+
+                        <td className="px-4 py-3">
+                          {new Date(member.createdAt).toLocaleDateString()}
+                        </td>
+
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end">
+                            <button
+                              type="button"
+                              disabled={isRemoving || !canDisable}
+                              onClick={() => setSelectedMember(member)}
+                              className="inline-flex items-center rounded-2xl border border-border/60 bg-secondary/40 px-3 py-2 text-xs font-medium transition hover:bg-secondary/70 disabled:pointer-events-none disabled:opacity-50"
+                            >
+                              {t(
+                                "dashboard.schoolAdmin.members.actions.disable",
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <TablePagination
+              page={page}
+              total={total}
+              pageSize={PAGE_SIZE}
+              onPageChange={setPage}
+            />
+            {isFetching ? (
+              <p className="mt-3 text-xs text-muted-foreground">
+                {t("common.refreshing")}
+              </p>
+            ) : null}
+          </DashboardTableCard>
+        )}
       </div>
 
-      <TablePagination
-        page={page}
-        total={total}
-        pageSize={PAGE_SIZE}
-        onPageChange={setPage}
+      <MemberDisableDialog
+        isLoading={isRemoving}
+        member={selectedMember}
+        open={Boolean(selectedMember)}
+        onConfirm={handleDisableConfirm}
+        onOpenChange={(open) => {
+          if (!open) setSelectedMember(null);
+        }}
       />
-    </DashboardTableCard>
+    </>
   );
 };
 

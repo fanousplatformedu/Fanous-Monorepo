@@ -1,0 +1,16 @@
+export enum CounselorMessageEnum {
+  RESULTS_COMPARED = "Student results compared successfully.",
+  STUDENTS_FETCHED = "Counselor students fetched successfully.",
+  NOTIFICATION_MARKED = "Counselor notification marked as read.",
+  SESSIONS_FETCHED = "Counseling sessions fetched successfully.",
+  REVIEW_SAVED = "Student assessment review saved successfully.",
+  DASHBOARD_FETCHED = "Counselor dashboard fetched successfully.",
+  SESSION_SCHEDULED = "Counseling session scheduled successfully.",
+  ASSIGNMENTS_FETCHED = "Counselor assignments fetched successfully.",
+  TIMELINE_FETCHED = "Student progress timeline fetched successfully.",
+  NOTIFICATIONS_FETCHED = "Counselor notifications fetched successfully.",
+  REVIEW_DETAIL_FETCHED = "Counselor review detail fetched successfully.",
+  EXPORT_CREATED = "Counselor student report export prepared successfully.",
+  STUDENT_DETAIL_FETCHED = "Counselor student detail fetched successfully.",
+  ASSESSMENT_QUEUE_FETCHED = "Student assessment queue fetched successfully.",
+}

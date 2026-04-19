@@ -11,7 +11,7 @@ export const accessRequestSchema = z
     fullName: z.string().min(2, "Full name is required"),
     email: z.string().email("Invalid email").or(z.literal("")),
     mobile: z.string().or(z.literal("")),
-    requestedRole: z.enum(["STUDENT", "PARENT", "COUNSELOR", "TEACHER"]),
+    requestedRole: z.enum(["STUDENT", "PARENT", "COUNSELOR"]),
   })
   .refine((data) => Boolean(data.email || data.mobile), {
     message: "At least one of email or mobile is required",

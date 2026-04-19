@@ -1,5 +1,5 @@
-import { TSeedCtx } from "@common/types/seed.type";
 import { randomBytes } from "crypto";
+import { TSeedCtx } from "@common/types/seed.type";
 
 export const slugify = (s: string) =>
   s
@@ -20,12 +20,16 @@ export const pick = <T>(arr: T[]) =>
 
 export const cleanDb = async (ctx: TSeedCtx) => {
   const { prisma } = ctx;
-  await prisma.auditLog.deleteMany();
-  await prisma.authSession.deleteMany();
-  await prisma.otpCode.deleteMany();
-  await prisma.accessRequest.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.school.deleteMany();
+  try {
+    await prisma.auditLog.deleteMany();
+    await prisma.authSession.deleteMany();
+    await prisma.otpCode.deleteMany();
+    await prisma.accessRequest.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.school.deleteMany();
+  } catch (error) {
+    console.log("⚠️ AuditLog table does not exist, skipping...");
+  }
 };
 
 export const envInt = (key: string, def: number) => {

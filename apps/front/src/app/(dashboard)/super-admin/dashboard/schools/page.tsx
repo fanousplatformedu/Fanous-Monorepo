@@ -1,8 +1,8 @@
 "use client";
 
-import { DashboardSidebar } from "@elements/dashboard-sidebar";
-import { DashboardHeader } from "@elements/dashboard-header";
-import { DashboardShell } from "@elements/dashboard-shell";
+import { DashboardSidebar } from "@modules/Dashboard/parts/dashboard-sidebar";
+import { DashboardHeader } from "@modules/Dashboard/parts/dashboard-header";
+import { DashboardShell } from "@modules/Dashboard/parts/dashboard-shell";
 import { superAdminNav } from "@/utils/dashboard-nav.config";
 import { Background } from "@elements/background";
 import { useI18n } from "@/hooks/useI18n";

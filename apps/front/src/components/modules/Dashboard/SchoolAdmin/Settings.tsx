@@ -3,7 +3,7 @@
 import { FloatingPasswordField } from "@elements/floating-password-field";
 import { TPasswordFormValues } from "@/types/modules";
 import { getApiErrorMessage } from "@/utils/function-helper";
-import { DashboardSection } from "@elements/dashboard-section";
+import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useI18n } from "@/hooks/useI18n";
@@ -40,13 +40,7 @@ const SchoolAdminSettingsPage = () => {
       await Promise.all([refetchHeaderUser(), refetchMe()]);
       FP.clearForcePasswordFlow();
       form.reset();
-      toast.success(
-        t(
-          "dashboard.schoolAdmin.settings.toasts.passwordUpdated",
-          {},
-          "Password updated successfully.",
-        ),
-      );
+      toast.success(t("dashboard.schoolAdmin.settings.toasts.passwordUpdated"));
       const returnTo = FP.getForcePasswordReturnTo();
       if (returnTo) router.replace(returnTo);
       else router.replace(FP.getDashboardPathByRole("SCHOOL_ADMIN"));
@@ -55,11 +49,7 @@ const SchoolAdminSettingsPage = () => {
       toast.error(
         getApiErrorMessage(
           error,
-          t(
-            "dashboard.schoolAdmin.settings.toasts.passwordUpdateFailed",
-            {},
-            "Failed to update password.",
-          ),
+          t("dashboard.schoolAdmin.settings.toasts.passwordUpdateFailed"),
         ),
       );
     }
@@ -70,36 +60,20 @@ const SchoolAdminSettingsPage = () => {
   return (
     <div className="space-y-5">
       <DashboardSection
-        title={t(
-          "dashboard.schoolAdmin.settings.account.title",
-          {},
-          "My Account",
-        )}
-        description={t(
-          "dashboard.schoolAdmin.settings.account.description",
-          {},
-          "Current school admin profile",
-        )}
+        title={t("dashboard.schoolAdmin.settings.account.title")}
+        description={t("dashboard.schoolAdmin.settings.account.description")}
       >
         <div className="grid gap-3 md:grid-cols-2">
           <div className="rounded-2xl bg-secondary/25 p-4">
             <p className="text-xs text-muted-foreground">
-              {t(
-                "dashboard.schoolAdmin.settings.fields.fullName",
-                {},
-                "Full Name",
-              )}
+              {t("dashboard.schoolAdmin.settings.fields.fullName")}
             </p>
             <p className="mt-1 font-medium">{me?.fullName || "-"}</p>
           </div>
 
           <div className="rounded-2xl bg-secondary/25 p-4">
             <p className="text-xs text-muted-foreground">
-              {t(
-                "dashboard.schoolAdmin.settings.fields.username",
-                {},
-                "Username",
-              )}
+              {t("dashboard.schoolAdmin.settings.fields.username")}
             </p>
             <p className="mt-1 font-medium">{me?.username || "-"}</p>
           </div>
@@ -121,24 +95,12 @@ const SchoolAdminSettingsPage = () => {
       </DashboardSection>
 
       <DashboardSection
-        title={t(
-          "dashboard.schoolAdmin.settings.password.title",
-          {},
-          "Change Password",
-        )}
-        description={t(
-          "dashboard.schoolAdmin.settings.password.description",
-          {},
-          "Update your admin password securely",
-        )}
+        title={t("dashboard.schoolAdmin.settings.password.title")}
+        description={t("dashboard.schoolAdmin.settings.password.description")}
       >
         {forcePasswordChange ? (
           <div className="mb-4 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300">
-            {t(
-              "dashboard.schoolAdmin.settings.password.forceNotice",
-              {},
-              "You are using a temporary password. Please set a new password before continuing.",
-            )}
+            {t("dashboard.schoolAdmin.settings.password.forceNotice")}
           </div>
         ) : null}
 
@@ -150,19 +112,13 @@ const SchoolAdminSettingsPage = () => {
                 name="currentPassword"
                 label={t(
                   "dashboard.schoolAdmin.settings.fields.currentPassword",
-                  {},
-                  "Current Password",
                 )}
               />
 
               <FloatingPasswordField
                 control={form.control}
                 name="newPassword"
-                label={t(
-                  "dashboard.schoolAdmin.settings.fields.newPassword",
-                  {},
-                  "New Password",
-                )}
+                label={t("dashboard.schoolAdmin.settings.fields.newPassword")}
               />
             </div>
 
@@ -175,11 +131,7 @@ const SchoolAdminSettingsPage = () => {
               >
                 {isLoading
                   ? t("common.loading")
-                  : t(
-                      "dashboard.schoolAdmin.settings.actions.updatePassword",
-                      {},
-                      "Update Password",
-                    )}
+                  : t("dashboard.schoolAdmin.settings.actions.updatePassword")}
               </Button>
             </div>
           </form>

@@ -7,25 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// =========== ENUMS - CORE / AUTH / ROLES ============
 enum Role {
+  PARENT
+  STUDENT
+  COUNSELOR
   SUPER_ADMIN
   SCHOOL_ADMIN
-  STUDENT
-  PARENT
-  TEACHER
-  COUNSELOR
 }
 
 enum SchoolStatus {
   ACTIVE
-  SUSPENDED
   ARCHIVED
+  SUSPENDED
 }
 
 enum UserStatus {
   ACTIVE
-  DISABLED
   DELETED
+  DISABLED
 }
 
 enum AccessRequestStatus {
@@ -35,9 +35,15 @@ enum AccessRequestStatus {
   CANCELED
 }
 
+enum AccessRequestRole {
+  PARENT
+  STUDENT
+  COUNSELOR
+}
+
 enum OtpChannel {
-  EMAIL
   SMS
+  EMAIL
 }
 
 enum OtpPurpose {
@@ -50,6 +56,7 @@ enum SessionStatus {
   EXPIRED
 }
 
+// ========== ENUMS - AUDIT =============
 enum AuditAction {
   SCHOOL_CREATE
   SCHOOL_UPDATE
@@ -64,8 +71,8 @@ enum AuditAction {
   ADMIN_DISABLE
 
   ACCESS_REQUEST_SUBMIT
-  ACCESS_REQUEST_APPROVE
   ACCESS_REQUEST_REJECT
+  ACCESS_REQUEST_APPROVE
 
   AUTH_LOGOUT
   OTP_REQUEST
@@ -78,28 +85,32 @@ enum AuditAction {
   ADMIN_PASSWORD_CHANGED
   ADMIN_PASSWORD_RESET
 
-  MEMBER_CREATED
   GRADE_CREATE
   GRADE_UPDATE
   GRADE_ARCHIVE
   GRADE_RESTORE
+  MEMBER_CREATED
   CLASSROOM_CREATE
+  ENROLLMENT_CLOSE
   CLASSROOM_UPDATE
   CLASSROOM_ARCHIVE
   CLASSROOM_RESTORE
   ENROLLMENT_CREATE
-  ENROLLMENT_CLOSE
 
+  ASSIGNMENT_CLOSE
   ASSIGNMENT_CREATE
   ASSIGNMENT_UPDATE
-  ASSIGNMENT_PUBLISH
-  ASSIGNMENT_CLOSE
   ASSIGNMENT_ASSIGN
   ASSESSMENT_SUBMIT
-  ASSESSMENT_EVALUATE
   ASSESSMENT_EXPORT
+  ASSIGNMENT_PUBLISH
+  ASSESSMENT_EVALUATE
+
+  INAPP_NOTIFICATION_READ
+  INAPP_NOTIFICATION_CREATE
 }
 
+// ============= ENUMS - ASSESSMENT / ASSIGNMENT ============
 enum AssignmentStatus {
   DRAFT
   CLOSED
@@ -118,19 +129,29 @@ enum StudentAssignmentStatus {
   SUBMITTED
   EVALUATED
   IN_PROGRESS
+  NOT_STARTED
 }
 
 enum IntelligenceKey {
-  LINGUISTIC
-  LOGICAL_MATH
   MUSICAL
-  BODILY_KINESTHETIC
-  VISUAL_SPATIAL
+  LINGUISTIC
   NATURALISTIC
   INTERPERSONAL
   INTRAPERSONAL
+  VISUAL_SPATIAL
+  BODILY_KINESTHETIC
+  LOGICAL_MATHEMATICAL
 }
 
+// ============ ENUMS - STUDENT EXPERIENCE ==============
+enum InAppNotificationType {
+  GENERAL
+  RESULT_READY
+  ASSIGNMENT_DUE
+  ASSIGNMENT_PUBLISHED
+}
+
+// =========== SCHOOL DOMAIN ============
 model School {
   id     String       @id @default(cuid())
   name   String
@@ -143,21 +164,32 @@ model School {
   updatedAt  DateTime  @updatedAt
   archivedAt DateTime?
 
-  users             User[]
-  accessRequests    AccessRequest[]
-  otpCodes          OtpCode[]
-  sessions          AuthSession[]
-  auditLogs         AuditLog[]
-  grades            Grade[]
-  classrooms        Classroom[]
-  enrollments       Enrollment[]
-  schoolAssignments SchoolAssignment[]
-  assessmentResults AssessmentResult[]
+  users                   User[]
+  accessRequests          AccessRequest[]
+  otpCodes                OtpCode[]
+  sessions                AuthSession[]
+  auditLogs               AuditLog[]
+  grades                  Grade[]
+  classrooms              Classroom[]
+  enrollments             Enrollment[]
+  schoolAssignments       SchoolAssignment[]
+  assessmentResults       AssessmentResult[]
+  counselingSessions      CounselingSession[]
+  inAppNotifications      InAppNotification[]
+  parentStudentLinks      ParentStudentLink[]
+  studentGradeRecords     StudentGradeRecord[]
+  studentActivities       StudentActivity[]
+  parentResources         ParentResource[]
+  counselorStudentLinks   CounselorStudentLink[]
+  counselorReviews        CounselorReview[]
+  counselorNotes          CounselorNote[]
+  counselorMessageThreads CounselorMessageThread[]
 
   @@index([status])
   @@index([createdAt])
 }
 
+// ============== USER DOMAIN ================
 model User {
   id String @id @default(cuid())
 
@@ -183,17 +215,55 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  accessRequestsSubmitted AccessRequest[]     @relation("AccessRequest_Submitter")
-  accessRequestsReviewed  AccessRequest[]     @relation("AccessRequest_Reviewer")
+  // ========= RELATIONS =========
+  accessRequestsSubmitted AccessRequest[] @relation("AccessRequest_Submitter")
+  accessRequestsReviewed  AccessRequest[] @relation("AccessRequest_Reviewer")
   otpCodes                OtpCode[]
   sessions                AuthSession[]
-  auditLogsAsActor        AuditLog[]          @relation("Audit_Actor")
-  accessRequests          AccessRequest[]
-  enrollments             Enrollment[]
-  studentAssignments      StudentAssignment[]
-  assessmentResults       AssessmentResult[]
-  schoolAssignments       SchoolAssignment[]
-  createdAssignments      SchoolAssignment[]  @relation("AssignmentCreatedBy")
+  auditLogsAsActor        AuditLog[]      @relation("Audit_Actor")
+
+  enrollments Enrollment[]
+
+  // Assignments & Assessments
+  studentAssignments StudentAssignment[]
+  assessmentResults  AssessmentResult[]
+  schoolAssignments  SchoolAssignment[]
+  createdAssignments SchoolAssignment[]  @relation("AssignmentCreatedBy")
+
+  // Counseling
+  studentCounselingSessions   CounselingSession[] @relation("StudentCounselingSessions")
+  counselorCounselingSessions CounselingSession[] @relation("CounselorCounselingSessions")
+  requestedCounselingSessions CounselingSession[] @relation("RequestedCounselingSessions")
+
+  // Notifications
+  inAppNotifications InAppNotification[]
+
+  // Parent & Student Links
+  parentLinksAsParent  ParentStudentLink[] @relation("ParentLinks")
+  parentLinksAsStudent ParentStudentLink[] @relation("StudentLinks")
+
+  // Student Records
+  gradeRecords        StudentGradeRecord[] @relation("StudentGradeRecords")
+  activities          StudentActivity[]    @relation("StudentActivities")
+  accessRequests      AccessRequest[]
+  counselingSessions  CounselingSession[]
+  parentStudentLinks  ParentStudentLink[]
+  studentGradeRecords StudentGradeRecord[]
+  studentActivities   StudentActivity[]
+
+  // Counselor
+  counselorAssignedStudents CounselorStudentLink[] @relation("CounselorAssignedStudents")
+  studentAssignedCounselors CounselorStudentLink[] @relation("StudentAssignedCounselors")
+
+  counselorReviews        CounselorReview[] @relation("CounselorReviews")
+  studentCounselorReviews CounselorReview[] @relation("StudentCounselorReviews")
+
+  counselorNotes        CounselorNote[] @relation("CounselorNotes")
+  studentCounselorNotes CounselorNote[] @relation("StudentCounselorNotes")
+
+  counselorMessageThreads CounselorMessageThread[] @relation("CounselorMessageThreads")
+  studentMessageThreads   CounselorMessageThread[] @relation("StudentMessageThreads")
+  counselorMessagesSent   CounselorMessage[]       @relation("CounselorMessagesSent")
 
   @@unique([schoolId, email])
   @@unique([schoolId, mobile])
@@ -203,6 +273,7 @@ model User {
   @@index([mobile])
 }
 
+// =========== ACCESS REQUEST DOMAIN ==============
 model AccessRequest {
   id String @id @default(cuid())
 
@@ -210,7 +281,7 @@ model AccessRequest {
   school   School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
 
   status        AccessRequestStatus @default(PENDING)
-  requestedRole Role
+  requestedRole AccessRequestRole
 
   email  String?
   mobile String?
@@ -239,6 +310,7 @@ model AccessRequest {
   @@index([createdAt])
 }
 
+// =========== OTP / SESSION DOMAIN ============
 model OtpCode {
   id String @id @default(cuid())
 
@@ -299,6 +371,7 @@ model AuthSession {
   @@index([expiresAt])
 }
 
+// ========= AUDIT DOMAIN ============
 model AuditLog {
   id String @id @default(cuid())
 
@@ -324,6 +397,7 @@ model AuditLog {
   @@index([action, createdAt])
 }
 
+// ========== SCHOOL STRUCTURE DOMAIN =============
 model Grade {
   id       String @id @default(cuid())
   schoolId String
@@ -392,7 +466,7 @@ model Enrollment {
   @@index([startedAt, endedAt])
 }
 
-// ============== Assessment ==============
+// =========== ASSESSMENT QUESTION DOMAIN ==============
 model AssessmentQuestion {
   id       String  @id @default(cuid())
   code     Int     @unique
@@ -403,8 +477,9 @@ model AssessmentQuestion {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  intelligences AssessmentQuestionIntelligence[]
-  answers       StudentAnswer[]
+  intelligences       AssessmentQuestionIntelligence[]
+  answers             StudentAnswer[]
+  assignmentQuestions AssignmentQuestion[]
 
   @@index([order])
   @@index([isActive])
@@ -419,6 +494,32 @@ model AssessmentQuestionIntelligence {
 
   @@unique([questionId, intelligenceKey])
   @@index([intelligenceKey])
+}
+
+// ============= ASSIGNMENT DOMAIN =============
+model AssignmentQuestion {
+  id String @id @default(cuid())
+
+  assignmentId String
+  assignment   SchoolAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  sourceQuestionId String?
+  sourceQuestion   AssessmentQuestion? @relation(fields: [sourceQuestionId], references: [id], onDelete: SetNull)
+
+  order          Int
+  questionNumber Int
+  text           String
+  isActive       Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  answers StudentAnswer[]
+
+  @@unique([assignmentId, questionNumber])
+  @@index([assignmentId, order])
+  @@index([assignmentId, questionNumber])
+  @@index([sourceQuestionId])
 }
 
 model SchoolAssignment {
@@ -447,9 +548,11 @@ model SchoolAssignment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  studentAssignments StudentAssignment[]
-  user               User?               @relation(fields: [userId], references: [id])
-  userId             String?
+  studentAssignments  StudentAssignment[]
+  assignmentQuestions AssignmentQuestion[]
+  user                User?                @relation(fields: [userId], references: [id])
+  userId              String?
+  counselorReviews    CounselorReview[]
 
   @@index([schoolId, status])
   @@index([createdById])
@@ -457,6 +560,7 @@ model SchoolAssignment {
   @@index([publishedAt])
 }
 
+// ============= STUDENT ASSIGNMENT DOMAIN ===============
 model StudentAssignment {
   id String @id @default(cuid())
 
@@ -489,16 +593,18 @@ model StudentAnswer {
   studentAssignmentId String
   studentAssignment   StudentAssignment @relation(fields: [studentAssignmentId], references: [id], onDelete: Cascade)
 
-  questionId String
-  question   AssessmentQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  assignmentQuestionId String
+  assignmentQuestion   AssignmentQuestion @relation(fields: [assignmentQuestionId], references: [id], onDelete: Cascade)
 
   value Int
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  assessmentQuestion   AssessmentQuestion? @relation(fields: [assessmentQuestionId], references: [id])
+  assessmentQuestionId String?
 
-  @@unique([studentAssignmentId, questionId])
-  @@index([questionId])
+  @@unique([studentAssignmentId, assignmentQuestionId])
+  @@index([assignmentQuestionId])
 }
 
 model AssessmentResult {
@@ -525,9 +631,322 @@ model AssessmentResult {
   dominantKey IntelligenceKey?
   summaryJson Json?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  counselorReviews CounselorReview[]
 
   @@index([schoolId, studentId])
   @@index([dominantKey])
+}
+
+// ============ STUDENT NOTIFICATIONS ==============
+model InAppNotification {
+  id String @id @default(cuid())
+
+  schoolId String?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      InAppNotificationType
+  title     String
+  body      String
+  actionUrl String?
+  isRead    Boolean               @default(false)
+
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
+
+  @@index([userId, isRead, createdAt])
+  @@index([schoolId, createdAt])
+}
+
+// =============== Counseling ===================
+enum CounselingSessionStatus {
+  CANCELED
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  RESCHEDULED
+}
+
+model CounselingSession {
+  id String @id @default(cuid())
+
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  studentId String
+  student   User   @relation("StudentCounselingSessions", fields: [studentId], references: [id], onDelete: Cascade)
+
+  counselorId String?
+  counselor   User?   @relation("CounselorCounselingSessions", fields: [counselorId], references: [id], onDelete: SetNull)
+
+  requestedById String
+  requestedBy   User   @relation("RequestedCounselingSessions", fields: [requestedById], references: [id], onDelete: Cascade)
+
+  title       String
+  note        String?
+  meetingUrl  String?
+  scheduledAt DateTime?
+
+  status     CounselingSessionStatus @default(REQUESTED)
+  canceledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@index([schoolId, studentId])
+  @@index([schoolId, counselorId])
+  @@index([studentId, status])
+  @@index([schoolId, status])
+  @@index([schoolId, scheduledAt])
+  @@index([counselorId, status])
+}
+
+// ================ Parent =================
+enum ParentRelationType {
+  OTHER
+  MOTHER
+  FATHER
+  GUARDIAN
+}
+
+enum StudentActivityType {
+  SESSION_BOOKED
+  PROFILE_UPDATED
+  RESULT_PUBLISHED
+  SESSION_REQUESTED
+  SESSION_COMPLETED
+  ASSIGNMENT_STARTED
+  ASSIGNMENT_ASSIGNED
+  ASSIGNMENT_SUBMITTED
+  ASSESSMENT_COMPLETED
+  CAREER_MATCH_UPDATED
+}
+
+enum ParentResourceCategory {
+  WELLBEING
+  CAREER_GUIDE
+  SUPPORT_TEEN
+  STUDY_SUPPORT
+  COMMUNICATION
+}
+
+model ParentStudentLink {
+  id        String             @id @default(cuid())
+  schoolId  String
+  parentId  String
+  studentId String
+  relation  ParentRelationType @default(OTHER)
+  isPrimary Boolean            @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school  School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  parent  User    @relation("ParentLinks", fields: [parentId], references: [id], onDelete: Cascade)
+  student User    @relation("StudentLinks", fields: [studentId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id])
+  userId  String?
+
+  @@unique([parentId, studentId])
+  @@index([schoolId, parentId])
+  @@index([schoolId, studentId])
+  @@index([parentId, isPrimary])
+}
+
+model StudentGradeRecord {
+  id        String @id @default(cuid())
+  schoolId  String
+  studentId String
+
+  subject    String
+  score      Float
+  maxScore   Float    @default(20)
+  examTitle  String?
+  termLabel  String?
+  recordedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school  School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  student User    @relation("StudentGradeRecords", fields: [studentId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id])
+  userId  String?
+
+  @@index([schoolId, studentId, recordedAt])
+  @@index([studentId, subject])
+  @@index([studentId, termLabel])
+}
+
+model StudentActivity {
+  id        String @id @default(cuid())
+  schoolId  String
+  studentId String
+
+  type        StudentActivityType
+  title       String
+  description String?
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+
+  school  School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  student User    @relation("StudentActivities", fields: [studentId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id])
+  userId  String?
+
+  @@index([schoolId, studentId, createdAt])
+  @@index([studentId, type])
+}
+
+model ParentResource {
+  id       String  @id @default(cuid())
+  schoolId String?
+
+  title         String
+  slug          String                 @unique
+  summary       String?
+  content       String?
+  category      ParentResourceCategory
+  coverImageUrl String?
+  isPublished   Boolean                @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school School? @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId, category, isPublished])
+  @@index([isPublished, createdAt])
+}
+
+// ================ Counselor ================
+
+enum CounselorStudentLinkStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum CounselorReviewStatus {
+  PENDING
+  IN_REVIEW
+  REVIEWED
+  RETURNED
+}
+
+enum CounselorMessageSenderRole {
+  COUNSELOR
+  STUDENT
+  PARENT
+  SCHOOL_ADMIN
+}
+
+enum CounselorMessageThreadStatus {
+  OPEN
+  CLOSED
+}
+
+enum CounselorExportFormat {
+  PDF
+  EXCEL
+}
+
+model CounselorStudentLink {
+  id          String                     @id @default(cuid())
+  schoolId    String
+  counselorId String
+  studentId   String
+  status      CounselorStudentLinkStatus @default(ACTIVE)
+  assignedAt  DateTime                   @default(now())
+  updatedAt   DateTime                   @updatedAt
+
+  school    School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  counselor User   @relation("CounselorAssignedStudents", fields: [counselorId], references: [id], onDelete: Cascade)
+  student   User   @relation("StudentAssignedCounselors", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, counselorId, studentId])
+  @@index([schoolId, counselorId, status])
+  @@index([schoolId, studentId, status])
+}
+
+model CounselorReview {
+  id           String                @id @default(cuid())
+  schoolId     String
+  counselorId  String
+  studentId    String
+  assignmentId String
+  resultId     String?
+  status       CounselorReviewStatus @default(PENDING)
+  feedback     String?
+  reviewedAt   DateTime?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  school     School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  counselor  User              @relation("CounselorReviews", fields: [counselorId], references: [id], onDelete: Cascade)
+  student    User              @relation("StudentCounselorReviews", fields: [studentId], references: [id], onDelete: Cascade)
+  assignment SchoolAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  result     AssessmentResult? @relation(fields: [resultId], references: [id], onDelete: SetNull)
+
+  @@index([schoolId, counselorId, status])
+  @@index([schoolId, studentId])
+  @@index([assignmentId])
+  @@index([resultId])
+}
+
+model CounselorNote {
+  id          String   @id @default(cuid())
+  schoolId    String
+  counselorId String
+  studentId   String
+  title       String?
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  school    School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  counselor User   @relation("CounselorNotes", fields: [counselorId], references: [id], onDelete: Cascade)
+  student   User   @relation("StudentCounselorNotes", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId, counselorId, studentId])
+}
+
+model CounselorMessageThread {
+  id          String                       @id @default(cuid())
+  schoolId    String
+  counselorId String
+  studentId   String
+  status      CounselorMessageThreadStatus @default(OPEN)
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+
+  school    School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  counselor User               @relation("CounselorMessageThreads", fields: [counselorId], references: [id], onDelete: Cascade)
+  student   User               @relation("StudentMessageThreads", fields: [studentId], references: [id], onDelete: Cascade)
+  messages  CounselorMessage[]
+
+  @@unique([schoolId, counselorId, studentId])
+  @@index([schoolId, counselorId, status])
+}
+
+model CounselorMessage {
+  id         String                     @id @default(cuid())
+  threadId   String
+  senderId   String
+  senderRole CounselorMessageSenderRole
+  body       String
+  isRead     Boolean                    @default(false)
+  createdAt  DateTime                   @default(now())
+
+  thread CounselorMessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender User                   @relation("CounselorMessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+  @@index([senderId])
 }

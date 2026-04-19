@@ -1,25 +1,30 @@
-import { DashboardSidebar } from "@elements/dashboard-sidebar";
-import { DashboardHeader } from "@elements/dashboard-header";
-import { DashboardShell } from "@elements/dashboard-shell";
+"use client";
+
+import { DashboardSidebar } from "@modules/Dashboard/parts/dashboard-sidebar";
+import { DashboardHeader } from "@modules/Dashboard/parts/dashboard-header";
+import { DashboardShell } from "@modules/Dashboard/parts/dashboard-shell";
 import { schoolAdminNav } from "@/utils/dashboard-nav.config";
 import { Background } from "@elements/background";
+import { useI18n } from "@/hooks/useI18n";
 
 import SchoolAdminGradesPage from "@modules/Dashboard/SchoolAdmin/Grades";
 
 const GradesSchoolAdminDashboard = () => {
+  const { t } = useI18n();
+
   return (
     <DashboardShell
       header={
         <DashboardHeader
-          title="Grades"
-          description="Manage school grade levels."
+          title={t("dashboard.schoolAdmin.grades.page.title")}
+          description={t("dashboard.schoolAdmin.grades.page.description")}
         />
       }
       sidebar={
         <DashboardSidebar
-          title="School Admin"
-          subtitle="School operations panel"
           items={schoolAdminNav}
+          title={t("dashboard.schoolAdmin.shell.title")}
+          subtitle={t("dashboard.schoolAdmin.shell.subtitle")}
         />
       }
     >

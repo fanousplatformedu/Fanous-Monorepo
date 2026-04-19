@@ -39,11 +39,8 @@ const ForcePasswordChangeEnforcer = () => {
       setPending(F.getForcePasswordPending());
       setLoginPath(F.getForcePasswordLoginPath());
     };
-
     syncFromStorage();
-
     window.addEventListener(F.FORCE_PASSWORD_EVENT, syncFromStorage);
-
     return () => {
       window.removeEventListener(F.FORCE_PASSWORD_EVENT, syncFromStorage);
     };
@@ -63,41 +60,29 @@ const ForcePasswordChangeEnforcer = () => {
 
   useEffect(() => {
     if (isLoading || isFetching) return;
-
     if (!mustChangePassword) {
       setOpen(false);
       hasShownToastRef.current = false;
       F.clearForcePasswordFlow();
       return;
     }
-
     if (!pending) {
       setOpen(false);
       return;
     }
-
     if (isSettingsPath) {
       setOpen(false);
       return;
     }
-
     setOpen(true);
-
     if (!hasShownToastRef.current) {
-      toast.warning(
-        t(
-          "auth.forcePassword.toast",
-          {},
-          "You must change your password before continuing.",
-        ),
-      );
+      toast.warning(t("auth.forcePassword.toast"));
       hasShownToastRef.current = true;
     }
   }, [isLoading, isFetching, mustChangePassword, pending, isSettingsPath, t]);
 
   const handleGoToSettings = () => {
     if (!currentUser?.role) return;
-
     setOpen(false);
     router.push(F.getSettingsPathByRole(currentUser.role));
   };
@@ -107,26 +92,13 @@ const ForcePasswordChangeEnforcer = () => {
       await logout().unwrap();
       F.clearForcePasswordFlow();
       setOpen(false);
-      toast.success(t("auth.logoutSuccess", {}, "Logged out successfully."));
+      toast.success(t("auth.logoutSuccess"));
       router.replace("/");
       router.refresh();
     } catch {
       toast.error(t("common.errors.generic"));
     }
   };
-
-  console.log("FORCE FLOW DEBUG", {
-    currentUser,
-    forcePasswordChange: currentUser?.forcePasswordChange,
-    mustChangePassword,
-    pending,
-    loginPath,
-    pathname,
-    isSettingsPath,
-    open,
-    isLoading,
-    isFetching,
-  });
 
   if (!mustChangePassword || !pending || isSettingsPath) return null;
 
@@ -145,20 +117,12 @@ const ForcePasswordChangeEnforcer = () => {
           </D.DialogTitle>
 
           <D.DialogDescription className="leading-7">
-            {t(
-              "auth.forcePassword.description",
-              {},
-              "For security reasons, you must change your temporary password before accessing the rest of the dashboard.",
-            )}
+            {t("auth.forcePassword.description")}
           </D.DialogDescription>
         </D.DialogHeader>
 
         <div className="rounded-2xl border border-border/60 bg-secondary/25 p-4 text-sm text-muted-foreground">
-          {t(
-            "auth.forcePassword.note",
-            {},
-            "You can only access your settings page until the password is updated successfully.",
-          )}
+          {t("auth.forcePassword.note")}
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
@@ -178,7 +142,7 @@ const ForcePasswordChangeEnforcer = () => {
             className="rounded-2xl"
             onClick={handleGoToSettings}
           >
-            {t("auth.forcePassword.goToSettings", {}, "Go to settings")}
+            {t("auth.forcePassword.goToSettings")}
           </Button>
         </div>
       </D.DialogContent>

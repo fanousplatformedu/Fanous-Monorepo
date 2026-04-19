@@ -1,7 +1,7 @@
 import { TGraphqlBaseQueryArgs, TGraphqlResponse } from "@/types/rtk-query";
 import { fetchBaseQuery, type BaseQueryFn } from "@reduxjs/toolkit/query";
 import { GraphqlBaseQueryError } from "@/types/rtk-query";
-import { GRAPHQL_ENDPOINT } from "@/lib/graphql/env";
+import { GRAPHQL_ENDPOINT } from "@/utils/constant";
 import { print } from "graphql";
 
 const rawBaseQuery = fetchBaseQuery({

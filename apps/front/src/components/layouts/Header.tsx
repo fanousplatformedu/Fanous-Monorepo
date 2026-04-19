@@ -2,16 +2,16 @@
 
 import { useCurrentUserHeaderQuery } from "@/lib/redux/api";
 import { Languages, Menu, X } from "lucide-react";
-import { HeaderMobileMenu } from "@elements/header-mobile";
+import { HeaderMobileMenu } from "@/components/layouts/parts/header-mobile";
 import { ThemeToggleBtn } from "@elements/theme-toggle-btn";
 import { headerStyles } from "@/utils/style";
 import { useScrolled } from "@/hooks/useScrolled";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "@/utils/constant";
 import { useState } from "react";
-import { UserMenu } from "@elements/user-menu";
+import { UserMenu } from "@/components/layouts/parts/user-menu";
 import { useI18n } from "@/hooks/useI18n";
-import { NavLink } from "@elements/nav-link";
+import { NavLink } from "@/components/layouts/parts/nav-link";
 import { Button } from "@ui/button";
 import { Brand } from "@elements/Brand";
 import { cn } from "@/lib/utils";

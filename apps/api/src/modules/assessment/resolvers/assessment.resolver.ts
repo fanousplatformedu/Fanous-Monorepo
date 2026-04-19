@@ -89,7 +89,7 @@ export class AssessmentResolver {
     name: AssessmentGqlMutationNames.AssignAssignmentToStudents,
   })
   async assignAssignmentToStudents(
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string; role: Role; schoolId: string | null },
     @Args("input") input: AssignAssignmentInput,
   ) {
     const res = await this.assessmentService.assignAssignmentToStudents({
@@ -97,7 +97,6 @@ export class AssessmentResolver {
       assignmentId: input.assignmentId,
       studentIds: input.studentIds ?? null,
     });
-
     return `ASSIGNED_${res.assignedCount}`;
   }
 

@@ -5,9 +5,12 @@ import { AccessRequestModule } from "@accessRequest/access-request.module";
 import { NotificationModule } from "@notif/notif.module";
 import { SuperAdminModule } from "@superAdmin/super-admin.module";
 import { AssessmentModule } from "@assessment/assessment.module";
+import { CounselorModule } from "@counselor/counselor.module";
+import { StudentModule } from "@student/student.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { PrismaModule } from "@prisma/prisma.module";
 import { SchoolModule } from "@school/school.module";
+import { ParentModule } from "@parent/parent.module";
 import { JwtAuthGuard } from "@auth/guards/jwt-auth.guard";
 import { AuthModule } from "@auth/auth.module";
 import { RolesGuard } from "@auth/guards/roles.guard";
@@ -26,7 +29,10 @@ import { join } from "path";
     AuthModule,
     UserModule,
     PrismaModule,
+    ParentModule,
     SchoolModule,
+    StudentModule,
+    CounselorModule,
     SuperAdminModule,
     AssessmentModule,
     NotificationModule,

@@ -28,19 +28,25 @@ export type TAuthIdentityPayload = {
 
 // ============== Dashboard Config ===============
 export type TDashboardIconName =
+  | "Bell"
   | "Users"
+  | "Brain"
   | "School"
   | "FileText"
+  | "Settings"
   | "UserPlus2"
   | "Settings2"
   | "UserRound"
+  | "BadgeHelp"
   | "UsersRound"
   | "ScrollText"
   | "UserCheck2"
+  | "NotebookPen"
   | "ClipboardList"
   | "GraduationCap"
   | "UserRoundCheck"
   | "ChartColumnBig"
+  | "MessagesSquare"
   | "LayoutDashboard";
 
 export type TDashboardNavItem = {

@@ -29,3 +29,32 @@ export const enrollmentSchema = z.object({
 });
 
 export type TEnrollmentForm = z.infer<typeof enrollmentSchema>;
+
+export const enrollmentFilterSchema = z.object({
+  gradeFilter: z.string(),
+  studentSearch: z.string(),
+});
+
+export type TEnrollmentFilterForm = z.infer<typeof enrollmentFilterSchema>;
+
+export const classroomFiltersSchema = z.object({
+  query: z.string(),
+  gradeId: z.string(),
+  scope: z.enum(["ACTIVE_ONLY", "ALL"]),
+});
+
+export type TClassroomFiltersValues = z.infer<typeof classroomFiltersSchema>;
+
+export const gradeSchema = z.object({
+  name: z.string().min(1),
+  code: z.string(),
+});
+
+export type TGradeFormValues = z.infer<typeof gradeSchema>;
+
+export const gradeEditSchema = z.object({
+  name: z.string().min(1),
+  code: z.string(),
+});
+
+export type TGradeEditValues = z.infer<typeof gradeEditSchema>;

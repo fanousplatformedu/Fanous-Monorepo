@@ -1,12 +1,11 @@
 export type AppRole =
-  | "SUPER_ADMIN"
-  | "SCHOOL_ADMIN"
-  | "STUDENT"
-  | "TEACHER"
   | "PARENT"
-  | "COUNSELOR";
+  | "STUDENT"
+  | "COUNSELOR"
+  | "SUPER_ADMIN"
+  | "SCHOOL_ADMIN";
 
-export const getRoleLabel = (role?: string | null) => {
+export const getRoleLabel = (role?: string) => {
   switch (role) {
     case "SUPER_ADMIN":
       return "Super Admin";
@@ -14,8 +13,6 @@ export const getRoleLabel = (role?: string | null) => {
       return "School Admin";
     case "STUDENT":
       return "Student";
-    case "TEACHER":
-      return "Teacher";
     case "PARENT":
       return "Parent";
     case "COUNSELOR":
@@ -25,46 +22,43 @@ export const getRoleLabel = (role?: string | null) => {
   }
 };
 
-export const getRoleDashboardPath = (role?: string | null) => {
+export const getRoleDashboardPath = (role?: string) => {
   switch (role) {
     case "SUPER_ADMIN":
       return "/super-admin/dashboard";
     case "SCHOOL_ADMIN":
       return "/school-admin/dashboard";
     case "STUDENT":
-    case "TEACHER":
+      return "/student/dashboard";
     case "PARENT":
     case "COUNSELOR":
-      return "/user/dashboard";
     default:
       return "/";
   }
 };
 
-export const getRoleProfilePath = (role?: string | null) => {
+export const getRoleProfilePath = (role?: string) => {
   switch (role) {
     case "SUPER_ADMIN":
       return "/super-admin/dashboard/settings";
     case "SCHOOL_ADMIN":
       return "/school-admin/dashboard/settings";
     case "STUDENT":
-    case "TEACHER":
+      return "/student/dashboard/profile";
     case "PARENT":
     case "COUNSELOR":
-      return "/user/dashboard/profile";
     default:
       return "/";
   }
 };
 
-export const getRoleBadgeTone = (role?: string | null) => {
+export const getRoleBadgeTone = (role?: string) => {
   switch (role) {
     case "SUPER_ADMIN":
       return "blue";
     case "SCHOOL_ADMIN":
       return "green";
     case "STUDENT":
-    case "TEACHER":
     case "PARENT":
     case "COUNSELOR":
       return "amber";

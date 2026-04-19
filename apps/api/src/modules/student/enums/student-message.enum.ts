@@ -1,0 +1,18 @@
+export enum StudentMessage {
+  ASSIGNMENT_NOT_FOUND = "Assignment not found.",
+  RESULT_NOT_FOUND = "Assessment result not found.",
+  NOTIFICATION_NOT_FOUND = "Notification not found.",
+  INVALID_COUNSELOR = "Selected counselor is invalid.",
+  SCHOOL_SCOPE_MISSING = "Student school scope is missing.",
+  NOTIFICATION_MARKED_AS_READ = "Notification marked as read.",
+  COUNSELING_SESSION_NOT_FOUND = "Counseling session not found.",
+  ONLY_STUDENTS_ALLOWED = "Only students can access this module.",
+  COMPARE_RESULT_NOT_FOUND = "One or both results were not found.",
+  ASSIGNMENT_ALREADY_EVALUATED = "This assignment is already evaluated.",
+  ASSIGNMENT_SUBMITTED = "Assignment submitted and evaluated successfully.",
+  COUNSELING_SESSION_CREATED = "Counseling session requested successfully.",
+  COUNSELING_SESSION_CANCELED = "Counseling session canceled successfully.",
+  DUPLICATE_ANSWER = "Duplicate answer for the same question is not allowed.",
+  COUNSELING_SESSION_NOT_CANCELABLE = "This session can no longer be canceled.",
+  INVALID_ASSIGNMENT_QUESTION = "One or more questions do not belong to this assignment.",
+}

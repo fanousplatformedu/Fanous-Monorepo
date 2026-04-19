@@ -145,10 +145,9 @@ const AccessRequestPage = () => {
                   name="requestedRole"
                   label={t("form.role")}
                   options={[
-                    { value: "STUDENT", label: t("roles.student") },
                     { value: "PARENT", label: t("roles.parent") },
+                    { value: "STUDENT", label: t("roles.student") },
                     { value: "COUNSELOR", label: t("roles.counselor") },
-                    { value: "TEACHER", label: t("roles.teacher") },
                   ]}
                 />
               </div>

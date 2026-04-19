@@ -1,6 +1,12 @@
+import {
+  AccessRequestRole,
+  AccessRequestStatus,
+  AuditAction,
+  Prisma,
+  Role,
+} from "@prisma/client";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { ForbiddenException, Injectable } from "@nestjs/common";
-import { AccessRequestStatus, AuditAction, Role } from "@prisma/client";
 import { SchoolStatus, UserStatus } from "@prisma/client";
 import { AccessRequestErrorCode } from "@accessRequest/enums/access-request-error-code.enum";
 import { AccessRequestMessage } from "@accessRequest/enums/access-request-message.enum";
@@ -88,39 +94,49 @@ export class AccessRequestService {
   }
 
   // ============ list requests (SCHOOL_ADMIN or SUPER_ADMIN) ============
-  async list(args: T.TListAccessRequestsArgs) {
-    const isSuper = args.actor.role === Role.SUPER_ADMIN;
-    const isSchoolAdmin = args.actor.role === Role.SCHOOL_ADMIN;
-    if (!isSuper && !isSchoolAdmin)
-      throw new ForbiddenException({ code: AccessRequestErrorCode.FORBIDDEN });
-    const scopeSchoolId = isSuper
-      ? (args.schoolId ?? null)
-      : args.actor.schoolId;
-    if (!scopeSchoolId && !isSuper)
-      throw new BadRequestException({ code: AccessRequestErrorCode.FORBIDDEN });
-    const where: any = {
-      schoolId: scopeSchoolId ?? undefined,
-      status: args.status ?? undefined,
+  async listAccessRequests(args: T.TListAccessRequestsArgs) {
+    const { actor, query, status, requestedRole, take, skip } = args;
+    if (actor.role !== Role.SCHOOL_ADMIN && actor.role !== Role.SUPER_ADMIN)
+      throw new ForbiddenException({
+        code: AccessRequestErrorCode.FORBIDDEN,
+      });
+
+    if (actor.role === Role.SCHOOL_ADMIN && !actor.schoolId)
+      throw new BadRequestException({
+        code: AccessRequestErrorCode.INVALID_OPERATION,
+      });
+    const where: Prisma.AccessRequestWhereInput = {
+      ...(actor.role === Role.SCHOOL_ADMIN
+        ? { schoolId: actor.schoolId! }
+        : {}),
+      ...(status ? { status } : {}),
+      ...(requestedRole ? { requestedRole } : {}),
+      ...(query?.trim()
+        ? {
+            OR: [
+              { fullName: { contains: query.trim(), mode: "insensitive" } },
+              { email: { contains: query.trim(), mode: "insensitive" } },
+              { mobile: { contains: query.trim(), mode: "insensitive" } },
+            ],
+          }
+        : {}),
     };
-    if (args.query?.trim()) {
-      const q = args.query.trim();
-      where.OR = [
-        { fullName: { contains: q, mode: "insensitive" } },
-        { email: { contains: q, mode: "insensitive" } },
-        { mobile: { contains: q } },
-      ];
-    }
+
     const [items, total] = await this.prismaService.$transaction([
       this.prismaService.accessRequest.findMany({
         where,
-        select: this.selectAccessRequest(),
         orderBy: { createdAt: "desc" },
-        take: args.take,
-        skip: args.skip,
+        take,
+        skip,
       }),
       this.prismaService.accessRequest.count({ where }),
     ]);
-    return { items, total, take: args.take, skip: args.skip };
+    return {
+      items,
+      total,
+      take,
+      skip,
+    };
   }
 
   async byId(actor: { role: Role; schoolId: string | null }, id: string) {
@@ -159,7 +175,6 @@ export class AccessRequestService {
         school: { select: { id: true, name: true, status: true } },
       },
     });
-
     if (!req)
       throw new NotFoundException({
         code: AccessRequestErrorCode.REQUEST_NOT_FOUND,
@@ -172,7 +187,6 @@ export class AccessRequestService {
       throw new BadRequestException({
         code: AccessRequestErrorCode.ALREADY_REVIEWED,
       });
-
     if (req.school.status !== SchoolStatus.ACTIVE)
       throw new BadRequestException({
         code: AccessRequestErrorCode.SCHOOL_SUSPENDED,
@@ -197,38 +211,35 @@ export class AccessRequestService {
         code: AccessRequestErrorCode.INVALID_DESTINATION,
       });
     if (args.approve) {
-      const finalRoleCandidate = (args.finalRole ?? req.requestedRole) as
-        | Role
-        | string
-        | null
-        | undefined;
-      if (!T.isSchoolUserRole(finalRoleCandidate))
-        throw new BadRequestException({
-          code: AccessRequestErrorCode.FORBIDDEN,
-        });
-      const finalRole = finalRoleCandidate;
+      const finalRole: AccessRequestRole = args.finalRole ?? req.requestedRole;
+      const userRole: Role =
+        finalRole === AccessRequestRole.STUDENT
+          ? Role.STUDENT
+          : finalRole === AccessRequestRole.PARENT
+            ? Role.PARENT
+            : Role.COUNSELOR;
       const existingUser = await this.prismaService.user.findFirst({
         where: {
           schoolId: req.schoolId,
           OR: [
             req.email ? { email: req.email } : undefined,
             req.mobile ? { mobile: req.mobile } : undefined,
-          ].filter(Boolean) as any,
+          ].filter(Boolean) as Prisma.UserWhereInput[],
         },
         select: { id: true },
       });
-      if (existingUser)
+      if (existingUser) {
         throw new BadRequestException({
           code: AccessRequestErrorCode.USER_ALREADY_EXISTS,
         });
-
+      }
       let createdUserId: string | undefined;
       let notificationError: string | undefined;
       await this.prismaService.$transaction(async (tx) => {
         const user = await tx.user.create({
           data: {
             schoolId: req.schoolId,
-            role: finalRole,
+            role: userRole,
             status: UserStatus.ACTIVE,
             email: req.email,
             mobile: req.mobile,
@@ -276,9 +287,11 @@ export class AccessRequestService {
         if (result.message !== "SENT")
           notificationError =
             `${result.errorCode ?? "FAILED"}: ${result.errorMessage ?? ""}`.trim();
-      } catch (e: any) {
+      } catch (error: unknown) {
         notificationError =
-          e?.message ?? AccessRequestErrorCode.NOTIFICATION_FAILED;
+          error instanceof Error
+            ? error.message
+            : AccessRequestErrorCode.NOTIFICATION_FAILED;
       }
       return {
         message: AccessRequestMessage.APPROVED,
@@ -287,7 +300,6 @@ export class AccessRequestService {
         notificationError,
       };
     }
-
     const reason = args.rejectReason?.trim() || null;
     await this.prismaService.accessRequest.update({
       where: { id: req.id },
@@ -298,7 +310,6 @@ export class AccessRequestService {
         rejectReason: reason,
       },
     });
-
     await this.auditService.record({
       action: AuditAction.ACCESS_REQUEST_REJECT,
       actorId: args.actor.id,
@@ -315,9 +326,7 @@ export class AccessRequestService {
         reviewedByRole: args.actor.role,
       },
     });
-
     let notificationError: string | undefined;
-
     try {
       const result = await this.notifService.notifyByTemplate({
         template: NotificationTemplate.ACCESS_REQUEST_REJECTED,

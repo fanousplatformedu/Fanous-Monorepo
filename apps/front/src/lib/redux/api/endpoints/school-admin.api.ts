@@ -346,11 +346,11 @@ export const schoolAdminApi = baseApi.injectEndpoints({
 
     enrollmentsByClassroom: builder.query<
       TAPI.EnrollmentsByClassroomQuery["enrollmentsByClassroom"],
-      { schoolId: string; classroomId: string }
+      TAPI.ListEnrollmentsByClassroomInput
     >({
-      query: ({ schoolId, classroomId }) => ({
+      query: (input) => ({
         document: API.EnrollmentsByClassroomDocument,
-        variables: { schoolId, classroomId },
+        variables: { input },
       }),
       transformResponse: (response: TAPI.EnrollmentsByClassroomQuery) =>
         response.enrollmentsByClassroom,

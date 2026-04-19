@@ -865,22 +865,46 @@ export class SchoolService {
 
   async enrollmentsByClassroom(
     actor: { id: string; role: Role; schoolId: string | null },
-    schoolId: string,
-    classroomId: string,
+    input: {
+      schoolId: string;
+      classroomId: string;
+      take: number;
+      skip: number;
+    },
   ) {
-    const scopedSchoolId = await this.resolveManagedSchoolId(actor, schoolId);
+    const scopedSchoolId = await this.resolveManagedSchoolId(
+      actor,
+      input.schoolId,
+    );
+
     const classroom = await this.prismaService.classroom.findFirst({
-      where: { id: classroomId, schoolId: scopedSchoolId },
+      where: {
+        id: input.classroomId,
+        schoolId: scopedSchoolId,
+      },
       select: { id: true },
     });
     if (!classroom) throw new NotFoundException("Classroom not found");
-    return this.prismaService.enrollment.findMany({
-      where: {
-        schoolId: scopedSchoolId,
-        classroomId,
-      },
-      orderBy: { startedAt: "desc" },
-    });
+    const where = {
+      schoolId: scopedSchoolId,
+      classroomId: input.classroomId,
+    };
+    const [items, total] = await this.prismaService.$transaction([
+      this.prismaService.enrollment.findMany({
+        where,
+        orderBy: { startedAt: "desc" },
+        take: input.take,
+        skip: input.skip,
+      }),
+      this.prismaService.enrollment.count({ where }),
+    ]);
+
+    return {
+      items,
+      total,
+      take: input.take,
+      skip: input.skip,
+    };
   }
 
   // =========== Public User ============

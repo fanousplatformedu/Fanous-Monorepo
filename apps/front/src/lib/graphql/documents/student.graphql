@@ -1,0 +1,187 @@
+query StudentDashboardSummary {
+  studentDashboardSummary {
+    totalAssignments
+    pendingAssignments
+    latestOverallScore
+    unreadNotifications
+    submittedAssignments
+    evaluatedAssignments
+    dominantIntelligence
+    inProgressAssignments
+    pendingCounselingSessions
+    progressTimeline {
+      label
+      overall
+    }
+  }
+}
+
+query MyAssignments($input: ListMyAssignmentsInput!) {
+  myAssignments(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      title
+      dueAt
+      status
+      startedAt
+      targetMode
+      description
+      publishedAt
+      submittedAt
+      evaluatedAt
+      assignmentId
+      completionRate
+    }
+  }
+}
+
+query MyAssignmentDetail($studentAssignmentId: String!) {
+  myAssignmentDetail(studentAssignmentId: $studentAssignmentId) {
+    id
+    title
+    dueAt
+    status
+    publishedAt
+    description
+    assignmentId
+    questions {
+      id
+      text
+      order
+      answerValue
+      questionNumber
+    }
+  }
+}
+
+mutation SubmitAssignmentAnswers($input: SubmitAssignmentAnswersInput!) {
+  submitAssignmentAnswers(input: $input) {
+    success
+    message
+  }
+}
+
+query MyAssessmentResults($input: ListMyAssessmentResultsInput!) {
+  myAssessmentResults(input: $input) {
+    total
+    take
+    skip
+    items {
+      id
+      musical
+      createdAt
+      linguistic
+      logicalMath
+      naturalistic
+      visualSpatial
+      interpersonal
+      intrapersonal
+      assignmentTitle
+      bodilyKinesthetic
+      studentAssignmentId
+      dominantIntelligence
+    }
+  }
+}
+
+query MyAssessmentResultDetail($resultId: String!) {
+  myAssessmentResultDetail(resultId: $resultId) {
+    id
+    musical
+    createdAt
+    linguistic
+    logicalMath
+    scoreSummary
+    naturalistic
+    visualSpatial
+    interpersonal
+    intrapersonal
+    careerMatches {
+      score
+      title
+      fitReason
+      description
+    }
+    assignmentTitle
+    bodilyKinesthetic
+    studentAssignmentId
+    dominantIntelligence
+  }
+}
+
+query CompareResults($input: CompareResultsInput!) {
+  compareResults(input: $input) {
+    delta
+    current
+    previous
+    intelligence
+  }
+}
+
+query MyNotifications($input: ListMyNotificationsInput!) {
+  myNotifications(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      body
+      type
+      title
+      isRead
+      readAt
+      actionUrl
+      createdAt
+    }
+  }
+}
+
+mutation MarkNotificationRead($input: MarkNotificationReadInput!) {
+  markNotificationRead(input: $input) {
+    success
+    message
+  }
+}
+
+query MyCounselingSessions($input: ListMyCounselingSessionsInput!) {
+  myCounselingSessions(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      note
+      title
+      status
+      createdAt
+      meetingUrl
+      canceledAt
+      scheduledAt
+      counselorId
+    }
+  }
+}
+
+mutation RequestCounselingSession($input: RequestCounselingSessionInput!) {
+  requestCounselingSession(input: $input) {
+    id
+    note
+    title
+    status
+    createdAt
+    meetingUrl
+    canceledAt
+    scheduledAt
+    counselorId
+  }
+}
+
+mutation CancelCounselingSession($input: CancelCounselingSessionInput!) {
+  cancelCounselingSession(input: $input) {
+    success
+    message
+  }
+}

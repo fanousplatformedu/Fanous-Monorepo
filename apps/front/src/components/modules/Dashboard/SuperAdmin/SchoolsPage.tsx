@@ -1,13 +1,13 @@
 "use client";
 
 import { useSchoolsQuery, useSetSchoolStatusMutation } from "@/lib/redux/api";
-import { SuperAdminSectionCard } from "@elements/super-admin-section-card";
-import { DashboardLoadingCard } from "@elements/dashboard-loading-card";
-import { DashboardEmptyState } from "@elements/dashboard-empty-state";
+import { SuperAdminSectionCard } from "@modules/Dashboard/SuperAdmin/parts/super-section-card";
+import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
+import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
 import { getApiErrorMessage } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
 import { TableActionButton } from "@elements/table-action-button";
-import { SchoolFormDialog } from "@elements/school-form-dialog";
+import { SchoolFormDialog } from "@modules/Dashboard/SchoolAdmin/parts/school-form-dialog";
 import { TablePagination } from "@elements/table-pagination";
 import { StatusBadge } from "@elements/status-badge";
 import { PAGE_SIZE } from "@/utils/constant";

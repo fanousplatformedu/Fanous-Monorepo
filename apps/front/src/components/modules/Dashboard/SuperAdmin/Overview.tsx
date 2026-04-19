@@ -1,9 +1,9 @@
 "use client";
 
-import { SuperAdminRequestBarChart } from "@elements/super-admin-charts";
-import { SuperAdminStatusPieChart } from "@elements/super-admin-charts";
-import { SuperAdminSectionCard } from "@elements/super-admin-section-card";
-import { SuperAdminKpiCard } from "@elements/super-admin-kpi-card";
+import { SuperAdminRequestBarChart } from "@modules/Dashboard/SuperAdmin/parts/super-charts";
+import { SuperAdminStatusPieChart } from "@modules/Dashboard/SuperAdmin/parts/super-charts";
+import { SuperAdminSectionCard } from "@modules/Dashboard/SuperAdmin/parts/super-section-card";
+import { SuperAdminKpiCard } from "@modules/Dashboard/SuperAdmin/parts/super-kpi-card";
 import { TrendWidget } from "@elements/trend-wighet";
 import { useI18n } from "@/hooks/useI18n";
 

@@ -49,3 +49,17 @@ export const getApiErrorMessage = (
   if (error instanceof Error) return error.message;
   return fallback;
 };
+
+// ============== School Admin Dashboard =================
+export const toIsoFromLocalDateTime = (value?: string): string | undefined => {
+  if (!value?.trim()) return undefined;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return undefined;
+  return date.toISOString();
+};
+
+export const formatShortDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return `${date.getMonth() + 1}/${date.getDate()}`;
+};

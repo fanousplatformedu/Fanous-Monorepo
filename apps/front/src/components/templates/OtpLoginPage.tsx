@@ -118,7 +118,7 @@ const OtpLoginPage = () => {
       } catch {}
       refetchAction.unsubscribe();
       toast.success(res.message);
-      router.replace("/user/dashboard");
+      router.replace("/student/dashboard");
       router.refresh();
     } catch (error: unknown) {
       const message =

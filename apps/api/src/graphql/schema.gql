@@ -25,6 +25,19 @@ type AccessRequestList {
   total: Int!
 }
 
+enum AccessRequestRole {
+  COUNSELOR
+  PARENT
+  STUDENT
+}
+
+enum AccessRequestStatus {
+  APPROVED
+  CANCELED
+  PENDING
+  REJECTED
+}
+
 input AdminLoginInput {
   password: String!
   username: String!
@@ -66,6 +79,24 @@ type AssessmentResult {
   visualSpatial: Float!
 }
 
+type AssessmentResultDetail {
+  assignmentTitle: String!
+  bodilyKinesthetic: Float!
+  careerMatches: [CareerMatch!]!
+  createdAt: String!
+  dominantIntelligence: String!
+  id: String!
+  interpersonal: Float!
+  intrapersonal: Float!
+  linguistic: Float!
+  logicalMath: Float!
+  musical: Float!
+  naturalistic: Float!
+  scoreSummary: String
+  studentAssignmentId: String!
+  visualSpatial: Float!
+}
+
 type AssessmentResultList {
   items: [AssessmentResult!]!
   skip: Int!
@@ -79,14 +110,48 @@ type AssessmentStudent {
   id: String!
 }
 
+type AssessmentStudentResult {
+  assignmentTitle: String!
+  bodilyKinesthetic: Float!
+  createdAt: String!
+  dominantIntelligence: String!
+  id: String!
+  interpersonal: Float!
+  intrapersonal: Float!
+  linguistic: Float!
+  logicalMath: Float!
+  musical: Float!
+  naturalistic: Float!
+  studentAssignmentId: String!
+  visualSpatial: Float!
+}
+
+type AssessmentStudentResultList {
+  items: [AssessmentStudentResult!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
 input AssignAssignmentInput {
   assignmentId: String!
   studentIds: [String!]
 }
 
+input AssignmentDraftAnswerInput {
+  questionNumber: Int!
+  value: Int!
+}
+
 type AssignmentRef {
   id: String!
   title: String!
+}
+
+enum AssignmentStatus {
+  CLOSED
+  DRAFT
+  PUBLISHED
 }
 
 type AuditCreateResult {
@@ -122,6 +187,23 @@ type AuthPayload {
   userId: String!
 }
 
+input CancelCounselingSessionInput {
+  reason: String
+  sessionId: String!
+}
+
+input CancelParentSessionInput {
+  reason: String
+  sessionId: String!
+}
+
+type CareerMatch {
+  description: String!
+  fitReason: String!
+  score: Float!
+  title: String!
+}
+
 input ChangeAdminPasswordInput {
   currentPassword: String!
   newPassword: String!
@@ -149,6 +231,228 @@ type ClassroomList {
 input CloseEnrollmentInput {
   endedAt: String
   id: String!
+}
+
+input CompareParentResultsInput {
+  baseResultId: String!
+  childId: String!
+  compareWithResultId: String!
+}
+
+input CompareResultsInput {
+  baseResultId: String!
+  compareWithResultId: String!
+}
+
+type CompareStudentResultItem {
+  dominantKey: ParentIntelligenceKey
+  latestDate: DateTime
+  latestScore: Float
+  studentId: String!
+  studentName: String!
+}
+
+type CompareStudentResults {
+  items: [CompareStudentResultItem!]!
+}
+
+input CompareStudentResultsInput {
+  studentIds: [String!]!
+}
+
+type CounselingSession {
+  canceledAt: String
+  counselorId: String
+  createdAt: String!
+  id: String!
+  meetingUrl: String
+  note: String
+  scheduledAt: String
+  status: String!
+  title: String!
+}
+
+type CounselingSessionList {
+  items: [CounselingSession!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type CounselorAssessmentQueueItem {
+  assignmentId: String!
+  assignmentTitle: String!
+  createdAt: DateTime!
+  resultId: String
+  reviewId: String!
+  reviewedAt: DateTime
+  status: CounselorReviewStatus!
+  studentId: String!
+  studentName: String!
+}
+
+type CounselorAssessmentQueueList {
+  hasNext: Boolean!
+  items: [CounselorAssessmentQueueItem!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type CounselorAssignmentItem {
+  assignmentId: String!
+  dueAt: DateTime
+  pendingReviews: Int!
+  publishedAt: DateTime
+  reviewedCount: Int!
+  status: AssignmentStatus!
+  title: String!
+  totalAssignedStudents: Int!
+}
+
+type CounselorAssignmentList {
+  hasNext: Boolean!
+  items: [CounselorAssignmentItem!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+input CounselorAssignmentsInput {
+  limit: Int! = 10
+  page: Int! = 1
+  search: String
+  studentId: String
+}
+
+type CounselorDashboardSummary {
+  activeStudents: Int!
+  pendingReviews: Int!
+  sessionsToday: Int!
+  totalStudents: Int!
+  unreadNotifications: Int!
+  upcomingSessions: Int!
+}
+
+enum CounselorExportFormat {
+  EXCEL
+  PDF
+}
+
+type CounselorExportResult {
+  createdAt: DateTime!
+  fileName: String!
+  filePath: String!
+  format: CounselorExportFormat!
+  id: String!
+}
+
+type CounselorNotification {
+  actionUrl: String
+  body: String!
+  createdAt: DateTime!
+  id: String!
+  isRead: Boolean!
+  readAt: DateTime
+  title: String!
+  type: InAppNotificationType!
+}
+
+type CounselorNotificationList {
+  hasNext: Boolean!
+  items: [CounselorNotification!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type CounselorProgressPoint {
+  date: DateTime!
+  label: String!
+  value: Float!
+}
+
+type CounselorReviewDetail {
+  assignmentId: String!
+  assignmentTitle: String!
+  createdAt: DateTime!
+  dominantKey: ParentIntelligenceKey
+  feedback: String
+  id: String!
+  resultId: String
+  reviewedAt: DateTime
+  status: CounselorReviewStatus!
+  studentId: String!
+  studentName: String!
+}
+
+type CounselorReviewResult {
+  message: String!
+  success: Boolean!
+}
+
+enum CounselorReviewStatus {
+  IN_REVIEW
+  PENDING
+  RETURNED
+  REVIEWED
+}
+
+type CounselorSession {
+  createdAt: DateTime!
+  id: String!
+  meetingUrl: String
+  note: String
+  scheduledAt: DateTime
+  status: ParentCounselingSessionStatus!
+  studentId: String!
+  studentName: String!
+  title: String!
+}
+
+type CounselorSessionList {
+  hasNext: Boolean!
+  items: [CounselorSession!]!
+  limit: Int!
+  page: Int!
+  total: Int!
+}
+
+type CounselorStudentCard {
+  assignedAt: DateTime!
+  email: String
+  fullName: String!
+  id: String!
+  latestResultAt: DateTime
+  linkStatus: CounselorStudentLinkStatus!
+  mobile: String
+  pendingReviews: Int!
+  upcomingSessionAt: DateTime
+}
+
+type CounselorStudentDetail {
+  email: String
+  fullName: String!
+  id: String!
+  latestResultAt: DateTime
+  latestSessionAt: DateTime
+  mobile: String
+  pendingReviews: Int!
+  totalResults: Int!
+  totalSessions: Int!
+}
+
+enum CounselorStudentLinkStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+type CounselorStudentList {
+  hasNext: Boolean!
+  items: [CounselorStudentCard!]!
+  limit: Int!
+  page: Int!
+  total: Int!
 }
 
 input CreateAssignmentInput {
@@ -224,6 +528,18 @@ type Enrollment {
   updatedAt: DateTime!
 }
 
+type EnrollmentList {
+  items: [Enrollment!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+input ExportCounselorStudentReportInput {
+  format: CounselorExportFormat!
+  studentId: String!
+}
+
 type Grade {
   code: String
   createdAt: DateTime!
@@ -241,6 +557,31 @@ type GradeList {
   total: Int!
 }
 
+type InAppNotification {
+  actionUrl: String
+  body: String!
+  createdAt: String!
+  id: String!
+  isRead: Boolean!
+  readAt: String
+  title: String!
+  type: String!
+}
+
+type InAppNotificationList {
+  items: [InAppNotification!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+enum InAppNotificationType {
+  ASSIGNMENT_DUE
+  ASSIGNMENT_PUBLISHED
+  GENERAL
+  RESULT_READY
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -248,10 +589,10 @@ scalar JSON
 
 input ListAccessRequestsInput {
   query: String
-  schoolId: String
+  requestedRole: AccessRequestRole
   skip: Int! = 0
-  status: String
-  take: Int! = 20
+  status: AccessRequestStatus
+  take: Int! = 10
 }
 
 input ListAssessmentResultsInput {
@@ -289,12 +630,93 @@ input ListClassroomsInput {
   take: Int! = 20
 }
 
+input ListEnrollmentsByClassroomInput {
+  classroomId: String!
+  schoolId: String!
+  skip: Int!
+  take: Int!
+}
+
 input ListGradesInput {
   includeDeleted: Boolean = false
   query: String
   schoolId: String!
   skip: Int! = 0
   take: Int! = 20
+}
+
+input ListMyAssessmentResultsInput {
+  dominantIntelligence: ParentIntelligenceKey
+  query: String
+  skip: Int! = 0
+  take: Int! = 10
+}
+
+input ListMyAssignmentsInput {
+  query: String
+  skip: Int! = 0
+  status: StudentAssignmentStatus
+  take: Int! = 10
+}
+
+input ListMyChildrenInput {
+  query: String
+  skip: Int!
+  take: Int!
+}
+
+input ListMyCounselingSessionsInput {
+  query: String
+  skip: Int! = 0
+  status: ParentCounselingSessionStatus
+  take: Int! = 10
+}
+
+input ListMyNotificationsInput {
+  query: String
+  skip: Int! = 0
+  take: Int! = 10
+  unreadOnly: Boolean
+}
+
+input ListParentChildActivitiesInput {
+  childId: String!
+  query: String
+  skip: Int!
+  take: Int!
+  type: StudentActivityType
+}
+
+input ListParentChildGradesInput {
+  childId: String!
+  query: String
+  skip: Int!
+  subject: String
+  take: Int!
+  termLabel: String
+}
+
+input ListParentChildResultsInput {
+  childId: String!
+  dominantIntelligence: ParentIntelligenceKey
+  query: String
+  skip: Int!
+  take: Int!
+}
+
+input ListParentCounselingSessionsInput {
+  childId: String
+  query: String
+  skip: Int!
+  status: ParentCounselingSessionStatus
+  take: Int!
+}
+
+input ListParentResourcesInput {
+  category: ParentResourceCategory
+  query: String
+  skip: Int!
+  take: Int!
 }
 
 input ListSchoolAdminsInput {
@@ -323,11 +745,20 @@ type LogoutResult {
   message: String!
 }
 
+input MarkCounselorNotificationReadInput {
+  notificationId: String!
+}
+
+input MarkNotificationReadInput {
+  notificationId: String!
+}
+
 type Mutation {
   adminLogin(input: AdminLoginInput!): AuthPayload!
   archiveClassroom(id: String!): Classroom!
   archiveGrade(id: String!): Grade!
   assignAssignmentToStudents(input: AssignAssignmentInput!): String!
+  cancelCounselingSession(input: CancelCounselingSessionInput!): NotificationStudentResult!
   changeAdminPassword(input: ChangeAdminPasswordInput!): PasswordResult!
   closeEnrollment(input: CloseEnrollmentInput!): Enrollment!
   createAssignment(input: CreateAssignmentInput!): SchoolAssignment!
@@ -337,21 +768,30 @@ type Mutation {
   createSchool(input: CreateSchoolInput!): School!
   createSchoolAdmin(input: CreateSchoolAdminInput!): CreateSchoolAdminResult!
   enrollStudent(input: EnrollStudentInput!): Enrollment!
+  exportCounselorStudentReport(input: ExportCounselorStudentReportInput!): CounselorExportResult!
   logout: LogoutResult!
   logoutAll: LogoutResult!
+  markCounselorNotificationRead(input: MarkCounselorNotificationReadInput!): CounselorReviewResult!
+  markNotificationRead(input: MarkNotificationReadInput!): NotificationStudentResult!
+  parentCancelCounselingSession(input: CancelParentSessionInput!): ParentSessionRequestResult!
+  parentRequestCounselingSession(input: ParentRequestSessionInput!): ParentSessionRequestResult!
   publishAssignment(id: String!): SchoolAssignment!
   refreshAuth: AuthPayload!
   removeSchoolMember(input: RemoveSchoolMemberInput!): User!
+  requestCounselingSession(input: RequestCounselingSessionInput!): CounselingSession!
   requestOtp(input: RequestOtpInput!): OtpResponse!
   resetAdminPassword(input: ResetAdminPasswordInput!): PasswordResult!
   restoreClassroom(id: String!): Classroom!
   restoreGrade(id: String!): Grade!
   reviewAccessRequest(input: ReviewAccessRequestInput!): ReviewResult!
+  reviewStudentAssessment(input: ReviewStudentAssessmentInput!): CounselorReviewResult!
+  scheduleCounselorSession(input: ScheduleCounselorSessionInput!): CounselorSession!
   sendTestEmail(input: SendTestEmailInput!): NotificationResult!
   sendTestSms(input: SendTestSmsInput!): NotificationResult!
   setAdminStatus(input: SetAdminStatusInput!): String!
   setSchoolStatus(input: SetSchoolStatusInput!): School!
   submitAccessRequest(input: SubmitAccessRequestInput!): AccessRequest!
+  submitAssignmentAnswers(input: SubmitAssignmentAnswersInput!): NotificationStudentResult!
   submitStudentAnswers(input: SubmitStudentAnswersInput!): String!
   updateAdminProfile(input: UpdateAdminProfileInput!): AdminProfileResult!
   updateClassroom(input: UpdateClassroomInput!): Classroom!
@@ -359,6 +799,30 @@ type Mutation {
   updateMe(input: UpdateMeInput!): User!
   updateSchool(input: UpdateSchoolInput!): School!
   verifyOtp(input: VerifyOtpInput!): AuthPayload!
+}
+
+input MyCounselorNotificationsInput {
+  limit: Int! = 10
+  page: Int! = 1
+  search: String
+  unreadOnly: Boolean! = false
+}
+
+input MyCounselorSessionsInput {
+  from: String
+  limit: Int! = 10
+  page: Int! = 1
+  search: String
+  status: ParentCounselingSessionStatus
+  studentId: String
+  to: String
+}
+
+input MyStudentsInput {
+  limit: Int! = 10
+  page: Int! = 1
+  search: String
+  status: CounselorStudentLinkStatus
 }
 
 type NotificationResult {
@@ -370,9 +834,188 @@ type NotificationResult {
   providerMessageId: String
 }
 
+type NotificationStudentResult {
+  message: String!
+  success: Boolean!
+}
+
 type OtpResponse {
   message: String!
   resendAfterSeconds: Float
+}
+
+type ParentAssessmentResult {
+  assignmentTitle: String!
+  bodilyKinesthetic: Float!
+  careerMatches: [ParentCareerMatch!]
+  createdAt: DateTime!
+  dominantIntelligence: ParentIntelligenceKey
+  id: String!
+  interpersonal: Float!
+  intrapersonal: Float!
+  linguistic: Float!
+  logicalMath: Float!
+  musical: Float!
+  naturalistic: Float!
+  studentAssignmentId: String!
+  summaryJson: String
+  visualSpatial: Float!
+}
+
+type ParentAssessmentResultList {
+  items: [ParentAssessmentResult!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type ParentCareerMatch {
+  description: String
+  fitReason: String
+  score: Float!
+  title: String!
+}
+
+type ParentChild {
+  avatarUrl: String
+  createdAt: DateTime
+  email: String
+  fullName: String
+  id: String!
+  isPrimary: Boolean!
+  mobile: String
+  relation: ParentRelationType!
+  status: String!
+}
+
+type ParentChildDetail {
+  avatarUrl: String
+  createdAt: DateTime
+  email: String
+  fullName: String
+  id: String!
+  isPrimary: Boolean!
+  mobile: String
+  relation: ParentRelationType!
+  status: String!
+}
+
+input ParentChildDetailInput {
+  childId: String!
+}
+
+type ParentChildList {
+  items: [ParentChild!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type ParentCompareResultItem {
+  current: Float!
+  delta: Float!
+  intelligence: ParentIntelligenceKey!
+  previous: Float!
+}
+
+type ParentCounselingSession {
+  canceledAt: DateTime
+  counselorId: String
+  createdAt: DateTime!
+  id: String!
+  meetingUrl: String
+  note: String
+  scheduledAt: DateTime
+  status: ParentCounselingSessionStatus!
+  title: String!
+}
+
+type ParentCounselingSessionList {
+  items: [ParentCounselingSession!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+enum ParentCounselingSessionStatus {
+  CANCELED
+  COMPLETED
+  CONFIRMED
+  REQUESTED
+  RESCHEDULED
+}
+
+type ParentDashboardSummary {
+  progressTimeline: [ParentProgressPoint!]!
+  totalActivities: Int!
+  totalChildren: Int!
+  totalResults: Int!
+  totalSessions: Int!
+}
+
+enum ParentIntelligenceKey {
+  BODILY_KINESTHETIC
+  INTERPERSONAL
+  INTRAPERSONAL
+  LINGUISTIC
+  LOGICAL_MATHEMATICAL
+  MUSICAL
+  NATURALISTIC
+  VISUAL_SPATIAL
+}
+
+type ParentProgressPoint {
+  label: String!
+  overall: Float!
+}
+
+enum ParentRelationType {
+  FATHER
+  GUARDIAN
+  MOTHER
+  OTHER
+}
+
+input ParentRequestSessionInput {
+  childId: String!
+  counselorId: String
+  meetingUrl: String
+  note: String
+  scheduledAt: String
+  title: String!
+}
+
+type ParentResource {
+  category: ParentResourceCategory!
+  content: String
+  coverImageUrl: String
+  createdAt: DateTime!
+  id: String!
+  isPublished: Boolean!
+  slug: String!
+  summary: String
+  title: String!
+}
+
+enum ParentResourceCategory {
+  CAREER_GUIDE
+  COMMUNICATION
+  STUDY_SUPPORT
+  SUPPORT_TEEN
+  WELLBEING
+}
+
+type ParentResourceList {
+  items: [ParentResource!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type ParentSessionRequestResult {
+  message: String!
+  sessionId: String
+  success: Boolean!
 }
 
 type PasswordResult {
@@ -403,20 +1046,56 @@ type Query {
   auditLogById(id: String!): AuditLog!
   auditLogs(input: ListAuditLogsInput!): AuditLogList!
   classrooms(input: ListClassroomsInput!): ClassroomList!
-  enrollmentsByClassroom(classroomId: String!, schoolId: String!): [Enrollment!]!
+  compareParentResults(input: CompareParentResultsInput!): [ParentCompareResultItem!]!
+  compareResults(input: CompareResultsInput!): [ResultCompareItem!]!
+  compareStudentResults(input: CompareStudentResultsInput!): CompareStudentResults!
+  counselorAssignments(input: CounselorAssignmentsInput!): CounselorAssignmentList!
+  counselorDashboardSummary: CounselorDashboardSummary!
+  counselorReviewDetail(reviewId: String!): CounselorReviewDetail!
+  counselorStudentDetail(studentId: String!): CounselorStudentDetail!
+  enrollmentsByClassroom(input: ListEnrollmentsByClassroomInput!): EnrollmentList!
   grades(input: ListGradesInput!): GradeList!
   me: User!
+  myAssessmentResultDetail(resultId: String!): AssessmentResultDetail!
+  myAssessmentResults(input: ListMyAssessmentResultsInput!): AssessmentStudentResultList!
+  myAssignmentDetail(studentAssignmentId: String!): StudentAssignmentDetail!
+  myAssignments(input: ListMyAssignmentsInput!): StudentAssignmentList!
+  myChildren(input: ListMyChildrenInput!): ParentChildList!
+  myCounselingSessions(input: ListMyCounselingSessionsInput!): CounselingSessionList!
+  myCounselorNotifications(input: MyCounselorNotificationsInput!): CounselorNotificationList!
+  myCounselorSessions(input: MyCounselorSessionsInput!): CounselorSessionList!
+  myNotifications(input: ListMyNotificationsInput!): InAppNotificationList!
+  myStudents(input: MyStudentsInput!): CounselorStudentList!
+  parentChildActivities(input: ListParentChildActivitiesInput!): StudentActivityList!
+  parentChildDetail(input: ParentChildDetailInput!): ParentChildDetail!
+  parentChildGrades(input: ListParentChildGradesInput!): StudentGradeRecordList!
+  parentChildResults(input: ListParentChildResultsInput!): ParentAssessmentResultList!
+  parentCounselingSessions(input: ListParentCounselingSessionsInput!): ParentCounselingSessionList!
+  parentDashboardSummary: ParentDashboardSummary!
+  parentResources(input: ListParentResourcesInput!): ParentResourceList!
+  parentResultDetail(resultId: String!): ParentAssessmentResult!
   publicSchools: PublicSchoolList!
   schoolAdmins(input: ListSchoolAdminsInput!): SchoolAdminList!
   schoolAssessmentSummary(input: SchoolAssessmentSummaryInput): SchoolAssessmentSummary!
   schoolById(schoolId: String!): School!
   schoolMembers(input: ListSchoolMembersInput!): UserList!
   schools(input: ListSchoolsInput!): SchoolList!
+  studentAssessmentQueue(input: StudentAssessmentQueueInput!): CounselorAssessmentQueueList!
+  studentDashboardSummary: StudentDashboardSummary!
+  studentProgressTimeline(input: StudentProgressTimelineInput!): [CounselorProgressPoint!]!
 }
 
 input RemoveSchoolMemberInput {
   hardDelete: Boolean
   userId: String!
+}
+
+input RequestCounselingSessionInput {
+  counselorId: String
+  meetingUrl: String
+  note: String
+  scheduledAt: String
+  title: String!
 }
 
 input RequestOtpInput {
@@ -427,6 +1106,13 @@ input RequestOtpInput {
 
 input ResetAdminPasswordInput {
   adminUserId: String!
+}
+
+type ResultCompareItem {
+  current: Float!
+  delta: Float!
+  intelligence: String!
+  previous: Float!
 }
 
 input ReviewAccessRequestInput {
@@ -442,6 +1128,20 @@ type ReviewResult {
   message: String!
   notificationError: String
   requestId: String!
+}
+
+input ReviewStudentAssessmentInput {
+  feedback: String
+  reviewId: String!
+  status: CounselorReviewStatus!
+}
+
+input ScheduleCounselorSessionInput {
+  meetingUrl: String
+  note: String
+  scheduledAt: String!
+  studentId: String!
+  title: String!
 }
 
 type School {
@@ -550,9 +1250,47 @@ input SetSchoolStatusInput {
   status: String!
 }
 
+type StudentActivity {
+  createdAt: DateTime!
+  description: String
+  id: String!
+  metadata: JSON
+  title: String!
+  type: StudentActivityType!
+}
+
+type StudentActivityList {
+  items: [StudentActivity!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+enum StudentActivityType {
+  ASSESSMENT_COMPLETED
+  ASSIGNMENT_ASSIGNED
+  ASSIGNMENT_STARTED
+  ASSIGNMENT_SUBMITTED
+  CAREER_MATCH_UPDATED
+  PROFILE_UPDATED
+  RESULT_PUBLISHED
+  SESSION_BOOKED
+  SESSION_COMPLETED
+  SESSION_REQUESTED
+}
+
 input StudentAnswerInput {
   questionId: String!
   value: Int!
+}
+
+input StudentAssessmentQueueInput {
+  assignmentId: String
+  limit: Int! = 10
+  page: Int! = 1
+  search: String
+  status: CounselorReviewStatus
+  studentId: String
 }
 
 type StudentAssignment {
@@ -567,12 +1305,107 @@ type StudentAssignment {
   submittedAt: DateTime
 }
 
+type StudentAssignmentDetail {
+  assignmentId: String!
+  description: String
+  dueAt: String
+  id: String!
+  publishedAt: String
+  questions: [StudentAssignmentQuestion!]!
+  status: String!
+  title: String!
+}
+
+type StudentAssignmentList {
+  items: [StudentDashboardAssignment!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type StudentAssignmentQuestion {
+  answerValue: Int
+  id: String!
+  order: Int!
+  questionNumber: Int!
+  text: String!
+}
+
+enum StudentAssignmentStatus {
+  EVALUATED
+  IN_PROGRESS
+  NOT_STARTED
+  PENDING
+  SUBMITTED
+}
+
+type StudentDashboardAssignment {
+  assignmentId: String!
+  completionRate: Float!
+  description: String
+  dueAt: String
+  evaluatedAt: String
+  id: String!
+  publishedAt: String
+  startedAt: String
+  status: String!
+  submittedAt: String
+  targetMode: String
+  title: String!
+}
+
+type StudentDashboardSummary {
+  dominantIntelligence: String
+  evaluatedAssignments: Int!
+  inProgressAssignments: Int!
+  latestOverallScore: Float!
+  pendingAssignments: Int!
+  pendingCounselingSessions: Int!
+  progressTimeline: [StudentProgressPoint!]!
+  submittedAssignments: Int!
+  totalAssignments: Int!
+  unreadNotifications: Int!
+}
+
+type StudentGradeRecord {
+  createdAt: DateTime!
+  examTitle: String
+  id: String!
+  maxScore: Float!
+  recordedAt: DateTime!
+  score: Float!
+  subject: String!
+  termLabel: String
+}
+
+type StudentGradeRecordList {
+  items: [StudentGradeRecord!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type StudentProgressPoint {
+  label: String!
+  overall: Float!
+}
+
+input StudentProgressTimelineInput {
+  limit: Int! = 12
+  studentId: String!
+}
+
 input SubmitAccessRequestInput {
   email: String
   fullName: String
   mobile: String
-  requestedRole: String!
+  requestedRole: AccessRequestRole!
   schoolId: String!
+}
+
+input SubmitAssignmentAnswersInput {
+  answers: [AssignmentDraftAnswerInput!]!
+  studentAssignmentId: String!
 }
 
 input SubmitStudentAnswersInput {

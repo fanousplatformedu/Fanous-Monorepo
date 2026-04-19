@@ -2,10 +2,10 @@
 
 import { useSuperAdminReviewAccessRequestMutation } from "@/lib/redux/api";
 import { useSuperAdminAccessRequestsQuery } from "@/lib/redux/api";
-import { SuperAdminRequestBarChart } from "@elements/super-admin-charts";
-import { SuperAdminSectionCard } from "@elements/super-admin-section-card";
-import { DashboardLoadingCard } from "@elements/dashboard-loading-card";
-import { DashboardEmptyState } from "@elements/dashboard-empty-state";
+import { SuperAdminRequestBarChart } from "@modules/Dashboard/SuperAdmin/parts/super-charts";
+import { SuperAdminSectionCard } from "@modules/Dashboard/SuperAdmin/parts/super-section-card";
+import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
+import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
 import { getApiErrorMessage } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
 import { TableActionButton } from "@elements/table-action-button";
@@ -169,20 +169,20 @@ const SuperAdminAccessRequestsPage = () => {
       <div className="space-y-6">
         <div className="grid gap-4 md:grid-cols-4">
           <TrendWidget
-            title={t("dashboard.superAdmin.accessRequests.kpis.total")}
             value={items.length}
+            title={t("dashboard.superAdmin.accessRequests.kpis.total")}
           />
           <TrendWidget
-            title={t("dashboard.superAdmin.accessRequests.kpis.pending")}
             value={pending}
+            title={t("dashboard.superAdmin.accessRequests.kpis.pending")}
           />
           <TrendWidget
-            title={t("dashboard.superAdmin.accessRequests.kpis.approved")}
             value={approved}
+            title={t("dashboard.superAdmin.accessRequests.kpis.approved")}
           />
           <TrendWidget
-            title={t("dashboard.superAdmin.accessRequests.kpis.rejected")}
             value={rejected}
+            title={t("dashboard.superAdmin.accessRequests.kpis.rejected")}
           />
         </div>
 

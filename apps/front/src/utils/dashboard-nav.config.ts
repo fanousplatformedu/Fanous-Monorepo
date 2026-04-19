@@ -71,12 +71,6 @@ export const schoolAdminNav: TDashboardNavItem[] = [
     icon: "FileText",
   },
   {
-    key: "reports",
-    labelKey: "dashboard.schoolAdmin.nav.reports",
-    href: "/school-admin/dashboard/reports",
-    icon: "ChartColumnBig",
-  },
-  {
     key: "classrooms",
     labelKey: "dashboard.schoolAdmin.nav.classrooms",
     href: "/school-admin/dashboard/classrooms",
@@ -102,23 +96,86 @@ export const schoolAdminNav: TDashboardNavItem[] = [
   },
 ];
 
-export const schoolUserNav: TDashboardNavItem[] = [
+export const studentNav: TDashboardNavItem[] = [
   {
     key: "overview",
-    labelKey: "dashboard.user.nav.overview",
-    href: "/user/dashboard",
+    labelKey: "dashboard.student.nav.overview",
+    href: "/student/dashboard",
     icon: "LayoutDashboard",
   },
   {
-    key: "profile",
-    labelKey: "dashboard.user.nav.profile",
-    href: "/user/dashboard/profile",
-    icon: "UserRound",
+    key: "assignments",
+    labelKey: "dashboard.student.nav.assignments",
+    href: "/student/dashboard/assignments",
+    icon: "NotebookPen",
   },
   {
-    key: "settings",
-    labelKey: "dashboard.user.nav.settings",
-    href: "/user/dashboard/settings",
-    icon: "Settings2",
+    key: "results",
+    labelKey: "dashboard.student.nav.results",
+    href: "/student/dashboard/results",
+    icon: "ChartColumnBig",
+  },
+  {
+    key: "notifications",
+    labelKey: "dashboard.student.nav.notifications",
+    href: "/student/dashboard/notifications",
+    icon: "Bell",
+  },
+  {
+    key: "counseling",
+    labelKey: "dashboard.student.nav.counselingSessions",
+    href: "/student/dashboard/counseling",
+    icon: "MessagesSquare",
+  },
+  {
+    key: "profileSettings",
+    labelKey: "dashboard.student.nav.profileSettings",
+    href: "/student/dashboard/profile",
+    icon: "Settings",
+  },
+];
+
+export const parentNav: TDashboardNavItem[] = [
+  {
+    key: "overview",
+    labelKey: "dashboard.parent.nav.overview",
+    href: "/parent/dashboard",
+    icon: "LayoutDashboard",
+  },
+  {
+    key: "children",
+    labelKey: "dashboard.parent.nav.children",
+    href: "/parent/dashboard/children",
+    icon: "UsersRound",
+  },
+  {
+    key: "results",
+    labelKey: "dashboard.parent.nav.results",
+    href: "/parent/dashboard/results",
+    icon: "GraduationCap",
+  },
+  {
+    key: "resources",
+    labelKey: "dashboard.parent.nav.resources",
+    href: "/parent/dashboard/resources",
+    icon: "FileText",
+  },
+  {
+    key: "activities",
+    labelKey: "dashboard.parent.nav.activities",
+    href: "/parent/dashboard/activities",
+    icon: "ScrollText",
+  },
+  {
+    key: "counseling",
+    labelKey: "dashboard.parent.nav.counseling",
+    href: "/parent/dashboard/counseling",
+    icon: "UserCheck2",
+  },
+  {
+    key: "profile",
+    labelKey: "dashboard.parent.nav.profile",
+    href: "/parent/dashboard/profile",
+    icon: "UserRound",
   },
 ];

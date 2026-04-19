@@ -129,15 +129,6 @@
           "desc": "در جریان مسیر کشف و تصمیم‌گیری شغلی فرزندتان باشید و مشارکت مؤثر داشته باشید.",
           "bullets": ["مشاهده پیشرفت", "مشاهده پیشنهادها", "تنظیمات اعلان‌ها"]
         },
-        "teachers": {
-          "title": "معلمان",
-          "desc": "پیشرفت کلاس را رصد کنید و از توسعه مهارت‌ها و رشد دانش‌آموزان حمایت کنید.",
-          "bullets": [
-            "نمای کلی کلاس",
-            "بینش‌های دانش‌آموزی",
-            "گزارش‌های عملکرد"
-          ]
-        },
         "super": {
           "title": "مدیر ارشد",
           "desc": "مدیریت چندمدرسه/چندمجموعه، تنظیمات سراسری و گزارش‌های کل پلتفرم را انجام دهید.",
@@ -171,17 +162,19 @@
     }
   },
   "common": {
+    "no": "خیر",
     "all": "همه",
     "yes": "بله",
-    "no": "خیر",
-    "apply": "اعمال",
-    "reset": "بازنشانی",
-    "edit": "ویرایش",
-    "previous": "قبلی",
     "next": "بعدی",
-    "loading": "در حال بارگذاری...",
     "save": "ذخیره",
+    "apply": "اعمال",
+    "edit": "ویرایش",
+    "close": "بستن",
     "cancel": "انصراف",
+    "previous": "قبلی",
+    "reset": "بازنشانی",
+    "refreshing": "در حال بروزرسانی...",
+    "loading": "در حال بارگذاری...",
     "errors": {
       "generic": "مشکلی رخ داد. لطفاً دوباره تلاش کنید."
     }
@@ -250,7 +243,6 @@
     "schoolAdmin": "ادمین مدرسه",
     "student": "دانش‌آموز",
     "parent": "والد",
-    "teacher": "معلم",
     "counselor": "مشاور"
   },
   "dashboard": {
@@ -558,11 +550,36 @@
       }
     },
     "schoolAdmin": {
+      "shell": {
+        "title": "مدیر مدرسه",
+        "subtitle": "پنل مدیریت عملیات مدرسه"
+      },
       "sidebar": {
         "title": "مدیریت مدرسه",
         "subtitle": "پنل مدیریت عملیات مدرسه"
       },
       "auditLogs": {
+        "kpis": {
+          "createActions": "اقدام‌های ایجاد",
+          "updateActions": "اقدام‌های ویرایش",
+          "deleteArchiveActions": "اقدام‌های حذف / آرشیو"
+        },
+        "filtersCard": {
+          "title": "فیلترهای لاگ حسابرسی",
+          "description": "لاگ‌های حسابرسی مدرسه را بر اساس اجراکننده، نوع اقدام و نوع موجودیت فیلتر کنید."
+        },
+        "filters": {
+          "actorId": "شناسه اجراکننده",
+          "action": "اقدام",
+          "entityType": "نوع موجودیت"
+        },
+        "columns": {
+          "action": "اقدام",
+          "actor": "اجراکننده",
+          "entity": "موجودیت",
+          "ip": "آی‌پی",
+          "created": "تاریخ ثبت"
+        },
         "header": {
           "title": "گزارش‌های حسابرسی",
           "description": "پیگیری رویدادهای مهم داخل مدرسه."
@@ -622,12 +639,50 @@
           "disableFailed": "غیرفعال‌سازی عضو انجام نشد."
         },
         "roles": {
-          "superAdmin": "سوپر ادمین",
-          "schoolAdmin": "مدیر مدرسه",
-          "student": "دانش‌آموز",
           "parent": "والد",
-          "teacher": "معلم",
-          "counselor": "مشاور"
+          "counselor": "مشاور",
+          "student": "دانش‌آموز",
+          "superAdmin": "سوپر ادمین",
+          "schoolAdmin": "مدیر مدرسه"
+        },
+        "kpis": {
+          "total": {
+            "title": "کل اعضا",
+            "description": "همه اعضای این مدرسه"
+          },
+          "active": {
+            "title": "اعضای فعال",
+            "description": "کاربران فعال فعلی"
+          },
+          "disabled": {
+            "title": "اعضای غیرفعال",
+            "description": "کاربران غیرفعال‌شده"
+          }
+        },
+        "filters": {
+          "title": "فیلترها",
+          "description": "اعضا را بر اساس نام، نقش یا وضعیت فیلتر کنید.",
+          "fields": {
+            "query": "جستجو بر اساس نام کامل",
+            "role": "نقش",
+            "status": "وضعیت"
+          },
+          "options": {
+            "allRoles": "همه نقش‌ها",
+            "allStatuses": "همه وضعیت‌ها"
+          }
+        },
+        "status": {
+          "ACTIVE": "فعال",
+          "DISABLED": "غیرفعال",
+          "DELETED": "حذف‌شده"
+        },
+        "disableDialog": {
+          "title": "غیرفعال‌کردن عضو",
+          "description": "آیا از غیرفعال‌کردن این عضو مطمئن هستید؟",
+          "fullName": "نام کامل",
+          "email": "ایمیل",
+          "role": "نقش"
         }
       },
       "settings": {
@@ -671,13 +726,997 @@
         "assignments": "واگزاری ها",
         "auditLogs": "لاگ‌ها",
         "settings": "تنظیمات"
+      },
+      "layout": {
+        "title": "مدیر مدرسه",
+        "subtitle": "پنل عملیات مدرسه"
+      },
+      "enrollments": {
+        "page": {
+          "title": "ثبت‌نام‌ها",
+          "description": "مدیریت ثبت‌نام کلاس‌ها و تخصیص دانش‌آموزان."
+        },
+        "form": {
+          "title": "مدیریت ثبت‌نام",
+          "description": "دانش‌آموزان را به کلاس‌ها اختصاص دهید و رکوردهای ثبت‌نام را مدیریت کنید.",
+          "classroom": "انتخاب کلاس",
+          "student": "انتخاب دانش‌آموز"
+        },
+        "filters": {
+          "grade": "فیلتر پایه",
+          "search": "جستجو",
+          "searching": "در حال جستجو ...",
+          "allGrades": "همه پایه‌ها",
+          "studentSearch": "جستجوی دانش‌آموز",
+          "studentSearchPlaceholder": "جستجو با نام، ایمیل یا موبایل دانش‌آموز"
+        },
+        "kpis": {
+          "classrooms": "کلاس‌های موجود",
+          "students": "دانش‌آموزان موجود",
+          "selectedClassroom": "کلاس انتخاب‌شده"
+        },
+        "summary": {
+          "classroom": "کلاس جاری",
+          "active": "ثبت‌نام‌های فعال",
+          "closed": "ثبت‌نام‌های بسته"
+        },
+        "table": {
+          "title": "ثبت‌نام‌ها",
+          "description": "تاریخچه ثبت‌نام کلاس انتخاب‌شده.",
+          "columns": {
+            "student": "دانش‌آموز",
+            "email": "ایمیل",
+            "classroom": "کلاس",
+            "started": "شروع",
+            "ended": "پایان",
+            "status": "وضعیت",
+            "actions": "عملیات"
+          }
+        },
+        "actions": {
+          "enroll": "ثبت‌نام دانش‌آموز",
+          "enrolling": "در حال ثبت‌نام...",
+          "close": "بستن"
+        },
+        "status": {
+          "active": "فعال",
+          "closed": "بسته",
+          "alreadyEnrolled": "قبلاً فعال ثبت‌نام شده"
+        },
+        "messages": {
+          "duplicateActive": "این دانش‌آموز در کلاس انتخاب‌شده از قبل یک ثبت‌نام فعال دارد."
+        },
+        "empty": {
+          "selectClassroom": {
+            "title": "یک کلاس انتخاب کنید",
+            "description": "برای مشاهده رکوردهای ثبت‌نام، یک کلاس انتخاب کنید."
+          },
+          "noData": {
+            "title": "هیچ ثبت‌نامی یافت نشد",
+            "description": "برای این کلاس هنوز رکورد ثبت‌نامی وجود ندارد."
+          }
+        },
+        "closeDialog": {
+          "title": "بستن ثبت‌نام",
+          "description": "آیا از بستن این رکورد ثبت‌نام مطمئن هستید؟",
+          "student": "دانش‌آموز",
+          "classroom": "کلاس",
+          "confirm": "تأیید بستن"
+        },
+        "toasts": {
+          "schoolMissing": "اطلاعات مدرسه موجود نیست.",
+          "duplicateActive": "این دانش‌آموز از قبل یک ثبت‌نام فعال دارد.",
+          "enrollSuccess": "دانش‌آموز با موفقیت ثبت‌نام شد.",
+          "enrollFailed": "ثبت‌نام دانش‌آموز انجام نشد.",
+          "closeSuccess": "ثبت‌نام با موفقیت بسته شد.",
+          "closeFailed": "بستن ثبت‌نام انجام نشد."
+        },
+        "common": {
+          "notSelected": "انتخاب نشده"
+        }
+      },
+      "classrooms": {
+        "page": {
+          "title": "کلاس‌ها",
+          "description": "ایجاد و مدیریت کلاس‌های مدرسه."
+        },
+        "createCard": {
+          "title": "ایجاد کلاس",
+          "description": "یک کلاس جدید زیرمجموعه یکی از پایه‌ها اضافه کنید."
+        },
+        "filtersCard": {
+          "title": "فیلترها",
+          "description": "سوابق کلاس‌ها را جستجو و فیلتر کنید."
+        },
+        "table": {
+          "title": "کلاس‌ها",
+          "description": "مدیریت کلاس‌ها و وضعیت بایگانی آن‌ها."
+        },
+        "empty": {
+          "title": "هیچ کلاسی یافت نشد",
+          "description": "اولین کلاس این مدرسه را ایجاد کنید."
+        },
+        "form": {
+          "grade": "انتخاب پایه",
+          "name": "نام کلاس",
+          "code": "کد",
+          "year": "سال تحصیلی"
+        },
+        "filters": {
+          "query": "جستجوی کلاس",
+          "grade": "پایه",
+          "scope": "نمایش",
+          "scopeActiveOnly": "فقط فعال‌ها",
+          "scopeAll": "همه کلاس‌ها",
+          "allGrades": "همه پایه‌ها"
+        },
+        "columns": {
+          "name": "نام",
+          "grade": "پایه",
+          "code": "کد",
+          "year": "سال",
+          "status": "وضعیت",
+          "actions": "عملیات"
+        },
+        "status": {
+          "active": "فعال",
+          "archived": "بایگانی‌شده"
+        },
+        "actions": {
+          "create": "ایجاد کلاس",
+          "creating": "در حال ایجاد...",
+          "edit": "ویرایش",
+          "archive": "بایگانی",
+          "restore": "بازیابی",
+          "save": "ذخیره تغییرات",
+          "saving": "در حال ذخیره..."
+        },
+        "editDialog": {
+          "title": "ویرایش کلاس",
+          "description": "اطلاعات کلاس را به‌روزرسانی کنید."
+        },
+        "kpis": {
+          "total": "تعداد کل کلاس‌ها",
+          "active": "کلاس‌های فعال",
+          "archived": "کلاس‌های بایگانی‌شده"
+        },
+        "toasts": {
+          "schoolMissing": "اطلاعات مدرسه در دسترس نیست.",
+          "createSuccess": "کلاس با موفقیت ایجاد شد.",
+          "createFailed": "ایجاد کلاس انجام نشد.",
+          "updateSuccess": "کلاس با موفقیت ویرایش شد.",
+          "updateFailed": "ویرایش کلاس انجام نشد.",
+          "archiveSuccess": "کلاس با موفقیت بایگانی شد.",
+          "restoreSuccess": "کلاس با موفقیت بازیابی شد.",
+          "statusFailed": "تغییر وضعیت کلاس انجام نشد.",
+          "duplicateCode": "این کد کلاس قبلاً در این مدرسه ثبت شده است."
+        }
+      },
+      "accessRequests": {
+        "page": {
+          "title": "درخواست‌های دسترسی",
+          "description": "درخواست‌های کاربران مدرسه را بررسی و مدیریت کنید."
+        },
+        "kpis": {
+          "pending": { "title": "درخواست‌های در انتظار" },
+          "approved": { "title": "درخواست‌های تایید شده" },
+          "rejected": { "title": "درخواست‌های رد شده" }
+        },
+        "filtersCard": {
+          "title": "فیلترها",
+          "description": "درخواست‌ها را بر اساس نام، وضعیت یا نقش درخواستی فیلتر کنید."
+        },
+        "filters": {
+          "query": "نام / ایمیل / موبایل",
+          "status": "وضعیت",
+          "requestedRole": "نقش درخواستی",
+          "statusAll": "همه وضعیت‌ها",
+          "roleAll": "همه نقش‌ها"
+        },
+        "table": {
+          "title": "درخواست‌های دسترسی",
+          "description": "درخواست‌های عضویت و دسترسی کاربران مدرسه را بررسی و مدیریت کنید.",
+          "columns": {
+            "fullName": "نام کامل",
+            "requestedRole": "نقش درخواستی",
+            "status": "وضعیت",
+            "email": "ایمیل",
+            "mobile": "موبایل",
+            "createdAt": "تاریخ ثبت",
+            "reviewedAt": "تاریخ بررسی",
+            "actions": "عملیات"
+          }
+        },
+        "actions": {
+          "approve": "تایید",
+          "reject": "رد"
+        },
+        "roles": {
+          "PARENT": "والد",
+          "STUDENT": "دانش‌آموز",
+          "COUNSELOR": "مشاور"
+        },
+        "status": {
+          "PENDING": "در انتظار",
+          "APPROVED": "تایید شده",
+          "REJECTED": "رد شده",
+          "CANCELED": "لغو شده"
+        },
+        "empty": {
+          "title": "درخواستی وجود ندارد",
+          "description": "درخواست‌های ثبت‌شده برای مدرسه شما در این بخش نمایش داده می‌شوند."
+        },
+        "dialog": {
+          "common": {
+            "fullName": "نام کامل",
+            "requestedRole": "نقش درخواستی",
+            "email": "ایمیل"
+          },
+          "approve": {
+            "title": "تایید درخواست",
+            "description": "این درخواست را تایید کنید و نقش نهایی را مشخص کنید.",
+            "finalRole": "نقش نهایی"
+          },
+          "reject": {
+            "title": "رد درخواست",
+            "description": "این درخواست را رد کنید و دلیل آن را وارد کنید.",
+            "reason": "دلیل رد",
+            "defaultReason": "رد شده توسط ادمین مدرسه"
+          }
+        },
+        "toasts": {
+          "approveSuccess": "درخواست با موفقیت تایید شد.",
+          "approveFailed": "تایید درخواست انجام نشد.",
+          "rejectSuccess": "درخواست با موفقیت رد شد.",
+          "rejectFailed": "رد درخواست انجام نشد."
+        }
+      },
+      "grades": {
+        "page": {
+          "title": "پایه‌ها",
+          "description": "مدیریت پایه‌های تحصیلی مدرسه."
+        },
+        "form": {
+          "title": "ایجاد پایه",
+          "description": "ایجاد و مدیریت پایه‌های تحصیلی.",
+          "fields": {
+            "name": "نام پایه",
+            "code": "کد"
+          }
+        },
+        "filters": {
+          "title": "فیلترها",
+          "description": "مشخص کنید چه رکوردهایی نمایش داده شوند.",
+          "includeArchived": "نمایش پایه‌های آرشیوشده"
+        },
+        "table": {
+          "title": "پایه‌ها",
+          "description": "مدیریت پایه‌های تحصیلی و وضعیت آرشیو آن‌ها.",
+          "columns": {
+            "name": "نام",
+            "code": "کد",
+            "status": "وضعیت",
+            "createdAt": "تاریخ ایجاد",
+            "actions": "عملیات"
+          }
+        },
+        "editDialog": {
+          "title": "ویرایش پایه",
+          "description": "اطلاعات پایه انتخاب‌شده را به‌روزرسانی کنید."
+        },
+        "empty": {
+          "title": "هیچ پایه‌ای یافت نشد",
+          "description": "اولین پایه این مدرسه را ایجاد کنید."
+        },
+        "kpis": {
+          "total": {
+            "title": "کل پایه‌ها"
+          },
+          "active": {
+            "title": "پایه‌های فعال",
+            "description": "پایه‌های در دسترس"
+          },
+          "archived": {
+            "title": "پایه‌های آرشیوشده",
+            "description": "پایه‌های مخفی یا آرشیوشده"
+          }
+        },
+        "status": {
+          "active": "فعال",
+          "archived": "آرشیوشده"
+        },
+        "actions": {
+          "create": "ایجاد پایه",
+          "creating": "در حال ایجاد...",
+          "edit": "ویرایش",
+          "archive": "آرشیو",
+          "restore": "بازیابی",
+          "save": "ذخیره",
+          "saving": "در حال ذخیره..."
+        },
+        "toasts": {
+          "schoolMissing": "اطلاعات مدرسه در دسترس نیست.",
+          "createSuccess": "پایه با موفقیت ایجاد شد.",
+          "createFailed": "ایجاد پایه انجام نشد.",
+          "updateSuccess": "پایه با موفقیت به‌روزرسانی شد.",
+          "updateFailed": "ویرایش پایه انجام نشد.",
+          "archiveSuccess": "پایه با موفقیت آرشیو شد.",
+          "restoreSuccess": "پایه با موفقیت بازیابی شد.",
+          "statusFailed": "تغییر وضعیت پایه انجام نشد."
+        }
+      },
+      "assignments": {
+        "page": {
+          "title": "تکالیف",
+          "description": "ایجاد، انتشار و توزیع ارزیابی‌های مدرسه."
+        },
+        "summary": {
+          "totalAssignments": "کل تکالیف",
+          "totalAssignmentsDescription": "همه تکالیف ارزیابی ایجادشده",
+          "publishedAssignments": "تکالیف منتشرشده",
+          "publishedAssignmentsDescription": "تکالیف آماده ارسال",
+          "totalStudents": "دانش‌آموزان",
+          "totalStudentsDescription": "تعداد کل دانش‌آموزان مدرسه",
+          "pendingAssignments": "تکالیف در انتظار",
+          "pendingAssignmentsDescription": "تکالیفی که هنوز تکمیل نشده‌اند",
+          "activeQuestions": "سوالات فعال",
+          "activeQuestionsDescription": "سوالات ارزیابی فعال در حال حاضر"
+        },
+        "form": {
+          "title": "ایجاد تکلیف",
+          "description": "ایجاد، انتشار و ارسال تکالیف ارزیابی. تعداد سوالات فعال: {{count}}",
+          "fields": {
+            "title": "عنوان تکلیف",
+            "description": "توضیحات",
+            "targetMode": "نوع هدف‌گذاری",
+            "dueAt": "مهلت تحویل"
+          }
+        },
+        "table": {
+          "title": "تکالیف",
+          "description": "مدیریت تکالیف ایجادشده و ارسال آن‌ها برای دانش‌آموزان.",
+          "columns": {
+            "title": "عنوان",
+            "status": "وضعیت",
+            "target": "هدف",
+            "due": "مهلت",
+            "published": "منتشر شده",
+            "actions": "عملیات"
+          }
+        },
+        "results": {
+          "title": "نتایج ارزیابی",
+          "description": "مشاهده رکوردهای ارسال‌شده و ارزیابی‌شده دانش‌آموزان.",
+          "empty": {
+            "title": "نتیجه ارزیابی یافت نشد",
+            "description": "پس از ارسال تکالیف توسط دانش‌آموزان، نتایج در اینجا نمایش داده می‌شود."
+          },
+          "columns": {
+            "student": "دانش‌آموز",
+            "assignment": "تکلیف",
+            "status": "وضعیت",
+            "completionRate": "نرخ تکمیل",
+            "dominantKey": "هوش غالب",
+            "createdAt": "تاریخ ایجاد"
+          }
+        },
+        "dialog": {
+          "common": {
+            "title": "عنوان تکلیف",
+            "status": "وضعیت فعلی"
+          },
+          "publish": {
+            "title": "انتشار تکلیف",
+            "description": "آیا از انتشار این تکلیف مطمئن هستید؟"
+          },
+          "assign": {
+            "title": "ارسال برای دانش‌آموزان",
+            "description": "آیا از ارسال این تکلیف برای دانش‌آموزان مطمئن هستید؟"
+          }
+        },
+        "actions": {
+          "create": "ایجاد تکلیف",
+          "creating": "در حال ایجاد...",
+          "publish": "انتشار",
+          "assign": "ارسال"
+        },
+        "status": {
+          "DRAFT": "پیش‌نویس",
+          "PUBLISHED": "منتشر شده",
+          "CLOSED": "بسته"
+        },
+        "targetMode": {
+          "ALL_STUDENTS": "همه دانش‌آموزان",
+          "BY_GRADE": "بر اساس پایه",
+          "BY_CLASSROOM": "بر اساس کلاس",
+          "BY_STUDENT_IDS": "دانش‌آموزان مشخص"
+        },
+        "empty": {
+          "title": "تکلیفی یافت نشد",
+          "description": "اولین تکلیف ارزیابی خود را ایجاد کنید."
+        },
+        "toasts": {
+          "createSuccess": "تکلیف با موفقیت ایجاد شد.",
+          "createFailed": "ایجاد تکلیف انجام نشد.",
+          "publishSuccess": "تکلیف با موفقیت منتشر شد.",
+          "publishFailed": "انتشار تکلیف انجام نشد.",
+          "assignSuccess": "تکلیف با موفقیت برای دانش‌آموزان ارسال شد.",
+          "assignFailed": "ارسال ارزیابی برای دانش‌آموزان انجام نشد."
+        }
+      },
+      "overview": {
+        "page": {
+          "title": "نمای کلی",
+          "description": "پیگیری فعالیت مدرسه، درخواست‌ها، اعضا و عملکرد ارزیابی‌ها."
+        },
+        "stats": {
+          "students": "دانش‌آموزان",
+          "activeMembers": "اعضای فعال",
+          "pendingRequests": "درخواست‌های در انتظار",
+          "completionRate": "نرخ تکمیل",
+          "totalAssignments": "تکالیف",
+          "publishedAssignments": "تکالیف منتشرشده",
+          "evaluatedAssignments": "تکالیف ارزیابی‌شده",
+          "auditLogs": "لاگ‌های حسابرسی",
+          "parents": "والدین",
+          "counselors": "مشاوران",
+          "pending": "در انتظار",
+          "submitted": "ارسال‌شده",
+          "approvedRequests": "درخواست‌های تاییدشده",
+          "rejectedRequests": "درخواست‌های ردشده",
+          "totalMembers": "کل اعضا"
+        },
+        "charts": {
+          "memberRoles": {
+            "title": "توزیع نقش اعضا",
+            "description": "نمایش ترکیب اعضای مدرسه بر اساس نقش."
+          },
+          "assignmentStatus": {
+            "title": "وضعیت تکالیف",
+            "description": "توزیع تکالیف پیش‌نویس، منتشرشده و بسته.",
+            "draft": "پیش‌نویس",
+            "published": "منتشرشده",
+            "closed": "بسته"
+          },
+          "assessmentFlow": {
+            "title": "پیشرفت ارزیابی",
+            "description": "تکالیف دانش‌آموزی در انتظار، ارسال‌شده و ارزیابی‌شده.",
+            "name": "جریان ارزیابی"
+          },
+          "activityTrend": {
+            "title": "روند فعالیت هفتگی",
+            "description": "روند اخیر تکالیف، درخواست‌های دسترسی و فعالیت‌های حسابرسی."
+          },
+          "intelligence": {
+            "title": "پروفایل میانگین هوش",
+            "description": "میانگین امتیاز مدرسه در ابعاد مختلف هوش.",
+            "linguistic": "کلامی",
+            "logicalMath": "منطقی-ریاضی",
+            "musical": "موسیقایی",
+            "bodily": "بدنی",
+            "visual": "دیداری",
+            "naturalistic": "طبیعت‌گرا",
+            "interpersonal": "بین‌فردی",
+            "intrapersonal": "درون‌فردی"
+          }
+        },
+        "recentActivity": {
+          "title": "فعالیت‌های اخیر",
+          "description": "آخرین عملیات ثبت‌شده در پنل مدرسه.",
+          "empty": "فعالیت اخیری یافت نشد.",
+          "actor": "کاربر"
+        }
       }
     },
-    "user": {
+    "student": {
+      "shell": {
+        "title": "داشبورد دانش‌آموز",
+        "subtitle": "پنل یادگیری و ارزیابی شما"
+      },
       "nav": {
-        "overview": "داشبورد",
-        "profile": "پروفایل من",
-        "settings": "تنظیمات"
+        "overview": "نمای کلی",
+        "assignments": "تکالیف",
+        "results": "نتایج",
+        "notifications": "اعلان‌ها",
+        "counselingSessions": "جلسات مشاوره",
+        "profileSettings": "پروفایل و تنظیمات"
+      },
+      "overview": {
+        "empty": {
+          "title": "داده‌ای برای داشبورد پیدا نشد",
+          "description": "نمای کلی داشبورد دانش‌آموز در اینجا نمایش داده می‌شود."
+        },
+        "common": {
+          "notAvailable": "ناموجود"
+        },
+        "stats": {
+          "role": "نقش من",
+          "accountStatus": "وضعیت حساب",
+          "totalAssignments": "کل تکالیف",
+          "pendingAssignments": "تکالیف در انتظار",
+          "inProgressAssignments": "تکالیف در حال انجام",
+          "evaluatedAssignments": "تکالیف ارزیابی‌شده",
+          "unreadNotifications": "اعلان‌های خوانده‌نشده"
+        },
+        "cards": {
+          "assignmentFlow": {
+            "title": "روند تکالیف",
+            "description": "توزیع وضعیت فعلی تکالیف شما."
+          },
+          "progressTimeline": {
+            "title": "روند پیشرفت",
+            "description": "روند آخرین پیشرفت کلی ارزیابی‌های شما."
+          },
+          "actionCenter": {
+            "title": "مرکز اقدامات",
+            "description": "مواردی که در حال حاضر نیاز به توجه شما دارند."
+          },
+          "performance": {
+            "title": "خلاصه عملکرد",
+            "description": "نمای سریع از وضعیت فعلی ارزیابی شما."
+          }
+        },
+        "performance": {
+          "latestOverall": "آخرین امتیاز کلی",
+          "dominantIntelligence": "هوش غالب",
+          "pendingCounseling": "جلسات مشاوره در انتظار",
+          "submittedAssignments": "تکالیف ارسال‌شده"
+        },
+        "charts": {
+          "assignmentFlow": {
+            "pending": "در انتظار",
+            "inProgress": "در حال انجام",
+            "submitted": "ارسال‌شده",
+            "evaluated": "ارزیابی‌شده"
+          },
+          "actionCenter": {
+            "notifications": "اعلان‌ها",
+            "counseling": "مشاوره",
+            "pending": "تکالیف در انتظار"
+          }
+        },
+        "emptyCharts": {
+          "assignmentFlow": {
+            "title": "داده‌ای برای روند تکالیف وجود ندارد",
+            "description": "هنوز داده کافی برای نمایش این نمودار وجود ندارد."
+          },
+          "progressTimeline": {
+            "title": "داده‌ای برای روند پیشرفت وجود ندارد",
+            "description": "بعد از ایجاد نتایج ارزیابی، نمودار روند پیشرفت نمایش داده می‌شود."
+          },
+          "actionCenter": {
+            "title": "مورد اقدامی وجود ندارد",
+            "description": "در حال حاضر موردی برای نمایش در این بخش وجود ندارد."
+          }
+        },
+        "intelligences": {
+          "MUSICAL": "موسیقایی",
+          "LINGUISTIC": "کلامی",
+          "NATURALISTIC": "طبیعت‌گرا",
+          "INTERPERSONAL": "بین‌فردی",
+          "INTRAPERSONAL": "درون‌فردی",
+          "VISUAL_SPATIAL": "دیداری فضایی",
+          "BODILY_KINESTHETIC": "جنبشی بدنی",
+          "LOGICAL_MATHEMATICAL": "منطقی ریاضی"
+        }
+      },
+      "assignments": {
+        "page": {
+          "title": "تکالیف من",
+          "description": "تکالیف مدرسه خود را مشاهده، پیگیری و ارسال کنید."
+        },
+        "filtersCard": {
+          "title": "فیلترها",
+          "description": "تکالیف خود را جستجو و فیلتر کنید."
+        },
+        "table": {
+          "title": "تکالیف من",
+          "description": "تکالیف ارزیابی خود را پیگیری و باز کنید.",
+          "columns": {
+            "title": "عنوان",
+            "status": "وضعیت",
+            "target": "دامنه",
+            "completion": "تکمیل",
+            "dueAt": "تاریخ سررسید",
+            "actions": "عملیات"
+          }
+        },
+        "actions": {
+          "view": "مشاهده جزئیات",
+          "submit": "ثبت پاسخ‌ها",
+          "submitting": "در حال ثبت..."
+        },
+        "toasts": {
+          "submitSuccess": "تکلیف با موفقیت ثبت شد.",
+          "submitFailed": "ثبت تکلیف ناموفق بود."
+        },
+        "detail": {
+          "title": "جزئیات تکلیف",
+          "description": "سوال‌ها را بررسی و پاسخ‌های خود را ثبت کنید.",
+          "readOnly": "قبلاً ثبت شده",
+          "questionLabel": "سوال",
+          "validation": {
+            "required": "لطفاً قبل از ثبت، به همه سوال‌ها پاسخ دهید."
+          },
+          "summary": {
+            "status": "وضعیت",
+            "dueAt": "تاریخ سررسید",
+            "questions": "تعداد سوال‌ها",
+            "assignmentId": "شناسه تکلیف"
+          },
+          "scale": {
+            "1": "خیلی کم",
+            "2": "کم",
+            "3": "متوسط",
+            "4": "زیاد",
+            "5": "خیلی زیاد"
+          }
+        },
+        "empty": {
+          "title": "هیچ تکلیفی یافت نشد",
+          "description": "تکالیف قابل مشاهده شما در اینجا نمایش داده می‌شوند."
+        },
+        "common": {
+          "noDescription": "توضیحی ثبت نشده است."
+        },
+        "kpis": {
+          "pending": {
+            "title": "در انتظار"
+          },
+          "inProgress": {
+            "title": "در حال انجام"
+          },
+          "evaluated": {
+            "title": "ارزیابی‌شده"
+          }
+        },
+        "filters": {
+          "search": "جستجو",
+          "status": "وضعیت",
+          "statusAll": "همه وضعیت‌ها"
+        },
+        "detailDialog": {
+          "title": "جزئیات تکلیف",
+          "description": "تکلیف را بررسی کرده و پاسخ‌های خود را ارسال کنید.",
+          "empty": "جزئیاتی برای این تکلیف پیدا نشد.",
+          "questionLabel": "سؤال",
+          "summary": {
+            "title": "عنوان",
+            "status": "وضعیت",
+            "answered": "پاسخ داده‌شده",
+            "dueAt": "مهلت"
+          }
+        },
+        "status": {
+          "NOT_STARTED": "شروع نشده",
+          "PENDING": "در انتظار",
+          "IN_PROGRESS": "در حال انجام",
+          "SUBMITTED": "ارسال‌شده",
+          "EVALUATED": "ارزیابی‌شده"
+        },
+        "targetModes": {
+          "ALL_STUDENTS": "همه دانش‌آموزان",
+          "BY_GRADE": "بر اساس پایه",
+          "BY_CLASSROOM": "بر اساس کلاس",
+          "BY_STUDENT_IDS": "دانش‌آموزان مشخص"
+        }
+      },
+      "results": {
+        "page": {
+          "title": "نتایج ارزیابی",
+          "description": "نتایج ارزیابی‌های تکمیل‌شده را بررسی کنید، آن‌ها را با هم مقایسه کنید و مسیرهای شغلی پیشنهادی را ببینید."
+        },
+        "common": {
+          "notAvailable": "موجود نیست"
+        },
+        "filters": {
+          "dominantIntelligence": "هوش غالب",
+          "all": "همه هوش‌ها"
+        },
+        "filtersCard": {
+          "title": "فیلترها",
+          "description": "سوابق نتایج را بر اساس هوش غالب فیلتر کنید."
+        },
+        "empty": {
+          "title": "نتیجه‌ای پیدا نشد",
+          "description": "برای فیلتر انتخاب‌شده هیچ نتیجه‌ای وجود ندارد."
+        },
+        "kpis": {
+          "total": {
+            "title": "کل نتایج",
+            "description": "همه رکوردهای نتیجه تکمیل‌شده"
+          },
+          "average": {
+            "title": "میانگین امتیاز",
+            "description": "میانگین امتیاز نتایج نمایش‌داده‌شده"
+          },
+          "compare": {
+            "title": "صف مقایسه",
+            "description": "نتایج انتخاب‌شده برای مقایسه"
+          }
+        },
+        "table": {
+          "title": "نتایج من",
+          "description": "سوابق نتایج خود را مرور کنید و جزئیات هر نتیجه را ببینید.",
+          "columns": {
+            "compare": "مقایسه",
+            "assignment": "ارزیابی",
+            "dominant": "هوش غالب",
+            "createdAt": "تاریخ ایجاد",
+            "actions": "عملیات"
+          }
+        },
+        "actions": {
+          "view": "مشاهده جزئیات",
+          "compare": "مقایسه",
+          "compareSelected": "مقایسه موارد انتخاب‌شده"
+        },
+        "detail": {
+          "title": "جزئیات نتیجه",
+          "description": "پروفایل کامل هوش‌ها، خلاصه نتیجه و پیشنهادهای شغلی را مشاهده کنید.",
+          "assignment": "ارزیابی",
+          "dominant": "هوش غالب",
+          "summary": "خلاصه",
+          "careerMatches": "مسیرهای شغلی پیشنهادی",
+          "noCareerMatches": "برای این نتیجه مسیر شغلی پیشنهادی موجود نیست."
+        },
+        "compare": {
+          "title": "مقایسه نتایج",
+          "description": "دو نتیجه را با هم مقایسه کنید و اختلاف امتیاز هر هوش را ببینید.",
+          "current": "فعلی",
+          "previous": "قبلی",
+          "delta": "اختلاف",
+          "result": "نتیجه انتخاب‌شده",
+          "clearSelection": "پاک کردن انتخاب",
+          "needTwoResults": "برای مقایسه باید دو نتیجه انتخاب شود."
+        },
+        "intelligences": {
+          "LINGUISTIC": "هوش کلامی",
+          "LOGICAL_MATHEMATICAL": "هوش منطقی / ریاضی",
+          "MUSICAL": "هوش موسیقایی",
+          "BODILY_KINESTHETIC": "هوش حرکتی",
+          "VISUAL_SPATIAL": "هوش دیداری / فضایی",
+          "NATURALISTIC": "هوش طبیعت‌گرا",
+          "INTERPERSONAL": "هوش بین‌فردی",
+          "INTRAPERSONAL": "هوش درون‌فردی"
+        }
+      },
+      "notifications": {
+        "page": {
+          "title": "اعلان‌ها",
+          "description": "آخرین اعلان‌های خود را بررسی کنید و موارد خوانده‌نشده را مدیریت کنید."
+        },
+        "filters": {
+          "visibility": "نمایش",
+          "all": "همه اعلان‌ها",
+          "unread": "فقط خوانده‌نشده‌ها"
+        },
+        "filtersCard": {
+          "title": "فیلترها",
+          "description": "لیست اعلان‌ها را بر اساس وضعیت خواندن فیلتر کنید."
+        },
+        "kpis": {
+          "total": {
+            "title": "کل اعلان‌ها",
+            "description": "همه رکوردهای اعلان"
+          },
+          "unread": {
+            "title": "خوانده‌نشده",
+            "description": "اعلان‌های خوانده‌نشده"
+          },
+          "read": {
+            "title": "خوانده‌شده",
+            "description": "اعلان‌های خوانده‌شده"
+          }
+        },
+        "empty": {
+          "title": "اعلانی پیدا نشد",
+          "description": "برای فیلتر انتخاب‌شده اعلانی وجود ندارد."
+        },
+        "table": {
+          "title": "اعلان‌های من",
+          "description": "سوابق اعلان‌ها را مرور کنید و جزئیات آن‌ها را ببینید.",
+          "columns": {
+            "title": "عنوان",
+            "type": "نوع",
+            "status": "وضعیت",
+            "createdAt": "تاریخ ایجاد",
+            "actions": "عملیات"
+          }
+        },
+        "detail": {
+          "title": "جزئیات اعلان",
+          "description": "محتوای کامل اعلان انتخاب‌شده را مشاهده کنید.",
+          "fields": {
+            "type": "نوع",
+            "status": "وضعیت",
+            "createdAt": "تاریخ ایجاد",
+            "readAt": "تاریخ خواندن",
+            "title": "عنوان",
+            "message": "پیام",
+            "actionUrl": "لینک اقدام"
+          }
+        },
+        "actions": {
+          "view": "مشاهده",
+          "markAsRead": "علامت‌گذاری به‌عنوان خوانده‌شده"
+        },
+        "status": {
+          "read": "خوانده‌شده",
+          "unread": "خوانده‌نشده"
+        },
+        "types": {
+          "GENERAL": "عمومی",
+          "RESULT_READY": "نتیجه آماده است",
+          "ASSIGNMENT_DUE": "مهلت تکلیف",
+          "ASSIGNMENT_PUBLISHED": "تکلیف منتشر شد"
+        },
+        "toasts": {
+          "markReadSuccess": "اعلان با موفقیت به‌عنوان خوانده‌شده ثبت شد.",
+          "markReadFailed": "علامت‌گذاری اعلان به‌عنوان خوانده‌شده ناموفق بود."
+        }
+      },
+      "counseling": {
+        "page": {
+          "title": "جلسات مشاوره",
+          "description": "درخواست‌های مشاوره و سابقه جلسات خود را مدیریت کنید."
+        },
+        "actionsCard": {
+          "title": "عملیات",
+          "description": "درخواست جلسه جدید ثبت کنید یا جلسات فعلی خود را مدیریت کنید."
+        },
+        "filtersCard": {
+          "title": "فیلترها",
+          "description": "لیست جلسات مشاوره را فیلتر کنید."
+        },
+        "filters": {
+          "search": "جستجو بر اساس عنوان یا یادداشت",
+          "status": "وضعیت",
+          "statusAll": "همه وضعیت‌ها"
+        },
+        "kpis": {
+          "requested": {
+            "title": "درخواست‌شده",
+            "description": "جلساتی که منتظر تایید هستند"
+          },
+          "confirmed": {
+            "title": "تاییدشده",
+            "description": "جلسات تاییدشده پیش رو"
+          },
+          "completed": {
+            "title": "تکمیل‌شده",
+            "description": "جلسات مشاوره پایان‌یافته"
+          }
+        },
+        "table": {
+          "title": "جلسات مشاوره من",
+          "description": "تاریخچه جلسات و درخواست‌های مشاوره خود را مشاهده کنید.",
+          "columns": {
+            "title": "عنوان",
+            "status": "وضعیت",
+            "scheduledAt": "زمان جلسه",
+            "meetingUrl": "لینک جلسه",
+            "actions": "عملیات"
+          }
+        },
+        "form": {
+          "title": "عنوان جلسه",
+          "note": "یادداشت",
+          "meetingUrl": "لینک جلسه",
+          "scheduledAt": "زمان جلسه",
+          "counselorId": "شناسه مشاور"
+        },
+        "requestDialog": {
+          "title": "درخواست جلسه جدید",
+          "description": "یک درخواست جدید برای جلسه مشاوره ثبت کنید."
+        },
+        "cancelDialog": {
+          "title": "لغو جلسه",
+          "description": "شما در حال لغو این جلسه مشاوره هستید.",
+          "sessionTitle": "عنوان جلسه",
+          "scheduledAt": "زمان جلسه",
+          "reason": "دلیل لغو"
+        },
+        "actions": {
+          "requestNew": "درخواست جلسه جدید",
+          "submitRequest": "ثبت درخواست",
+          "cancel": "لغو جلسه",
+          "openLink": "باز کردن لینک"
+        },
+        "status": {
+          "REQUESTED": "درخواست‌شده",
+          "CONFIRMED": "تاییدشده",
+          "COMPLETED": "تکمیل‌شده",
+          "CANCELED": "لغوشده"
+        },
+        "empty": {
+          "title": "جلسه مشاوره‌ای پیدا نشد",
+          "description": "برای فیلتر انتخاب‌شده جلسه‌ای وجود ندارد."
+        },
+        "toasts": {
+          "requestSuccess": "درخواست جلسه مشاوره با موفقیت ثبت شد.",
+          "requestFailed": "ثبت درخواست جلسه مشاوره ناموفق بود.",
+          "cancelSuccess": "جلسه مشاوره با موفقیت لغو شد.",
+          "cancelFailed": "لغو جلسه مشاوره ناموفق بود."
+        }
+      },
+      "profile": {
+        "page": {
+          "title": "پروفایل و تنظیمات",
+          "description": "اطلاعات پروفایل و تنظیمات حساب خود را مدیریت کنید."
+        },
+        "summaryCard": {
+          "title": "نمای کلی پروفایل",
+          "description": "خلاصه‌ای از حساب و میزان تکمیل بودن پروفایل شما."
+        },
+        "formCard": {
+          "title": "ویرایش پروفایل",
+          "description": "اطلاعات شخصی خود را به‌روزرسانی کنید."
+        },
+        "accountCard": {
+          "title": "اطلاعات حساب",
+          "description": "شناسه‌های حساب و نقش فعلی خود را مشاهده کنید."
+        },
+        "logoutCard": {
+          "title": "نشست کاربری",
+          "description": "از نشست فعلی حساب خود خارج شوید."
+        },
+        "summary": {
+          "fullName": "نام و نام خانوادگی",
+          "role": "نقش",
+          "status": "وضعیت حساب",
+          "profileCompletion": "تکمیل پروفایل"
+        },
+        "form": {
+          "fields": {
+            "fullName": "نام و نام خانوادگی",
+            "email": "ایمیل",
+            "mobile": "موبایل",
+            "avatarUrl": "لینک آواتار"
+          }
+        },
+        "account": {
+          "id": "شناسه کاربر",
+          "schoolId": "شناسه مدرسه",
+          "role": "نقش",
+          "createdAt": "تاریخ ایجاد"
+        },
+        "logout": {
+          "title": "خروج از حساب",
+          "description": "از حساب دانش‌آموزی خود خارج شوید."
+        },
+        "actions": {
+          "save": "ذخیره تغییرات",
+          "saving": "در حال ذخیره...",
+          "logout": "خروج",
+          "loggingOut": "در حال خروج..."
+        },
+        "toasts": {
+          "updateSuccess": "پروفایل با موفقیت به‌روزرسانی شد.",
+          "updateFailed": "به‌روزرسانی پروفایل ناموفق بود.",
+          "logoutSuccess": "با موفقیت خارج شدید.",
+          "logoutFailed": "خروج از حساب ناموفق بود."
+        },
+        "roles": {
+          "STUDENT": "دانش‌آموز",
+          "PARENT": "والد",
+          "COUNSELOR": "مشاور",
+          "SCHOOL_ADMIN": "ادمین مدرسه",
+          "SUPER_ADMIN": "سوپر ادمین"
+        },
+        "status": {
+          "ACTIVE": "فعال",
+          "DISABLED": "غیرفعال",
+          "DELETED": "حذف‌شده"
+        },
+        "common": {
+          "notSet": "ثبت نشده",
+          "notAvailable": "ناموجود"
+        },
+        "empty": {
+          "title": "پروفایل پیدا نشد",
+          "description": "اطلاعات پروفایل شما بارگذاری نشد."
+        }
       }
     },
     "overview": "داشبورد",

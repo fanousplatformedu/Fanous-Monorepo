@@ -1,0 +1,200 @@
+query CounselorDashboardSummary {
+  counselorDashboardSummary {
+    totalStudents
+    sessionsToday
+    activeStudents
+    pendingReviews
+    upcomingSessions
+    unreadNotifications
+  }
+}
+
+query MyStudents($input: MyStudentsInput!) {
+  myStudents(input: $input) {
+    page
+    total
+    limit
+    hasNext
+    items {
+      id
+      email
+      mobile
+      fullName
+      linkStatus
+      assignedAt
+      pendingReviews
+      latestResultAt
+      upcomingSessionAt
+    }
+  }
+}
+
+query CounselorStudentDetail($studentId: String!) {
+  counselorStudentDetail(studentId: $studentId) {
+    id
+    email
+    mobile
+    fullName
+    totalResults
+    totalSessions
+    pendingReviews
+    latestResultAt
+    latestSessionAt
+  }
+}
+
+query StudentAssessmentQueue($input: StudentAssessmentQueueInput!) {
+  studentAssessmentQueue(input: $input) {
+    page
+    total
+    limit
+    hasNext
+    items {
+      status
+      reviewId
+      resultId
+      studentId
+      createdAt
+      reviewedAt
+      studentName
+      assignmentId
+      assignmentTitle
+    }
+  }
+}
+
+query CounselorReviewDetail($reviewId: String!) {
+  counselorReviewDetail(reviewId: $reviewId) {
+    id
+    status
+    feedback
+    resultId
+    studentId
+    createdAt
+    reviewedAt
+    dominantKey
+    studentName
+    assignmentId
+    assignmentTitle
+  }
+}
+
+mutation ReviewStudentAssessment($input: ReviewStudentAssessmentInput!) {
+  reviewStudentAssessment(input: $input) {
+    success
+    message
+  }
+}
+
+query CounselorAssignments($input: CounselorAssignmentsInput!) {
+  counselorAssignments(input: $input) {
+    page
+    total
+    limit
+    hasNext
+    items {
+      title
+      dueAt
+      status
+      publishedAt
+      assignmentId
+      reviewedCount
+      pendingReviews
+      totalAssignedStudents
+    }
+  }
+}
+
+query StudentProgressTimeline($input: StudentProgressTimelineInput!) {
+  studentProgressTimeline(input: $input) {
+    date
+    label
+    value
+  }
+}
+
+mutation ScheduleCounselorSession($input: ScheduleCounselorSessionInput!) {
+  scheduleCounselorSession(input: $input) {
+    id
+    note
+    title
+    status
+    createdAt
+    studentId
+    meetingUrl
+    studentName
+    scheduledAt
+  }
+}
+
+query MyCounselorSessions($input: MyCounselorSessionsInput!) {
+  myCounselorSessions(input: $input) {
+    page
+    total
+    limit
+    hasNext
+    items {
+      id
+      note
+      title
+      status
+      createdAt
+      studentId
+      meetingUrl
+      studentName
+      scheduledAt
+    }
+  }
+}
+
+query MyCounselorNotifications($input: MyCounselorNotificationsInput!) {
+  myCounselorNotifications(input: $input) {
+    page
+    total
+    limit
+    hasNext
+    items {
+      id
+      type
+      body
+      title
+      readAt
+      isRead
+      actionUrl
+      createdAt
+    }
+  }
+}
+
+mutation MarkCounselorNotificationRead(
+  $input: MarkCounselorNotificationReadInput!
+) {
+  markCounselorNotificationRead(input: $input) {
+    success
+    message
+  }
+}
+
+mutation ExportCounselorStudentReport(
+  $input: ExportCounselorStudentReportInput!
+) {
+  exportCounselorStudentReport(input: $input) {
+    id
+    format
+    fileName
+    filePath
+    createdAt
+  }
+}
+
+query CompareStudentResults($input: CompareStudentResultsInput!) {
+  compareStudentResults(input: $input) {
+    items {
+      studentId
+      latestDate
+      studentName
+      latestScore
+      dominantKey
+    }
+  }
+}

@@ -1,0 +1,182 @@
+query ParentDashboardSummary {
+  parentDashboardSummary {
+    totalResults
+    totalChildren
+    totalSessions
+    totalActivities
+  }
+}
+
+query MyChildren($input: ListMyChildrenInput!) {
+  myChildren(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      email
+      mobile
+      fullName
+      relation
+      isPrimary
+      avatarUrl
+      createdAt
+    }
+  }
+}
+
+query ParentChildDetail($input: ParentChildDetailInput!) {
+  parentChildDetail(input: $input) {
+    id
+    email
+    mobile
+    relation
+    fullName
+    isPrimary
+    avatarUrl
+  }
+}
+
+query ParentChildGrades($input: ListParentChildGradesInput!) {
+  parentChildGrades(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      score
+      subject
+      maxScore
+      examTitle
+      termLabel
+      createdAt
+      recordedAt
+    }
+  }
+}
+
+query ParentChildResults($input: ListParentChildResultsInput!) {
+  parentChildResults(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      musical
+      createdAt
+      linguistic
+      logicalMath
+      naturalistic
+      interpersonal
+      intrapersonal
+      visualSpatial
+      assignmentTitle
+      bodilyKinesthetic
+      studentAssignmentId
+      dominantIntelligence
+    }
+  }
+}
+
+query ParentResultDetail($resultId: String!) {
+  parentResultDetail(resultId: $resultId) {
+    id
+    musical
+    createdAt
+    linguistic
+    logicalMath
+    naturalistic
+    interpersonal
+    intrapersonal
+    visualSpatial
+    assignmentTitle
+    bodilyKinesthetic
+    studentAssignmentId
+    dominantIntelligence
+    careerMatches {
+      title
+      score
+      fitReason
+      description
+    }
+  }
+}
+
+query CompareParentResults($input: CompareParentResultsInput!) {
+  compareParentResults(input: $input) {
+    delta
+    current
+    previous
+    intelligence
+  }
+}
+
+query ParentResources($input: ListParentResourcesInput!) {
+  parentResources(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      slug
+      title
+      summary
+      content
+      category
+      createdAt
+      isPublished
+      coverImageUrl
+    }
+  }
+}
+
+query ParentChildActivities($input: ListParentChildActivitiesInput!) {
+  parentChildActivities(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      type
+      title
+      metadata
+      createdAt
+      description
+    }
+  }
+}
+
+query ParentCounselingSessions($input: ListParentCounselingSessionsInput!) {
+  parentCounselingSessions(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      note
+      title
+      status
+      createdAt
+      canceledAt
+      meetingUrl
+      scheduledAt
+      counselorId
+    }
+  }
+}
+
+mutation ParentRequestCounselingSession($input: ParentRequestSessionInput!) {
+  parentRequestCounselingSession(input: $input) {
+    success
+    message
+    sessionId
+  }
+}
+
+mutation ParentCancelCounselingSession($input: CancelParentSessionInput!) {
+  parentCancelCounselingSession(input: $input) {
+    success
+    message
+    sessionId
+  }
+}
