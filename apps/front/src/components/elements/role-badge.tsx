@@ -13,7 +13,8 @@ const toneMap = {
 };
 
 export const RoleBadge = ({ role, className }: TRoleBadgeProps) => {
-  const tone = getRoleBadgeTone(role);
+  const normalizedRole = role ?? undefined;
+  const tone = getRoleBadgeTone(normalizedRole);
 
   return (
     <span
@@ -23,7 +24,7 @@ export const RoleBadge = ({ role, className }: TRoleBadgeProps) => {
         className,
       )}
     >
-      {getRoleLabel(role)}
+      {getRoleLabel(normalizedRole)}
     </span>
   );
 };

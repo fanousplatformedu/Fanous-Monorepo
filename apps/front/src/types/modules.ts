@@ -531,33 +531,16 @@ export type TMembersFiltersProps = {
   onApply: (values: TSchoolMemberFilterValues) => void;
 };
 
-export type TResultItem = {
-  id: string;
-  createdAt: string;
-  studentId: string;
-  dominantKey: string | null;
-  student: {
-    id: string;
-    email: string | null;
-    fullName: string | null;
-  };
-  studentAssignment: {
-    id: string;
-    status: string;
-    completionRate: number;
-    assignment: {
-      id: string;
-      title: string;
-    };
-  };
-};
+type TResultList = NonNullable<
+  TAPI.AssessmentResultsQuery["assessmentResults"]
+>;
 
 export type TAssignmentResultsTableProps = {
   page: number;
   total: number;
   isLoading: boolean;
   isFetching: boolean;
-  items: TResultItem[];
+  items: TResultList["items"];
   onPageChange: (page: number) => void;
 };
 
@@ -900,4 +883,16 @@ export type TStudentProfileSummaryCardProps = {
     avatarUrl?: string | null;
     createdAt?: string | null;
   };
+};
+
+export type TDistributionItem = {
+  label: string;
+  value: number;
+};
+
+export type TResultDistribution = {
+  title: string;
+  emptyText: string;
+  description: string;
+  items: TDistributionItem[];
 };

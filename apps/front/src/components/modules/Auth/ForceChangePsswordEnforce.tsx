@@ -93,7 +93,7 @@ const ForcePasswordChangeEnforcer = () => {
       F.clearForcePasswordFlow();
       setOpen(false);
       toast.success(t("auth.logoutSuccess"));
-      router.replace("/");
+      router.replace(loginPath || "/");
       router.refresh();
     } catch {
       toast.error(t("common.errors.generic"));

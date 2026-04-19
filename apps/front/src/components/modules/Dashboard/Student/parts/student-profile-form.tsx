@@ -1,5 +1,7 @@
 "use client";
 
+import { TStudentProfileFormValues } from "@/types/modules";
+import { TStudentProfileFormProps } from "@/types/modules";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { AppDialogActions } from "@elements/app-dialog";
 import { useEffect } from "react";

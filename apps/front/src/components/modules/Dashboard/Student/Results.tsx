@@ -1,5 +1,6 @@
 "use client";
 
+import { StudentResultDominantDistribution } from "@modules/Dashboard/Student/parts/result-dominant-distribution";
 import { useMyAssessmentResultDetailQuery } from "@/lib/redux/api/endpoints/student.api";
 import { TResultFilterValues, TResultRow } from "@/types/modules";
 import { useMyAssessmentResultsQuery } from "@/lib/redux/api/endpoints/student.api";
@@ -187,6 +188,15 @@ const StudentResultsPage = () => {
           />
         </DashboardSection>
 
+        <StudentResultDominantDistribution
+          title={t("dashboard.student.results.kpis.distribution.title")}
+          description={t(
+            "dashboard.student.results.kpis.distribution.description",
+          )}
+          items={dominantDistribution}
+          emptyText={t("dashboard.student.results.common.notAvailable")}
+        />
+
         {!items.length ? (
           <DashboardEmptyState
             icon={L.ChartColumnBig}
@@ -211,12 +221,12 @@ const StudentResultsPage = () => {
       <StudentResultDetailDialog
         result={detail ?? null}
         open={Boolean(selectedResultId)}
+        onOpenChange={handleCloseDetail}
         isLoading={isDetailLoading || isDetailFetching}
         onCompare={() => {
           if (selectedResultId) handleToggleCompare(selectedResultId);
           setCompareOpen(true);
         }}
-        onOpenChange={handleCloseDetail}
       />
 
       <StudentResultCompareDialog

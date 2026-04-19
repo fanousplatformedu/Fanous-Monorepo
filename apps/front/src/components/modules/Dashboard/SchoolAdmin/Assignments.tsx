@@ -360,9 +360,9 @@ const SchoolAdminAssignmentsPage = () => {
         )}
 
         <AssignmentResultsTable
+          page={resultsPage}
           items={resultItems}
           total={resultsTotal}
-          page={resultsPage}
           onPageChange={setResultsPage}
           isLoading={isResultsLoading}
           isFetching={isResultsFetching}

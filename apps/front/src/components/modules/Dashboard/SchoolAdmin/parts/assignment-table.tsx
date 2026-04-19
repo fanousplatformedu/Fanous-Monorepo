@@ -75,18 +75,22 @@ export const AssignmentResultsTable = ({
               <tr key={item.id} className="border-t border-border/40">
                 <td className="px-4 py-3">
                   <div className="font-medium">
-                    {item.student.fullName || "-"}
+                    {item.student?.fullName || "-"}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {item.student.email || item.studentId}
+                    {item.student?.email || item.studentId}
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  {item.studentAssignment.assignment.title}
+                  {item.studentAssignment?.assignment?.title || "-"}
                 </td>
-                <td className="px-4 py-3">{item.studentAssignment.status}</td>
                 <td className="px-4 py-3">
-                  {item.studentAssignment.completionRate}%
+                  {item.studentAssignment?.status || "-"}
+                </td>
+                <td className="px-4 py-3">
+                  {item.studentAssignment?.completionRate != null
+                    ? `${item.studentAssignment.completionRate}%`
+                    : "-"}
                 </td>
                 <td className="px-4 py-3">{item.dominantKey || "-"}</td>
                 <td className="px-4 py-3">
