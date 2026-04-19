@@ -11,6 +11,8 @@ import { useI18n } from "@/hooks/useI18n";
 
 import * as F from "@ui/form";
 
+const ACCESS_REQUEST_DIALOG_FORM_ID = "access-request-review-form";
+
 export const AccessRequestDialog = ({
   open,
   mode,
@@ -30,6 +32,7 @@ export const AccessRequestDialog = ({
 
   useEffect(() => {
     if (!request || !mode) return;
+
     form.reset({
       finalRole: request.requestedRole,
       rejectReason: "",
@@ -58,6 +61,7 @@ export const AccessRequestDialog = ({
       });
       return;
     }
+
     await onConfirm({
       rejectReason: values.rejectReason,
     });
@@ -89,6 +93,7 @@ export const AccessRequestDialog = ({
           loadingText={t("common.loading")}
           isLoading={isLoading}
           confirmType="submit"
+          form={ACCESS_REQUEST_DIALOG_FORM_ID}
           confirmVariant={mode === "approve" ? "brand" : "brandSoft"}
           onCancel={() => onOpenChange(false)}
         />
@@ -125,7 +130,11 @@ export const AccessRequestDialog = ({
       </div>
 
       <F.Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form
+          id={ACCESS_REQUEST_DIALOG_FORM_ID}
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="space-y-4"
+        >
           {mode === "approve" ? (
             <FloatingSelectField
               name="finalRole"

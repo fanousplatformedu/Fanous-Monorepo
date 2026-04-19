@@ -323,6 +323,7 @@ const SchoolAdminAssignmentsPage = () => {
                             <Button
                               variant="brand"
                               disabled={isAssigning}
+                              className="rounded-2xl"
                               onClick={() =>
                                 openAssignDialog({
                                   id: item.id,

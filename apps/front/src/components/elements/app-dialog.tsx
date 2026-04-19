@@ -57,6 +57,7 @@ export const AppDialog = ({
 };
 
 export const AppDialogActions = ({
+  form,
   onCancel,
   onConfirm,
   cancelText,
@@ -83,6 +84,7 @@ export const AppDialogActions = ({
 
       <Button
         type={confirmType}
+        form={form}
         className="rounded-2xl"
         variant={confirmVariant}
         disabled={confirmDisabled || isLoading}

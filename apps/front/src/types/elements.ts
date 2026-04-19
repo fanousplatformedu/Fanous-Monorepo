@@ -223,6 +223,7 @@ export type TAppDialogProps = {
 };
 
 export type TAppDialogActionsProps = {
+  form?: string;
   cancelText: string;
   confirmText: string;
   isLoading?: boolean;
