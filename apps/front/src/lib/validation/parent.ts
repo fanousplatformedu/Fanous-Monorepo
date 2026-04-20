@@ -24,3 +24,8 @@ export const counselingFiltersSchema = z.object({
   status: z.string(),
   childId: z.string(),
 });
+
+export const childrenFiltersSchema = z.object({
+  query: z.string(),
+  childId: z.string(),
+});

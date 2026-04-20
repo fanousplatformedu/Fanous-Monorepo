@@ -879,29 +879,49 @@ type ParentCareerMatch {
 type ParentChild {
   avatarUrl: String
   createdAt: DateTime
+  currentEnrollment: ParentChildCurrentEnrollment
   email: String
   fullName: String
   id: String!
   isPrimary: Boolean!
   mobile: String
   relation: ParentRelationType!
-  status: String!
+  status: UserStatus
+}
+
+type ParentChildCurrentEnrollment {
+  classroom: ParentChildEnrollmentClassroom
+  endedAt: DateTime
+  id: String!
+  startedAt: DateTime!
 }
 
 type ParentChildDetail {
   avatarUrl: String
   createdAt: DateTime
+  currentEnrollment: ParentChildCurrentEnrollment
   email: String
   fullName: String
   id: String!
   isPrimary: Boolean!
   mobile: String
   relation: ParentRelationType!
-  status: String!
+  status: UserStatus
 }
 
 input ParentChildDetailInput {
   childId: String!
+}
+
+type ParentChildEnrollmentClassroom {
+  grade: ParentChildEnrollmentGrade
+  id: String!
+  name: String!
+}
+
+type ParentChildEnrollmentGrade {
+  id: String!
+  name: String!
 }
 
 type ParentChildList {
@@ -1476,6 +1496,12 @@ type UserList {
   skip: Int!
   take: Int!
   total: Int!
+}
+
+enum UserStatus {
+  ACTIVE
+  DELETED
+  DISABLED
 }
 
 input VerifyOtpInput {

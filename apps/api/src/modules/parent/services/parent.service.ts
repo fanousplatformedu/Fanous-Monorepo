@@ -175,6 +175,7 @@ export class ParentService {
           }
         : {}),
     };
+
     const [items, total] = await this.prismaService.$transaction([
       this.prismaService.parentStudentLink.findMany({
         where,
@@ -188,6 +189,33 @@ export class ParentService {
               avatarUrl: true,
               status: true,
               createdAt: true,
+              enrollments: {
+                where: {
+                  schoolId,
+                  endedAt: null,
+                },
+                orderBy: {
+                  startedAt: "desc",
+                },
+                take: 1,
+                select: {
+                  id: true,
+                  startedAt: true,
+                  endedAt: true,
+                  classroom: {
+                    select: {
+                      id: true,
+                      name: true,
+                      grade: {
+                        select: {
+                          id: true,
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -208,6 +236,7 @@ export class ParentService {
         relation: item.relation,
         isPrimary: item.isPrimary,
         createdAt: item.student.createdAt,
+        currentEnrollment: item.student.enrollments[0] ?? null,
       })),
       total,
       take,
@@ -236,11 +265,37 @@ export class ParentService {
             avatarUrl: true,
             status: true,
             createdAt: true,
+            enrollments: {
+              where: {
+                schoolId,
+                endedAt: null,
+              },
+              orderBy: {
+                startedAt: "desc",
+              },
+              take: 1,
+              select: {
+                id: true,
+                startedAt: true,
+                endedAt: true,
+                classroom: {
+                  select: {
+                    id: true,
+                    name: true,
+                    grade: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
     });
-
     if (!child)
       throw new NotFoundException({
         code: ParentErrorCode.CHILD_NOT_FOUND,
@@ -256,6 +311,7 @@ export class ParentService {
       createdAt: child.student.createdAt,
       relation: child.relation,
       isPrimary: child.isPrimary,
+      currentEnrollment: child.student.enrollments[0] ?? null,
     };
   }
 

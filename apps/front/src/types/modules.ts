@@ -1014,3 +1014,42 @@ export type TParentCounselingSummary = {
   confirmedCount: number;
   completedCount: number;
 };
+
+type TChildDetail = TAPI.ParentChildDetailQuery["parentChildDetail"];
+
+export type TChildDetailDialog = {
+  open: boolean;
+  isLoading?: boolean;
+  child: TChildDetail | null;
+  onOpenChange: (open: boolean) => void;
+};
+
+type TChildrenList = NonNullable<TAPI.MyChildrenQuery["myChildren"]>;
+type TChildItem = TChildrenList["items"][number];
+
+export type TChildTable = {
+  page: number;
+  total: number;
+  items: TChildItem[];
+  isFetching?: boolean;
+  onPageChange: (page: number) => void;
+  onOpenDetail: (childId: string) => void;
+};
+
+export type TParentChildrenFilterValues = {
+  query: string;
+  childId: string | "ALL";
+};
+
+export type TChildrenFilter = {
+  onReset: () => void;
+  value: TParentChildrenFilterValues;
+  childOptions: Array<{ value: string; label: string }>;
+  onApply: (values: TParentChildrenFilterValues) => void;
+};
+
+export type TChildrenSummary = {
+  totalChildren: number;
+  withEmailCount: number;
+  withMobileCount: number;
+};

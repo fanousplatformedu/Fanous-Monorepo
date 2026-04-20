@@ -39,7 +39,10 @@ export enum ParentGqlObjectNames {
   ParentCounselingSession = "ParentCounselingSession",
   ParentSessionRequestResult = "ParentSessionRequestResult",
   ParentAssessmentResultList = "ParentAssessmentResultList",
+  ParentChildEnrollmentGrade = "ParentChildEnrollmentGrade",
   ParentCounselingSessionList = "ParentCounselingSessionList",
+  ParentChildCurrentEnrollment = "ParentChildCurrentEnrollment",
+  ParentChildEnrollmentClassroom = "ParentChildEnrollmentClassroom",
   ParentCounselingSessionStudent = "ParentCounselingSessionStudent",
 }
 

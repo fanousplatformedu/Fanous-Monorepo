@@ -1141,30 +1141,53 @@ export type ParentChild = {
   __typename?: 'ParentChild';
   avatarUrl: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
+  currentEnrollment: Maybe<ParentChildCurrentEnrollment>;
   email: Maybe<Scalars['String']['output']>;
   fullName: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   isPrimary: Scalars['Boolean']['output'];
   mobile: Maybe<Scalars['String']['output']>;
   relation: ParentRelationType;
-  status: Scalars['String']['output'];
+  status: Maybe<UserStatus>;
+};
+
+export type ParentChildCurrentEnrollment = {
+  __typename?: 'ParentChildCurrentEnrollment';
+  classroom: Maybe<ParentChildEnrollmentClassroom>;
+  endedAt: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['String']['output'];
+  startedAt: Scalars['DateTime']['output'];
 };
 
 export type ParentChildDetail = {
   __typename?: 'ParentChildDetail';
   avatarUrl: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
+  currentEnrollment: Maybe<ParentChildCurrentEnrollment>;
   email: Maybe<Scalars['String']['output']>;
   fullName: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   isPrimary: Scalars['Boolean']['output'];
   mobile: Maybe<Scalars['String']['output']>;
   relation: ParentRelationType;
-  status: Scalars['String']['output'];
+  status: Maybe<UserStatus>;
 };
 
 export type ParentChildDetailInput = {
   childId: Scalars['String']['input'];
+};
+
+export type ParentChildEnrollmentClassroom = {
+  __typename?: 'ParentChildEnrollmentClassroom';
+  grade: Maybe<ParentChildEnrollmentGrade>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type ParentChildEnrollmentGrade = {
+  __typename?: 'ParentChildEnrollmentGrade';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type ParentChildList = {
@@ -1966,6 +1989,11 @@ export type UserList = {
   total: Scalars['Int']['output'];
 };
 
+export type UserStatus =
+  | 'ACTIVE'
+  | 'DELETED'
+  | 'DISABLED';
+
 export type VerifyOtpInput = {
   code: Scalars['String']['input'];
   email?: InputMaybe<Scalars['String']['input']>;
@@ -2089,14 +2117,14 @@ export type MyChildrenQueryVariables = Exact<{
 }>;
 
 
-export type MyChildrenQuery = { __typename?: 'Query', myChildren: { __typename?: 'ParentChildList', take: number, skip: number, total: number, items: Array<{ __typename?: 'ParentChild', id: string, email: string | null, mobile: string | null, fullName: string | null, relation: ParentRelationType, isPrimary: boolean, avatarUrl: string | null, createdAt: string | null }> } };
+export type MyChildrenQuery = { __typename?: 'Query', myChildren: { __typename?: 'ParentChildList', take: number, skip: number, total: number, items: Array<{ __typename?: 'ParentChild', id: string, email: string | null, mobile: string | null, fullName: string | null, relation: ParentRelationType, isPrimary: boolean, avatarUrl: string | null, createdAt: string | null, currentEnrollment: { __typename?: 'ParentChildCurrentEnrollment', id: string, startedAt: string, endedAt: string | null, classroom: { __typename?: 'ParentChildEnrollmentClassroom', id: string, name: string, grade: { __typename?: 'ParentChildEnrollmentGrade', id: string, name: string } | null } | null } | null }> } };
 
 export type ParentChildDetailQueryVariables = Exact<{
   input: ParentChildDetailInput;
 }>;
 
 
-export type ParentChildDetailQuery = { __typename?: 'Query', parentChildDetail: { __typename?: 'ParentChildDetail', id: string, email: string | null, mobile: string | null, relation: ParentRelationType, fullName: string | null, isPrimary: boolean, avatarUrl: string | null } };
+export type ParentChildDetailQuery = { __typename?: 'Query', parentChildDetail: { __typename?: 'ParentChildDetail', id: string, email: string | null, mobile: string | null, relation: ParentRelationType, fullName: string | null, isPrimary: boolean, avatarUrl: string | null, currentEnrollment: { __typename?: 'ParentChildCurrentEnrollment', id: string, startedAt: string, endedAt: string | null, classroom: { __typename?: 'ParentChildEnrollmentClassroom', id: string, name: string, grade: { __typename?: 'ParentChildEnrollmentGrade', id: string, name: string } | null } | null } | null } };
 
 export type ParentChildGradesQueryVariables = Exact<{
   input: ListParentChildGradesInput;
@@ -2606,8 +2634,8 @@ export const CompareStudentResultsDocument = {"kind":"Document","definitions":[{
 export const HeaderCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"HeaderCurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"schoolId"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"forcePasswordChange"}}]}}]}}]} as unknown as DocumentNode<HeaderCurrentUserQuery, HeaderCurrentUserQueryVariables>;
 export const HeaderLogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"HeaderLogout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<HeaderLogoutMutation, HeaderLogoutMutationVariables>;
 export const ParentDashboardSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ParentDashboardSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"parentDashboardSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalResults"}},{"kind":"Field","name":{"kind":"Name","value":"totalChildren"}},{"kind":"Field","name":{"kind":"Name","value":"totalSessions"}},{"kind":"Field","name":{"kind":"Name","value":"totalActivities"}}]}}]}}]} as unknown as DocumentNode<ParentDashboardSummaryQuery, ParentDashboardSummaryQueryVariables>;
-export const MyChildrenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MyChildren"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ListMyChildrenInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myChildren"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"take"}},{"kind":"Field","name":{"kind":"Name","value":"skip"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"mobile"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"relation"}},{"kind":"Field","name":{"kind":"Name","value":"isPrimary"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<MyChildrenQuery, MyChildrenQueryVariables>;
-export const ParentChildDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ParentChildDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ParentChildDetailInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"parentChildDetail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"mobile"}},{"kind":"Field","name":{"kind":"Name","value":"relation"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"isPrimary"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]}}]} as unknown as DocumentNode<ParentChildDetailQuery, ParentChildDetailQueryVariables>;
+export const MyChildrenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MyChildren"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ListMyChildrenInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myChildren"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"take"}},{"kind":"Field","name":{"kind":"Name","value":"skip"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"mobile"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"relation"}},{"kind":"Field","name":{"kind":"Name","value":"isPrimary"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"currentEnrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"endedAt"}},{"kind":"Field","name":{"kind":"Name","value":"classroom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"grade"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<MyChildrenQuery, MyChildrenQueryVariables>;
+export const ParentChildDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ParentChildDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ParentChildDetailInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"parentChildDetail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"mobile"}},{"kind":"Field","name":{"kind":"Name","value":"relation"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"isPrimary"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"currentEnrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"endedAt"}},{"kind":"Field","name":{"kind":"Name","value":"classroom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"grade"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ParentChildDetailQuery, ParentChildDetailQueryVariables>;
 export const ParentChildGradesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ParentChildGrades"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ListParentChildGradesInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"parentChildGrades"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"take"}},{"kind":"Field","name":{"kind":"Name","value":"skip"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"score"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"maxScore"}},{"kind":"Field","name":{"kind":"Name","value":"examTitle"}},{"kind":"Field","name":{"kind":"Name","value":"termLabel"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"recordedAt"}}]}}]}}]}}]} as unknown as DocumentNode<ParentChildGradesQuery, ParentChildGradesQueryVariables>;
 export const ParentChildResultsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ParentChildResults"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ListParentChildResultsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"parentChildResults"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"take"}},{"kind":"Field","name":{"kind":"Name","value":"skip"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"musical"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"linguistic"}},{"kind":"Field","name":{"kind":"Name","value":"logicalMath"}},{"kind":"Field","name":{"kind":"Name","value":"naturalistic"}},{"kind":"Field","name":{"kind":"Name","value":"interpersonal"}},{"kind":"Field","name":{"kind":"Name","value":"intrapersonal"}},{"kind":"Field","name":{"kind":"Name","value":"visualSpatial"}},{"kind":"Field","name":{"kind":"Name","value":"assignmentTitle"}},{"kind":"Field","name":{"kind":"Name","value":"bodilyKinesthetic"}},{"kind":"Field","name":{"kind":"Name","value":"studentAssignmentId"}},{"kind":"Field","name":{"kind":"Name","value":"dominantIntelligence"}}]}}]}}]}}]} as unknown as DocumentNode<ParentChildResultsQuery, ParentChildResultsQueryVariables>;
 export const ParentResultDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ParentResultDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resultId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"parentResultDetail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"resultId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resultId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"musical"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"linguistic"}},{"kind":"Field","name":{"kind":"Name","value":"logicalMath"}},{"kind":"Field","name":{"kind":"Name","value":"naturalistic"}},{"kind":"Field","name":{"kind":"Name","value":"interpersonal"}},{"kind":"Field","name":{"kind":"Name","value":"intrapersonal"}},{"kind":"Field","name":{"kind":"Name","value":"visualSpatial"}},{"kind":"Field","name":{"kind":"Name","value":"assignmentTitle"}},{"kind":"Field","name":{"kind":"Name","value":"bodilyKinesthetic"}},{"kind":"Field","name":{"kind":"Name","value":"studentAssignmentId"}},{"kind":"Field","name":{"kind":"Name","value":"dominantIntelligence"}},{"kind":"Field","name":{"kind":"Name","value":"careerMatches"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"score"}},{"kind":"Field","name":{"kind":"Name","value":"fitReason"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<ParentResultDetailQuery, ParentResultDetailQueryVariables>;

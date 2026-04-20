@@ -21,6 +21,19 @@ query MyChildren($input: ListMyChildrenInput!) {
       isPrimary
       avatarUrl
       createdAt
+      currentEnrollment {
+        id
+        startedAt
+        endedAt
+        classroom {
+          id
+          name
+          grade {
+            id
+            name
+          }
+        }
+      }
     }
   }
 }
@@ -34,6 +47,19 @@ query ParentChildDetail($input: ParentChildDetailInput!) {
     fullName
     isPrimary
     avatarUrl
+    currentEnrollment {
+      id
+      startedAt
+      endedAt
+      classroom {
+        id
+        name
+        grade {
+          id
+          name
+        }
+      }
+    }
   }
 }
 

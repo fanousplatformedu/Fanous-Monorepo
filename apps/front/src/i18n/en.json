@@ -1886,6 +1886,67 @@
           "cancelFailed": "Failed to cancel counseling session."
         }
       },
+      "children": {
+        "page": {
+          "title": "My Children",
+          "description": "View your children and review their academic profile"
+        },
+        "kpis": {
+          "total": {
+            "title": "Total Children",
+            "description": "Children linked to your parent account"
+          },
+          "email": {
+            "title": "With Email",
+            "description": "Children who have an email address"
+          },
+          "mobile": {
+            "title": "With Mobile",
+            "description": "Children who have a mobile number"
+          }
+        },
+        "filtersCard": {
+          "title": "Filter Children",
+          "description": "Search and narrow down the children list"
+        },
+        "filters": {
+          "fields": {
+            "query": "Search",
+            "child": "Child"
+          },
+          "childOptions": {
+            "ALL": "All Children"
+          }
+        },
+        "empty": {
+          "title": "No children found",
+          "description": "There are no children matching your current filters."
+        },
+        "table": {
+          "title": "Children List",
+          "description": "Browse and review your linked children",
+          "columns": {
+            "fullName": "Full Name",
+            "email": "Email",
+            "mobile": "Mobile",
+            "grade": "Grade",
+            "classroom": "Classroom",
+            "actions": "Actions"
+          },
+          "viewAction": "View Details"
+        },
+        "detailDialog": {
+          "title": "Child Details",
+          "description": "Detailed information about your selected child",
+          "fields": {
+            "fullName": "Full Name",
+            "email": "Email",
+            "mobile": "Mobile",
+            "grade": "Grade",
+            "classroom": "Classroom"
+          }
+        }
+      },
       "nav": {
         "overview": "Overview",
         "children": "Children",
