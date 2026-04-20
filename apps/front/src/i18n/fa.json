@@ -1957,6 +1957,103 @@
           }
         }
       },
+      "results": {
+        "page": {
+          "title": "نتایج ارزیابی",
+          "description": "نتایج ارزیابی فرزندان خود را بررسی کنید و روند پیشرفت را مقایسه نمایید"
+        },
+        "common": {
+          "notAvailable": "موجود نیست"
+        },
+        "actions": {
+          "compare": "مقایسه نتایج"
+        },
+        "kpis": {
+          "total": {
+            "title": "تعداد نتایج",
+            "description": "همه نتایج بارگذاری‌شده برای فرزند انتخاب‌شده"
+          },
+          "average": {
+            "title": "میانگین امتیاز",
+            "description": "میانگین امتیاز در نتایج بارگذاری‌شده"
+          },
+          "compare": {
+            "title": "انتخاب برای مقایسه",
+            "description": "تا 2 نتیجه را برای مقایسه انتخاب کنید"
+          }
+        },
+        "filtersCard": {
+          "title": "فیلتر نتایج",
+          "description": "یک فرزند را انتخاب کنید تا تاریخچه نتایج او را بررسی نمایید"
+        },
+        "filters": {
+          "fields": {
+            "child": "فرزند"
+          },
+          "childOptions": {
+            "ALL": "همه فرزندان"
+          }
+        },
+        "chartCard": {
+          "title": "توزیع هوش غالب",
+          "description": "نمایی سریع از نتایج بارگذاری‌شده بر اساس هوش غالب",
+          "empty": "هنوز داده کافی برای نمایش نمودار وجود ندارد."
+        },
+        "empty": {
+          "title": "نتیجه‌ای پیدا نشد",
+          "description": "هیچ نتیجه‌ای مطابق با فیلترهای فعلی شما پیدا نشد."
+        },
+        "table": {
+          "title": "فهرست نتایج",
+          "description": "نتایج ارزیابی فرزندان خود را مرور کنید",
+          "columns": {
+            "child": "فرزند",
+            "assignment": "تکلیف",
+            "dominant": "هوش غالب",
+            "createdAt": "تاریخ ایجاد",
+            "actions": "عملیات"
+          },
+          "viewAction": "مشاهده جزئیات",
+          "compareAction": "انتخاب برای مقایسه",
+          "selectedCompareAction": "انتخاب شده",
+          "openCompareAction": "باز کردن مقایسه"
+        },
+        "detailDialog": {
+          "title": "جزئیات نتیجه",
+          "description": "نتیجه ارزیابی انتخاب‌شده را با جزئیات بررسی کنید",
+          "assignment": "تکلیف",
+          "dominant": "هوش غالب",
+          "summary": "خلاصه",
+          "careerMatches": "تناسب‌های شغلی",
+          "noCareerMatches": "هیچ تناسب شغلی موجود نیست"
+        },
+        "compareDialog": {
+          "title": "مقایسه نتایج",
+          "description": "دو نتیجه انتخاب‌شده را در کنار هم مقایسه کنید",
+          "clearAction": "پاک کردن انتخاب‌ها",
+          "notEnough": "لطفاً دو نتیجه را برای مقایسه انتخاب کنید.",
+          "resultCard": {
+            "child": "فرزند",
+            "assignment": "تکلیف"
+          },
+          "table": {
+            "intelligence": "هوش",
+            "previous": "قبلی",
+            "current": "فعلی",
+            "delta": "اختلاف"
+          }
+        },
+        "intelligences": {
+          "MUSICAL": "موسیقایی",
+          "LINGUISTIC": "کلامی",
+          "NATURALISTIC": "طبیعت‌گرا",
+          "INTERPERSONAL": "میان‌فردی",
+          "INTRAPERSONAL": "درون‌فردی",
+          "VISUAL_SPATIAL": "دیداری-فضایی",
+          "BODILY_KINESTHETIC": "حرکتی-جسمانی",
+          "LOGICAL_MATHEMATICAL": "منطقی-ریاضی"
+        }
+      },
       "nav": {
         "overview": "نمای کلی",
         "children": "فرزندان",

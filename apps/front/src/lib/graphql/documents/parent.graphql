@@ -88,10 +88,19 @@ query ParentChildResults($input: ListParentChildResultsInput!) {
     total
     items {
       id
+      studentId
+      student {
+        id
+        email
+        mobile
+        fullName
+        avatarUrl
+      }
       musical
       createdAt
       linguistic
       logicalMath
+      scoreSummary
       naturalistic
       interpersonal
       intrapersonal
@@ -107,11 +116,20 @@ query ParentChildResults($input: ListParentChildResultsInput!) {
 query ParentResultDetail($resultId: String!) {
   parentResultDetail(resultId: $resultId) {
     id
+    studentId
+    student {
+      id
+      email
+      mobile
+      fullName
+      avatarUrl
+    }
     musical
     createdAt
     linguistic
     logicalMath
     naturalistic
+    scoreSummary
     interpersonal
     intrapersonal
     visualSpatial

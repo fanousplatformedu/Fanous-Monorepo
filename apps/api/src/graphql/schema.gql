@@ -857,8 +857,10 @@ type ParentAssessmentResult {
   logicalMath: Float!
   musical: Float!
   naturalistic: Float!
+  scoreSummary: String
+  student: ParentAssessmentStudent
   studentAssignmentId: String!
-  summaryJson: String
+  studentId: String!
   visualSpatial: Float!
 }
 
@@ -867,6 +869,14 @@ type ParentAssessmentResultList {
   skip: Int!
   take: Int!
   total: Int!
+}
+
+type ParentAssessmentStudent {
+  avatarUrl: String
+  email: String
+  fullName: String
+  id: String!
+  mobile: String
 }
 
 type ParentCareerMatch {

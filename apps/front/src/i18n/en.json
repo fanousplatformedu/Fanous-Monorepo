@@ -1947,6 +1947,103 @@
           }
         }
       },
+      "results": {
+        "page": {
+          "title": "Assessment Results",
+          "description": "Review your children’s assessment results and compare progress"
+        },
+        "common": {
+          "notAvailable": "Not available"
+        },
+        "actions": {
+          "compare": "Compare Results"
+        },
+        "kpis": {
+          "total": {
+            "title": "Total Results",
+            "description": "All loaded results for your selected child"
+          },
+          "average": {
+            "title": "Average Score",
+            "description": "Average score across the loaded results"
+          },
+          "compare": {
+            "title": "Compare Selection",
+            "description": "Select up to 2 results to compare"
+          }
+        },
+        "filtersCard": {
+          "title": "Filter Results",
+          "description": "Choose a child to review their assessment history"
+        },
+        "filters": {
+          "fields": {
+            "child": "Child"
+          },
+          "childOptions": {
+            "ALL": "All Children"
+          }
+        },
+        "chartCard": {
+          "title": "Dominant Intelligence Distribution",
+          "description": "A quick visual summary of the loaded results by dominant intelligence",
+          "empty": "There is not enough data to render the chart yet."
+        },
+        "empty": {
+          "title": "No results found",
+          "description": "There are no assessment results matching your current filters."
+        },
+        "table": {
+          "title": "Results List",
+          "description": "Browse your children’s assessment results",
+          "columns": {
+            "child": "Child",
+            "assignment": "Assignment",
+            "dominant": "Dominant Intelligence",
+            "createdAt": "Created At",
+            "actions": "Actions"
+          },
+          "viewAction": "View Details",
+          "compareAction": "Select Compare",
+          "selectedCompareAction": "Selected",
+          "openCompareAction": "Open Compare"
+        },
+        "detailDialog": {
+          "title": "Result Details",
+          "description": "Review the selected assessment result in detail",
+          "assignment": "Assignment",
+          "dominant": "Dominant Intelligence",
+          "summary": "Summary",
+          "careerMatches": "Career Matches",
+          "noCareerMatches": "No career matches available"
+        },
+        "compareDialog": {
+          "title": "Compare Results",
+          "description": "Compare two selected assessment results side by side",
+          "clearAction": "Clear Selection",
+          "notEnough": "Please select two results to compare.",
+          "resultCard": {
+            "child": "Child",
+            "assignment": "Assignment"
+          },
+          "table": {
+            "intelligence": "Intelligence",
+            "previous": "Previous",
+            "current": "Current",
+            "delta": "Delta"
+          }
+        },
+        "intelligences": {
+          "MUSICAL": "Musical",
+          "LINGUISTIC": "Linguistic",
+          "NATURALISTIC": "Naturalistic",
+          "INTERPERSONAL": "Interpersonal",
+          "INTRAPERSONAL": "Intrapersonal",
+          "VISUAL_SPATIAL": "Visual Spatial",
+          "BODILY_KINESTHETIC": "Bodily Kinesthetic",
+          "LOGICAL_MATHEMATICAL": "Logical Mathematical"
+        }
+      },
       "nav": {
         "overview": "Overview",
         "children": "Children",

@@ -29,3 +29,7 @@ export const childrenFiltersSchema = z.object({
   query: z.string(),
   childId: z.string(),
 });
+
+export const resultsFiltersSchema = z.object({
+  childId: z.string(),
+});

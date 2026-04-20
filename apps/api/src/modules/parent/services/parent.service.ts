@@ -389,6 +389,15 @@ export class ParentService {
       this.prismaService.assessmentResult.findMany({
         where,
         include: {
+          student: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              mobile: true,
+              avatarUrl: true,
+            },
+          },
           studentAssignment: {
             include: {
               assignment: {
@@ -406,6 +415,16 @@ export class ParentService {
     return {
       items: items.map((item) => ({
         id: item.id,
+        studentId: item.studentId,
+        student: item.student
+          ? {
+              id: item.student.id,
+              fullName: item.student.fullName,
+              email: item.student.email,
+              mobile: item.student.mobile,
+              avatarUrl: item.student.avatarUrl,
+            }
+          : null,
         createdAt: item.createdAt,
         studentAssignmentId: item.studentAssignmentId,
         assignmentTitle: item.studentAssignment.assignment.title,
@@ -418,6 +437,13 @@ export class ParentService {
         naturalistic: item.naturalistic,
         interpersonal: item.interpersonal,
         intrapersonal: item.intrapersonal,
+        scoreSummary:
+          item.summaryJson && typeof item.summaryJson === "object"
+            ? JSON.stringify(item.summaryJson, null, 2)
+            : item.summaryJson
+              ? String(item.summaryJson)
+              : null,
+        careerMatches: null,
       })),
       total,
       take,
@@ -441,6 +467,15 @@ export class ParentService {
         },
       },
       include: {
+        student: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            mobile: true,
+            avatarUrl: true,
+          },
+        },
         studentAssignment: {
           include: {
             assignment: {
@@ -465,28 +500,45 @@ export class ParentService {
       typeof summary === "object" &&
       "careerMatches" in summary &&
       Array.isArray((summary as { careerMatches?: unknown[] }).careerMatches)
-        ? ((summary as { careerMatches: unknown[] }).careerMatches as Array<{
-            title: string;
-            score: number;
-            description?: string;
-            fitReason?: string;
-          }>)
+        ? (
+            (summary as { careerMatches: unknown[] }).careerMatches as Array<{
+              title: string;
+              score: number;
+              description?: string;
+              fitReason?: string;
+            }>
+          ).map((item) => ({
+            title: item.title,
+            score: item.score,
+            description: item.description ?? null,
+            fitReason: item.fitReason ?? null,
+          }))
         : [];
     return {
       id: result.id,
+      studentId: result.studentId,
+      student: result.student
+        ? {
+            id: result.student.id,
+            fullName: result.student.fullName,
+            email: result.student.email,
+            mobile: result.student.mobile,
+            avatarUrl: result.student.avatarUrl,
+          }
+        : null,
+      musical: result.musical,
       createdAt: result.createdAt,
-      studentAssignmentId: result.studentAssignmentId,
-      assignmentTitle: result.studentAssignment.assignment.title,
-      dominantIntelligence: result.dominantKey,
       linguistic: result.linguistic,
       logicalMath: result.logicalMath,
-      musical: result.musical,
-      bodilyKinesthetic: result.bodilyKinesthetic,
-      visualSpatial: result.visualSpatial,
       naturalistic: result.naturalistic,
+      visualSpatial: result.visualSpatial,
       interpersonal: result.interpersonal,
       intrapersonal: result.intrapersonal,
-      summaryJson: JSON.stringify(summary ?? null),
+      dominantIntelligence: result.dominantKey,
+      bodilyKinesthetic: result.bodilyKinesthetic,
+      studentAssignmentId: result.studentAssignmentId,
+      assignmentTitle: result.studentAssignment.assignment.title,
+      scoreSummary: summary ? JSON.stringify(summary, null, 2) : null,
       careerMatches,
     };
   }

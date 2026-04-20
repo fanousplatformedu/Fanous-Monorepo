@@ -1,4 +1,5 @@
 import { ComponentType, ElementType, ReactNode } from "react";
+import { TParentProfileFormValues } from "@/lib/validation/parent";
 import { TClassroomFiltersValues } from "@/lib/validation/school-admin";
 import { TCreateAssignmentForm } from "@/lib/validation/school-admin";
 import { TEnrollmentFilterForm } from "@/lib/validation/school-admin";
@@ -11,7 +12,6 @@ import { LucideIcon } from "lucide-react";
 import { z } from "zod";
 
 import type * as TAPI from "@lib/graphql/generated";
-import { TParentProfileFormValues } from "@/lib/validation/parent";
 
 // ============ Role Gateway ==============
 export type TRoleItem = {
@@ -532,7 +532,7 @@ export type TMembersFiltersProps = {
   onApply: (values: TSchoolMemberFilterValues) => void;
 };
 
-type TResultList = NonNullable<
+type TAssessmentResultList = NonNullable<
   TAPI.AssessmentResultsQuery["assessmentResults"]
 >;
 
@@ -541,7 +541,7 @@ export type TAssignmentResultsTableProps = {
   total: number;
   isLoading: boolean;
   isFetching: boolean;
-  items: TResultList["items"];
+  items: TAssessmentResultList["items"];
   onPageChange: (page: number) => void;
 };
 
@@ -1053,3 +1053,75 @@ export type TChildrenSummary = {
   withEmailCount: number;
   withMobileCount: number;
 };
+
+type TParentResultList = NonNullable<
+  TAPI.ParentChildResultsQuery["parentChildResults"]
+>;
+
+type TResultItem = TParentResultList["items"][number];
+
+type TCompareData = TAPI.CompareParentResultsQuery["compareParentResults"];
+
+export type TResultCompare = {
+  open: boolean;
+  data: TCompareData;
+  isLoading?: boolean;
+  compareIds: string[];
+  compareRows: TResultItem[];
+  onClearSelection: () => void;
+  onOpenChange: (open: boolean) => void;
+};
+
+type TDetail = TAPI.ParentResultDetailQuery["parentResultDetail"];
+
+export type TResultDetailDialog = {
+  open: boolean;
+  isLoading?: boolean;
+  onCompare: () => void;
+  result: TDetail | null;
+  onOpenChange: (open: boolean) => void;
+};
+
+export type TParentResultItem = TParentResultList["items"][number];
+
+export type TParentResultTable = {
+  page: number;
+  total: number;
+  compareIds: string[];
+  isFetching?: boolean;
+  items: TResultItem[];
+  onPageChange: (page: number) => void;
+  onViewDetail: (resultId: string) => void;
+  onOpenCompare: (resultId?: string) => void;
+  onToggleCompare: (resultId: string) => void;
+};
+
+export type TParentDistributionChart = {
+  data: Array<{
+    key: string;
+    label: string;
+    value: number;
+  }>;
+};
+
+export type TParentResultsFilterValues = {
+  childId: string | "ALL";
+};
+
+export type TParentResultFilters = {
+  onReset: () => void;
+  value: TParentResultsFilterValues;
+  childOptions: Array<{ value: string; label: string }>;
+  onApply: (values: TParentResultsFilterValues) => void;
+};
+
+export type TResultSummaryCards = {
+  total: number;
+  averageScore: number;
+  compareCount: number;
+};
+
+type TResultList = NonNullable<
+  TAPI.ParentChildResultsQuery["parentChildResults"]
+>;
+export type TDashboardParentResultItem = TResultList["items"][number];
