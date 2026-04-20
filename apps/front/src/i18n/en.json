@@ -1728,6 +1728,84 @@
         }
       }
     },
+    "parent": {
+      "shell": {
+        "title": "Parent Dashboard",
+        "subtitle": "Support your child’s growth and stay informed"
+      },
+      "profile": {
+        "page": {
+          "title": "Profile",
+          "description": "Manage your personal information and account settings"
+        },
+        "empty": {
+          "title": "Profile not found",
+          "description": "We could not load your profile information at the moment."
+        },
+        "summaryCard": {
+          "title": "Profile Summary",
+          "description": "A quick overview of your account information",
+          "role": "Role",
+          "parentRole": "Parent",
+          "email": "Email Address",
+          "mobile": "Mobile Number",
+          "status": "Sync Status",
+          "synced": "Up to date"
+        },
+        "form": {
+          "title": "Edit Profile",
+          "description": "Update your profile information and contact details",
+          "fields": {
+            "fullName": "Full Name",
+            "email": "Email Address",
+            "mobile": "Mobile Number",
+            "avatarUrl": "Avatar URL"
+          },
+          "actions": {
+            "save": "Save Changes"
+          }
+        },
+        "accountCard": {
+          "title": "Account Information",
+          "description": "Key details about your account",
+          "rows": {
+            "role": "Role",
+            "email": "Email",
+            "mobile": "Mobile",
+            "status": "Account Status"
+          },
+          "values": {
+            "parent": "Parent",
+            "active": "Active"
+          }
+        },
+        "logoutCard": {
+          "title": "Sign Out",
+          "description": "Securely sign out of your account",
+          "heading": "Log out from this account",
+          "text": "Use this action if you want to safely leave your dashboard on this device.",
+          "action": "Log Out"
+        },
+        "toasts": {
+          "updateSuccess": "Your profile was updated successfully.",
+          "updateFailed": "Failed to update your profile.",
+          "logoutSuccess": "You have been logged out successfully.",
+          "logoutFailed": "Failed to log out from your account."
+        },
+        "common": {
+          "notSet": "Not set"
+        }
+      },
+      "nav": {
+        "overview": "Overview",
+        "children": "Children",
+        "results": "Results",
+        "resources": "Resources",
+        "activities": "Activities",
+        "counseling": "Counseling",
+        "profile": "Profile"
+      }
+    },
     "overview": "Dashboard",
     "myProfile": "My Profile"
   },

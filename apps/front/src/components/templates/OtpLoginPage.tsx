@@ -3,6 +3,7 @@
 import { requestOtpSchema, verifyOtpSchema } from "@/lib/validation/auth";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { usePublicSchoolsQuery } from "@/lib/redux/api";
+import { getRoleDashboardPath } from "@/utils/auth-role-helper";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { useMemo, useState } from "react";
@@ -113,12 +114,16 @@ const OtpLoginPage = () => {
           forceRefetch: true,
         }),
       );
+      let currentUser: { role?: string } | null = null;
       try {
-        await refetchAction.unwrap();
-      } catch {}
+        currentUser = await refetchAction.unwrap();
+      } catch {
+        currentUser = null;
+      }
       refetchAction.unsubscribe();
       toast.success(res.message);
-      router.replace("/student/dashboard");
+      const nextPath = getRoleDashboardPath(currentUser?.role);
+      router.replace(nextPath);
       router.refresh();
     } catch (error: unknown) {
       const message =

@@ -55,3 +55,10 @@ export const formatShortDate = (value: string) => {
   if (Number.isNaN(date.getTime())) return value;
   return `${date.getMonth() + 1}/${date.getDate()}`;
 };
+
+// ============== Profile ===============
+export const getInitials = (fullName?: string | null) => {
+  if (!fullName?.trim()) return "P";
+  const parts = fullName.trim().split(/\s+/).slice(0, 2);
+  return parts.map((part) => part[0]?.toUpperCase() ?? "").join("") || "P";
+};

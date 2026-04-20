@@ -43,10 +43,7 @@ export const DashboardSidebar = ({
   const { t } = useI18n();
 
   const isItemActive = (href: string) => {
-    if (href === "/student/dashboard") {
-      return pathname === href;
-    }
-
+    if (href === "/student/dashboard") return pathname === href;
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 

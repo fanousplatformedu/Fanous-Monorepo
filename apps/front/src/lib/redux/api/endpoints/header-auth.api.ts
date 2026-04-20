@@ -1,14 +1,10 @@
 import { baseApi } from "@redux/api/base-api";
 
-import type {
-  HeaderLogoutMutation,
-  HeaderCurrentUserQuery,
-} from "@lib/graphql/generated";
+import type { HeaderCurrentUserQuery } from "@lib/graphql/generated";
+import type { HeaderLogoutMutation } from "@lib/graphql/generated";
 
-import {
-  HeaderLogoutDocument,
-  HeaderCurrentUserDocument,
-} from "@lib/graphql/generated";
+import { HeaderCurrentUserDocument } from "@lib/graphql/generated";
+import { HeaderLogoutDocument } from "@lib/graphql/generated";
 
 export const headerAuthApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

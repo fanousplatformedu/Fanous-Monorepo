@@ -11,6 +11,7 @@ import { LucideIcon } from "lucide-react";
 import { z } from "zod";
 
 import type * as TAPI from "@lib/graphql/generated";
+import { TParentProfileFormValues } from "@/lib/validation/parent";
 
 // ============ Role Gateway ==============
 export type TRoleItem = {
@@ -949,4 +950,18 @@ export type TStudentResultCard = {
   score: number;
   fitReason?: string | null;
   description?: string | null;
+};
+
+// =============== Pranet =================
+export type TProfileLogout = {
+  isSubmitting?: boolean;
+  onLogout: () => void | Promise<void>;
+};
+
+type TMe = TAPI.SchoolUserMeQuery["me"];
+
+export type TProfileForm = {
+  me: TMe;
+  isSubmitting?: boolean;
+  onSubmit: (values: TParentProfileFormValues) => void | Promise<void>;
 };

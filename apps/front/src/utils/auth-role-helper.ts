@@ -31,7 +31,9 @@ export const getRoleDashboardPath = (role?: string) => {
     case "STUDENT":
       return "/student/dashboard";
     case "PARENT":
+      return "/parent/dashboard";
     case "COUNSELOR":
+      return "/counselor/dashboard";
     default:
       return "/";
   }
@@ -46,7 +48,9 @@ export const getRoleProfilePath = (role?: string) => {
     case "STUDENT":
       return "/student/dashboard/profile";
     case "PARENT":
+      return "/parent/dashboard/profile";
     case "COUNSELOR":
+      return "/counselor/dashboard/profile";
     default:
       return "/";
   }
