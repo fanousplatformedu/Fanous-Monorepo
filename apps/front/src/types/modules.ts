@@ -1,4 +1,4 @@
-import { ComponentType, ReactNode } from "react";
+import { ComponentType, ElementType, ReactNode } from "react";
 import { TClassroomFiltersValues } from "@/lib/validation/school-admin";
 import { TCreateAssignmentForm } from "@/lib/validation/school-admin";
 import { TEnrollmentFilterForm } from "@/lib/validation/school-admin";
@@ -895,4 +895,58 @@ export type TResultDistribution = {
   emptyText: string;
   description: string;
   items: TDistributionItem[];
+};
+
+export type TStudentResultDetailDialogProps = TResultDetailDialogProps;
+
+export type TDetailTab = "overview" | "scores" | "matches";
+
+export type TChartRow = {
+  key: string;
+  value: number;
+  fullLabel: string;
+  shortLabel: string;
+};
+
+export type TSummaryPoint = {
+  label: string;
+  value: string;
+  icon: ElementType;
+};
+
+export type TDetailTabItem = {
+  label: string;
+  key: TDetailTab;
+  icon: ElementType;
+};
+
+export type TTopScoreItem = TChartRow;
+
+export type TStudentResultDetail = {
+  value: TDetailTab;
+  items: TDetailTabItem[];
+  onChange: (tab: TDetailTab) => void;
+};
+
+export type TStudentResultTab = {
+  topScores: TChartRow[];
+  chartData: TChartRow[];
+  narrativeSummary: string;
+};
+
+export type TStudentResultMatches = {
+  dominantText: string;
+  matches?: Array<{
+    title: string;
+    score: number;
+    description?: string | null;
+    fitReason?: string | null;
+  }> | null;
+};
+
+export type TStudentResultCard = {
+  title: string;
+  score: number;
+  fitReason?: string | null;
+  description?: string | null;
 };

@@ -5,7 +5,7 @@ import { useMyAssessmentResultDetailQuery } from "@/lib/redux/api/endpoints/stud
 import { TResultFilterValues, TResultRow } from "@/types/modules";
 import { useMyAssessmentResultsQuery } from "@/lib/redux/api/endpoints/student.api";
 import { StudentResultCompareDialog } from "@modules/Dashboard/Student/parts/result-compare-dialog";
-import { StudentResultDetailDialog } from "@modules/Dashboard/Student/parts/result-detail-dialog";
+import { StudentResultDetailDialog } from "@modules/Dashboard/Student/parts/student-result-detail-dialog";
 import { useCompareResultsQuery } from "@/lib/redux/api/endpoints/student.api";
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
 import { StudentResultFilters } from "@modules/Dashboard/Student/parts/result-filter";

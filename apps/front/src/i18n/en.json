@@ -1423,6 +1423,10 @@
           "compare": {
             "title": "Compare Queue",
             "description": "Selected results for comparison"
+          },
+          "distribution": {
+            "title": "Dominant Distribution",
+            "description": "Distribution of dominant intelligences across results"
           }
         },
         "table": {
@@ -1448,7 +1452,22 @@
           "dominant": "Dominant Intelligence",
           "summary": "Summary",
           "careerMatches": "Career Matches",
-          "noCareerMatches": "No career matches available for this result."
+          "noCareerMatches": "No career matches available for this result.",
+          "tabs": {
+            "overview": "Overview",
+            "scores": "Scores & Charts",
+            "matches": "Career Matches"
+          },
+          "radarChart": "Intelligence Radar Chart",
+          "chartHint": "This chart maps your scores across 8 intelligence areas. A wider spread indicates multiple strengths.",
+          "chartLegend": "Score Breakdown",
+          "summaryInsights": "Top Strengths & Insights",
+          "rank": "Rank",
+          "narrativeSummary": "Narrative Summary",
+          "allScores": "All Intelligence Scores",
+          "matchOverview": "Matches Overview",
+          "totalMatches": "Total Matches Found",
+          "bestFit": "Best Fit Career"
         },
         "compare": {
           "title": "Compare Results",

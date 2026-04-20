@@ -1,12 +1,4 @@
 import { TAuthIdentityPayload } from "@/types/constant";
-import { useContext } from "react";
-import { Ctx } from "@utils/constant";
-
-export const useLanguage = () => {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error("useLanguage must be used inside LanguageProvider");
-  return ctx;
-};
 
 // ============ Otp Request =============
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
