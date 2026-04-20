@@ -1796,6 +1796,96 @@
           "notSet": "Not set"
         }
       },
+      "counseling": {
+        "page": {
+          "title": "Counseling Sessions",
+          "description": "Request, follow up, and manage counseling sessions for your children"
+        },
+        "kpis": {
+          "requested": {
+            "title": "Requested Sessions",
+            "description": "Sessions waiting for confirmation"
+          },
+          "confirmed": {
+            "title": "Confirmed Sessions",
+            "description": "Approved and scheduled counseling sessions"
+          },
+          "completed": {
+            "title": "Completed Sessions",
+            "description": "Sessions that have already been completed"
+          }
+        },
+        "actions": {
+          "requestSession": "Request Session"
+        },
+        "filtersCard": {
+          "title": "Filter Sessions",
+          "description": "Narrow down sessions by child, status, or keyword"
+        },
+        "filters": {
+          "fields": {
+            "query": "Search",
+            "status": "Session Status",
+            "child": "Child"
+          },
+          "statusOptions": {
+            "ALL": "All Statuses",
+            "REQUESTED": "Requested",
+            "CONFIRMED": "Confirmed",
+            "COMPLETED": "Completed",
+            "CANCELED": "Canceled"
+          },
+          "childOptions": {
+            "ALL": "All Children"
+          }
+        },
+        "empty": {
+          "title": "No counseling sessions found",
+          "description": "There are no counseling sessions matching your current filters."
+        },
+        "requestDialog": {
+          "title": "Request Counseling Session",
+          "description": "Create a new counseling request for one of your children",
+          "fields": {
+            "child": "Child",
+            "title": "Session Title",
+            "note": "Note"
+          },
+          "action": "Submit Request"
+        },
+        "cancelDialog": {
+          "title": "Cancel Session",
+          "description": "Are you sure you want to cancel this counseling session?",
+          "note": "This action will mark the session as canceled and remove it from active counseling flow.",
+          "action": "Confirm Cancel"
+        },
+        "table": {
+          "title": "Counseling Sessions",
+          "description": "Track all requested and scheduled counseling sessions",
+          "columns": {
+            "child": "Child",
+            "title": "Session",
+            "status": "Status",
+            "scheduledAt": "Scheduled At",
+            "meetingUrl": "Meeting Link",
+            "actions": "Actions"
+          },
+          "joinLink": "Open Link",
+          "cancelAction": "Cancel",
+          "status": {
+            "REQUESTED": "Requested",
+            "CONFIRMED": "Confirmed",
+            "COMPLETED": "Completed",
+            "CANCELED": "Canceled"
+          }
+        },
+        "toasts": {
+          "requestSuccess": "Counseling session request submitted successfully.",
+          "requestFailed": "Failed to submit counseling session request.",
+          "cancelSuccess": "Counseling session canceled successfully.",
+          "cancelFailed": "Failed to cancel counseling session."
+        }
+      },
       "nav": {
         "overview": "Overview",
         "children": "Children",

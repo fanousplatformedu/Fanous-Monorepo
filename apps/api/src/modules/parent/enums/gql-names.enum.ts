@@ -40,6 +40,7 @@ export enum ParentGqlObjectNames {
   ParentSessionRequestResult = "ParentSessionRequestResult",
   ParentAssessmentResultList = "ParentAssessmentResultList",
   ParentCounselingSessionList = "ParentCounselingSessionList",
+  ParentCounselingSessionStudent = "ParentCounselingSessionStudent",
 }
 
 export enum ParentGqlInputNames {

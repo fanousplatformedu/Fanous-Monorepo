@@ -155,7 +155,7 @@ export type TTableActionButtonProps = {
   className?: string;
   disabled?: boolean;
   onClick?: () => void;
-  variant?: "brandChip" | "brandOutline" | "brandDanger";
+  variant?: "brandChip" | "brandOutline" | "brandDanger" | "brandSoft";
 };
 
 export type TTrendWidgetProps = {

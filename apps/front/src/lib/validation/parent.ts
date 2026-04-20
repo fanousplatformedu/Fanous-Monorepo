@@ -8,3 +8,19 @@ export const parentProfileSchema = z.object({
 });
 
 export type TParentProfileFormValues = z.infer<typeof parentProfileSchema>;
+
+export const requestSessionSchema = z.object({
+  childId: z.string().min(1),
+  title: z.string().min(1),
+  note: z.string().optional(),
+});
+
+export type TParentCounselingrequestValues = z.infer<
+  typeof requestSessionSchema
+>;
+
+export const counselingFiltersSchema = z.object({
+  query: z.string(),
+  status: z.string(),
+  childId: z.string(),
+});

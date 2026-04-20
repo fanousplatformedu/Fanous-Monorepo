@@ -927,6 +927,8 @@ type ParentCounselingSession {
   note: String
   scheduledAt: DateTime
   status: ParentCounselingSessionStatus!
+  student: ParentCounselingSessionStudent
+  studentId: String!
   title: String!
 }
 
@@ -943,6 +945,14 @@ enum ParentCounselingSessionStatus {
   CONFIRMED
   REQUESTED
   RESCHEDULED
+}
+
+type ParentCounselingSessionStudent {
+  avatarUrl: String
+  email: String
+  fullName: String
+  id: String!
+  mobile: String
 }
 
 type ParentDashboardSummary {

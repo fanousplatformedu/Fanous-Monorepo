@@ -611,6 +611,7 @@ export class ParentService {
         },
         select: { studentId: true },
       });
+
       childIds = links.map((x) => x.studentId);
     }
     const where: Prisma.CounselingSessionWhereInput = {
@@ -632,6 +633,30 @@ export class ParentService {
                   mode: Prisma.QueryMode.insensitive,
                 },
               },
+              {
+                student: {
+                  fullName: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
+              {
+                student: {
+                  email: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
+              {
+                student: {
+                  mobile: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
             ],
           }
         : {}),
@@ -639,13 +664,43 @@ export class ParentService {
     const [items, total] = await this.prismaService.$transaction([
       this.prismaService.counselingSession.findMany({
         where,
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        orderBy: [
+          { scheduledAt: "desc" },
+          { createdAt: "desc" },
+          { id: "desc" },
+        ],
         take,
         skip,
+        select: {
+          id: true,
+          title: true,
+          note: true,
+          meetingUrl: true,
+          counselorId: true,
+          studentId: true,
+          createdAt: true,
+          status: true,
+          canceledAt: true,
+          scheduledAt: true,
+          student: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              mobile: true,
+              avatarUrl: true,
+            },
+          },
+        },
       }),
       this.prismaService.counselingSession.count({ where }),
     ]);
-    return { items, total, take, skip };
+    return {
+      items,
+      total,
+      take,
+      skip,
+    };
   }
 
   async requestCounselingSession(args: T.TParentRequestSessionArgs) {

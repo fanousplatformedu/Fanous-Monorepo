@@ -161,6 +161,14 @@ query ParentCounselingSessions($input: ListParentCounselingSessionsInput!) {
       meetingUrl
       scheduledAt
       counselorId
+      studentId
+      student {
+        id
+        fullName
+        email
+        mobile
+        avatarUrl
+      }
     }
   }
 }

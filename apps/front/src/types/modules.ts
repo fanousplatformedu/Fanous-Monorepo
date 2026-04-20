@@ -952,7 +952,7 @@ export type TStudentResultCard = {
   description?: string | null;
 };
 
-// =============== Pranet =================
+// =============== Pranet Dashboard =================
 export type TProfileLogout = {
   isSubmitting?: boolean;
   onLogout: () => void | Promise<void>;
@@ -964,4 +964,53 @@ export type TProfileForm = {
   me: TMe;
   isSubmitting?: boolean;
   onSubmit: (values: TParentProfileFormValues) => void | Promise<void>;
+};
+
+type TSessionsList = NonNullable<
+  TAPI.ParentCounselingSessionsQuery["parentCounselingSessions"]
+>;
+
+type TSessionItem = TSessionsList["items"][number];
+
+export type TCounselingSessionTable = {
+  page: number;
+  total: number;
+  isFetching?: boolean;
+  items: TSessionItem[];
+  onPageChange: (page: number) => void;
+  onCancelSession: (sessionId: string) => void;
+};
+
+export type TCancelSessionDialog = {
+  open: boolean;
+  isLoading?: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void | Promise<void>;
+};
+
+export type TCounselingRequest = {
+  open: boolean;
+  isLoading?: boolean;
+  onOpenChange: (open: boolean) => void;
+  childOptions: Array<{ value: string; label: string }>;
+  onSubmit: (values: TAPI.ParentRequestSessionInput) => void | Promise<void>;
+};
+
+export type TParentCounselingFilterValues = {
+  query: string;
+  childId: string | "ALL";
+  status: "ALL" | TAPI.CounselingSessionStatus;
+};
+
+export type TParentCounselingFilter = {
+  onReset: () => void;
+  value: TParentCounselingFilterValues;
+  childOptions: Array<{ value: string; label: string }>;
+  onApply: (values: TParentCounselingFilterValues) => void;
+};
+
+export type TParentCounselingSummary = {
+  requestedCount: number;
+  confirmedCount: number;
+  completedCount: number;
 };
