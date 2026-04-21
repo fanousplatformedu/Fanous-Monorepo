@@ -5,10 +5,10 @@ import { IntelligenceKey } from "@prisma/client";
 
 @InputType(ParentGqlInputNames.ListParentChildResultsInput)
 export class ListParentChildResultsInput {
-  @Field() @IsString() childId!: string;
   @Field(() => Int) @IsInt() @Min(0) take!: number;
   @Field(() => Int) @IsInt() @Min(0) skip!: number;
   @Field({ nullable: true }) @IsOptional() @IsString() query!: string;
+  @Field(() => String, { nullable: true }) @IsString() childId?: string | null;
   @Field(() => IntelligenceKey, { nullable: true })
   @IsOptional()
   @IsEnum(IntelligenceKey)

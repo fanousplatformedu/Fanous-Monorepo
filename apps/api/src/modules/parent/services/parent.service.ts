@@ -360,28 +360,67 @@ export class ParentService {
   }
 
   async listChildResults(args: T.TListParentChildResultsArgs) {
-    const schoolId = await this.ensureParentChildAccess(
-      args.actor,
-      args.childId,
-    );
+    const schoolId = this.ensureParent(args.actor);
     const { take, skip } = this.normalizePagination(args.take, args.skip);
     const query = this.normalizeQuery(args.query);
+    let childIds: string[] = [];
+    if (args.childId) {
+      await this.ensureParentChildAccess(args.actor, args.childId);
+      childIds = [args.childId];
+    } else {
+      const links = await this.prismaService.parentStudentLink.findMany({
+        where: {
+          schoolId,
+          parentId: args.actor.id,
+        },
+        select: { studentId: true },
+      });
+      childIds = links.map((x) => x.studentId);
+    }
     const where: Prisma.AssessmentResultWhereInput = {
       schoolId,
-      studentId: args.childId,
+      studentId: { in: childIds.length ? childIds : ["__none__"] },
       ...(args.dominantIntelligence
         ? { dominantKey: args.dominantIntelligence }
         : {}),
       ...(query
         ? {
-            studentAssignment: {
-              assignment: {
-                title: {
-                  contains: query,
-                  mode: Prisma.QueryMode.insensitive,
+            OR: [
+              {
+                studentAssignment: {
+                  assignment: {
+                    title: {
+                      contains: query,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
                 },
               },
-            },
+              {
+                student: {
+                  fullName: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
+              {
+                student: {
+                  email: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
+              {
+                student: {
+                  mobile: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
+            ],
           }
         : {}),
     };
@@ -662,15 +701,26 @@ export class ParentService {
   }
 
   async listChildActivities(args: T.TListParentActivitiesArgs) {
-    const schoolId = await this.ensureParentChildAccess(
-      args.actor,
-      args.childId,
-    );
+    const schoolId = this.ensureParent(args.actor);
     const { take, skip } = this.normalizePagination(args.take, args.skip);
     const query = this.normalizeQuery(args.query);
+    let childIds: string[] = [];
+    if (args.childId) {
+      await this.ensureParentChildAccess(args.actor, args.childId);
+      childIds = [args.childId];
+    } else {
+      const links = await this.prismaService.parentStudentLink.findMany({
+        where: {
+          schoolId,
+          parentId: args.actor.id,
+        },
+        select: { studentId: true },
+      });
+      childIds = links.map((x) => x.studentId);
+    }
     const where: Prisma.StudentActivityWhereInput = {
       schoolId,
-      studentId: args.childId,
+      studentId: { in: childIds.length ? childIds : ["__none__"] },
       ...(args.type ? { type: args.type } : {}),
       ...(query
         ? {

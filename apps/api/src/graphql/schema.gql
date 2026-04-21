@@ -680,7 +680,7 @@ input ListMyNotificationsInput {
 }
 
 input ListParentChildActivitiesInput {
-  childId: String!
+  childId: String
   query: String
   skip: Int!
   take: Int!
@@ -697,7 +697,7 @@ input ListParentChildGradesInput {
 }
 
 input ListParentChildResultsInput {
-  childId: String!
+  childId: String
   dominantIntelligence: ParentIntelligenceKey
   query: String
   skip: Int!

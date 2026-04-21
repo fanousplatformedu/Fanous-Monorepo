@@ -32,8 +32,8 @@ export type TListParentChildGradesArgs = {
 export type TListParentChildResultsArgs = {
   take: number;
   skip: number;
-  childId: string;
   actor: TParentActor;
+  childId?: string | null;
   query?: string | null;
   dominantIntelligence?: IntelligenceKey | null;
 };
@@ -56,8 +56,8 @@ export type TListParentResourcesArgs = {
 export type TListParentActivitiesArgs = {
   take: number;
   skip: number;
-  childId: string;
   actor: TParentActor;
+  childId?: string | null;
   query?: string | null;
   type?: StudentActivityType | null;
 };

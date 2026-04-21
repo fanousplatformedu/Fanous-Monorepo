@@ -966,11 +966,11 @@ export type TProfileForm = {
   onSubmit: (values: TParentProfileFormValues) => void | Promise<void>;
 };
 
-type TSessionsList = NonNullable<
+export type TSessionsList = NonNullable<
   TAPI.ParentCounselingSessionsQuery["parentCounselingSessions"]
 >;
 
-type TSessionItem = TSessionsList["items"][number];
+export type TSessionItem = TSessionsList["items"][number];
 
 export type TCounselingSessionTable = {
   page: number;
@@ -1058,7 +1058,7 @@ type TParentResultList = NonNullable<
   TAPI.ParentChildResultsQuery["parentChildResults"]
 >;
 
-type TResultItem = TParentResultList["items"][number];
+export type TResultItem = TParentResultList["items"][number];
 
 type TCompareData = TAPI.CompareParentResultsQuery["compareParentResults"];
 
@@ -1124,6 +1124,7 @@ export type TResultSummaryCards = {
 type TResultList = NonNullable<
   TAPI.ParentChildResultsQuery["parentChildResults"]
 >;
+
 export type TDashboardParentResultItem = TResultList["items"][number];
 
 type TActivitiesList = NonNullable<
@@ -1157,4 +1158,35 @@ export type TActivitiesSummaryCard = {
   totalActivities: number;
   completedAssessments: number;
   submittedAssignments: number;
+};
+
+export type TOverviewSessionChart = {
+  data: Array<{
+    key: string;
+    label: string;
+    value: number;
+  }>;
+};
+
+export type TOverviewActivitiesChart = {
+  data: Array<{
+    key: string;
+    label: string;
+    value: number;
+  }>;
+};
+
+export type TOverviewDominantChart = {
+  data: Array<{
+    key: string;
+    label: string;
+    value: number;
+  }>;
+};
+
+export type TOverviewSummaryCards = {
+  totalResults: number;
+  totalChildren: number;
+  totalSessions: number;
+  totalActivities: number;
 };

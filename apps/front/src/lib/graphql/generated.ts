@@ -723,7 +723,7 @@ export type ListMyNotificationsInput = {
 };
 
 export type ListParentChildActivitiesInput = {
-  childId: Scalars['String']['input'];
+  childId?: InputMaybe<Scalars['String']['input']>;
   query?: InputMaybe<Scalars['String']['input']>;
   skip: Scalars['Int']['input'];
   take: Scalars['Int']['input'];
@@ -740,7 +740,7 @@ export type ListParentChildGradesInput = {
 };
 
 export type ListParentChildResultsInput = {
-  childId: Scalars['String']['input'];
+  childId?: InputMaybe<Scalars['String']['input']>;
   dominantIntelligence?: InputMaybe<ParentIntelligenceKey>;
   query?: InputMaybe<Scalars['String']['input']>;
   skip: Scalars['Int']['input'];

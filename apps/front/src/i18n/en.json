@@ -2111,6 +2111,61 @@
           "CAREER_MATCH_UPDATED": "Career Match Updated"
         }
       },
+      "overview": {
+        "page": {
+          "title": "Overview",
+          "description": "A complete snapshot of your children’s learning, activities, and counseling progress"
+        },
+        "common": {
+          "notAvailable": "Not available",
+          "emptyChart": "There is not enough data to render this chart yet.",
+          "noItems": "No recent items available."
+        },
+        "kpis": {
+          "children": {
+            "title": "Children",
+            "description": "Children linked to your account"
+          },
+          "results": {
+            "title": "Results",
+            "description": "Assessment results currently loaded"
+          },
+          "activities": {
+            "title": "Activities",
+            "description": "Recent child activity records"
+          },
+          "sessions": {
+            "title": "Sessions",
+            "description": "Counseling sessions currently loaded"
+          }
+        },
+        "charts": {
+          "dominant": {
+            "title": "Dominant Intelligence Distribution",
+            "description": "Distribution of dominant intelligences across loaded results"
+          },
+          "activities": {
+            "title": "Activity Type Distribution",
+            "description": "A breakdown of recent activities by type"
+          },
+          "sessions": {
+            "title": "Counseling Status Distribution",
+            "description": "A quick look at the current status of counseling sessions"
+          }
+        },
+        "latestResults": {
+          "title": "Latest Results",
+          "description": "Most recent assessment outcomes"
+        },
+        "latestActivities": {
+          "title": "Latest Activities",
+          "description": "Recent learning and school activity events"
+        },
+        "latestSessions": {
+          "title": "Latest Sessions",
+          "description": "Recent and upcoming counseling sessions"
+        }
+      },
       "nav": {
         "overview": "Overview",
         "children": "Children",
