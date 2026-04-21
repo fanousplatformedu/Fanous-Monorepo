@@ -687,6 +687,30 @@ export class ParentService {
                   mode: Prisma.QueryMode.insensitive,
                 },
               },
+              {
+                student: {
+                  fullName: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
+              {
+                student: {
+                  email: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
+              {
+                student: {
+                  mobile: {
+                    contains: query,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              },
             ],
           }
         : {}),
@@ -697,10 +721,43 @@ export class ParentService {
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         take,
         skip,
+        include: {
+          student: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              mobile: true,
+              avatarUrl: true,
+            },
+          },
+        },
       }),
       this.prismaService.studentActivity.count({ where }),
     ]);
-    return { items, total, take, skip };
+    return {
+      items: items.map((item) => ({
+        id: item.id,
+        studentId: item.studentId,
+        student: item.student
+          ? {
+              id: item.student.id,
+              fullName: item.student.fullName,
+              email: item.student.email,
+              mobile: item.student.mobile,
+              avatarUrl: item.student.avatarUrl,
+            }
+          : null,
+        type: item.type,
+        title: item.title,
+        metadata: item.metadata ?? null,
+        createdAt: item.createdAt,
+        description: item.description,
+      })),
+      total,
+      take,
+      skip,
+    };
   }
 
   async listCounselingSessions(args: T.TListParentCounselingSessionsArgs) {

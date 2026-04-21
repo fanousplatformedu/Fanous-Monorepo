@@ -33,3 +33,8 @@ export const childrenFiltersSchema = z.object({
 export const resultsFiltersSchema = z.object({
   childId: z.string(),
 });
+
+export const activitiesFiltersSchema = z.object({
+  childId: z.string(),
+  type: z.string(),
+});

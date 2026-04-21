@@ -181,6 +181,14 @@ query ParentChildActivities($input: ListParentChildActivitiesInput!) {
     total
     items {
       id
+      studentId
+      student {
+        id
+        email
+        mobile
+        fullName
+        avatarUrl
+      }
       type
       title
       metadata

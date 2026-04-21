@@ -2054,6 +2054,73 @@
           "LOGICAL_MATHEMATICAL": "منطقی-ریاضی"
         }
       },
+      "activities": {
+        "page": {
+          "title": "تایم‌لاین فعالیت‌ها",
+          "description": "فعالیت‌های آموزشی و مشاوره‌ای فرزندان خود را دنبال کنید"
+        },
+        "kpis": {
+          "total": {
+            "title": "کل فعالیت‌ها",
+            "description": "همه سوابق فعالیت بارگذاری‌شده"
+          },
+          "assessments": {
+            "title": "ارزیابی‌های تکمیل‌شده",
+            "description": "رویدادهای ارزیابی تکمیل‌شده"
+          },
+          "assignments": {
+            "title": "تکالیف ارسال‌شده",
+            "description": "فعالیت‌های مربوط به تکالیف ارسال‌شده"
+          },
+          "sessions": {
+            "title": "فعالیت‌های جلسه",
+            "description": "فعالیت‌های مرتبط با جلسات مشاوره"
+          }
+        },
+        "filtersCard": {
+          "title": "فیلتر فعالیت‌ها",
+          "description": "فعالیت‌ها را بر اساس فرزند یا نوع فعالیت محدود کنید"
+        },
+        "filters": {
+          "fields": {
+            "child": "فرزند",
+            "type": "نوع فعالیت"
+          },
+          "childOptions": {
+            "ALL": "همه فرزندان"
+          },
+          "typeOptions": {
+            "ALL": "همه انواع فعالیت"
+          }
+        },
+        "empty": {
+          "title": "فعالیتی پیدا نشد",
+          "description": "هیچ فعالیتی مطابق با فیلترهای فعلی شما پیدا نشد."
+        },
+        "table": {
+          "title": "تایم‌لاین فعالیت‌ها",
+          "description": "تاریخچه فعالیت‌های اخیر فرزندان خود را مرور کنید",
+          "columns": {
+            "child": "فرزند",
+            "type": "نوع",
+            "title": "عنوان",
+            "description": "توضیحات",
+            "createdAt": "تاریخ ایجاد"
+          }
+        },
+        "types": {
+          "SESSION_BOOKED": "جلسه رزرو شد",
+          "PROFILE_UPDATED": "پروفایل به‌روزرسانی شد",
+          "RESULT_PUBLISHED": "نتیجه منتشر شد",
+          "SESSION_REQUESTED": "درخواست جلسه ثبت شد",
+          "SESSION_COMPLETED": "جلسه انجام شد",
+          "ASSIGNMENT_STARTED": "تکلیف شروع شد",
+          "ASSIGNMENT_ASSIGNED": "تکلیف اختصاص داده شد",
+          "ASSIGNMENT_SUBMITTED": "تکلیف ارسال شد",
+          "ASSESSMENT_COMPLETED": "ارزیابی تکمیل شد",
+          "CAREER_MATCH_UPDATED": "تناسب شغلی به‌روزرسانی شد"
+        }
+      },
       "nav": {
         "overview": "نمای کلی",
         "children": "فرزندان",

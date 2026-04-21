@@ -2044,6 +2044,73 @@
           "LOGICAL_MATHEMATICAL": "Logical Mathematical"
         }
       },
+      "activities": {
+        "page": {
+          "title": "Activity Timeline",
+          "description": "Track your children’s learning and counseling related activities"
+        },
+        "kpis": {
+          "total": {
+            "title": "Total Activities",
+            "description": "All loaded activity records"
+          },
+          "assessments": {
+            "title": "Assessments Completed",
+            "description": "Completed assessment events"
+          },
+          "assignments": {
+            "title": "Assignments Submitted",
+            "description": "Submitted assignment related activities"
+          },
+          "sessions": {
+            "title": "Session Activities",
+            "description": "Counseling session related activities"
+          }
+        },
+        "filtersCard": {
+          "title": "Filter Activities",
+          "description": "Narrow activities by child or activity type"
+        },
+        "filters": {
+          "fields": {
+            "child": "Child",
+            "type": "Activity Type"
+          },
+          "childOptions": {
+            "ALL": "All Children"
+          },
+          "typeOptions": {
+            "ALL": "All Activity Types"
+          }
+        },
+        "empty": {
+          "title": "No activities found",
+          "description": "There are no activities matching your current filters."
+        },
+        "table": {
+          "title": "Activity Timeline",
+          "description": "Browse your children’s recent activity history",
+          "columns": {
+            "child": "Child",
+            "type": "Type",
+            "title": "Title",
+            "description": "Description",
+            "createdAt": "Created At"
+          }
+        },
+        "types": {
+          "SESSION_BOOKED": "Session Booked",
+          "PROFILE_UPDATED": "Profile Updated",
+          "RESULT_PUBLISHED": "Result Published",
+          "SESSION_REQUESTED": "Session Requested",
+          "SESSION_COMPLETED": "Session Completed",
+          "ASSIGNMENT_STARTED": "Assignment Started",
+          "ASSIGNMENT_ASSIGNED": "Assignment Assigned",
+          "ASSIGNMENT_SUBMITTED": "Assignment Submitted",
+          "ASSESSMENT_COMPLETED": "Assessment Completed",
+          "CAREER_MATCH_UPDATED": "Career Match Updated"
+        }
+      },
       "nav": {
         "overview": "Overview",
         "children": "Children",

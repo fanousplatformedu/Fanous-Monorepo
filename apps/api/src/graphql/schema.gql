@@ -1295,6 +1295,8 @@ type StudentActivity {
   description: String
   id: String!
   metadata: JSON
+  student: StudentActivityStudent
+  studentId: String!
   title: String!
   type: StudentActivityType!
 }
@@ -1304,6 +1306,14 @@ type StudentActivityList {
   skip: Int!
   take: Int!
   total: Int!
+}
+
+type StudentActivityStudent {
+  avatarUrl: String
+  email: String
+  fullName: String
+  id: String!
+  mobile: String
 }
 
 enum StudentActivityType {

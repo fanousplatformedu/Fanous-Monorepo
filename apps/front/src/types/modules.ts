@@ -1125,3 +1125,36 @@ type TResultList = NonNullable<
   TAPI.ParentChildResultsQuery["parentChildResults"]
 >;
 export type TDashboardParentResultItem = TResultList["items"][number];
+
+type TActivitiesList = NonNullable<
+  TAPI.ParentChildActivitiesQuery["parentChildActivities"]
+>;
+
+export type TActivityItem = TActivitiesList["items"][number];
+
+export type TActivitiesTable = {
+  page: number;
+  total: number;
+  isFetching?: boolean;
+  items: TActivityItem[];
+  onPageChange: (page: number) => void;
+};
+
+export type TParentActivitiesFilterValues = {
+  type: string | "ALL";
+  childId: string | "ALL";
+};
+
+export type TActivitiesFilters = {
+  onReset: () => void;
+  value: TParentActivitiesFilterValues;
+  childOptions: Array<{ value: string; label: string }>;
+  onApply: (values: TParentActivitiesFilterValues) => void;
+};
+
+export type TActivitiesSummaryCard = {
+  sessionsCount: number;
+  totalActivities: number;
+  completedAssessments: number;
+  submittedAssignments: number;
+};
