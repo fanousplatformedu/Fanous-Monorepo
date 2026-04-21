@@ -2121,6 +2121,78 @@
           "CAREER_MATCH_UPDATED": "تناسب شغلی به‌روزرسانی شد"
         }
       },
+      "resources": {
+        "page": {
+          "title": "منابع والدین",
+          "description": "منابع مفید برای حمایت از رشد و یادگیری فرزند خود را بررسی کنید"
+        },
+        "common": {
+          "notAvailable": "موجود نیست"
+        },
+        "kpis": {
+          "total": {
+            "title": "کل منابع",
+            "description": "همه منابعی که در حال حاضر بارگذاری شده‌اند"
+          },
+          "wellbeing": {
+            "title": "سلامت و wellbeing",
+            "description": "منابع مربوط به سلامت روانی و حمایت عاطفی"
+          },
+          "career": {
+            "title": "راهنمای شغلی",
+            "description": "منابع مربوط به آگاهی و راهنمایی شغلی"
+          },
+          "support": {
+            "title": "منابع حمایتی",
+            "description": "منابع مربوط به حمایت تحصیلی، نوجوانان و ارتباط"
+          }
+        },
+        "filtersCard": {
+          "title": "فیلتر منابع",
+          "description": "مناسب‌ترین منابع را بر اساس کلمه کلیدی یا دسته‌بندی پیدا کنید"
+        },
+        "filters": {
+          "fields": {
+            "query": "جستجو",
+            "category": "دسته‌بندی"
+          },
+          "categoryOptions": {
+            "ALL": "همه دسته‌بندی‌ها"
+          }
+        },
+        "categories": {
+          "WELLBEING": "سلامت و wellbeing",
+          "CAREER_GUIDE": "راهنمای شغلی",
+          "SUPPORT_TEEN": "حمایت از نوجوان",
+          "STUDY_SUPPORT": "حمایت تحصیلی",
+          "COMMUNICATION": "ارتباط"
+        },
+        "empty": {
+          "title": "منبعی پیدا نشد",
+          "description": "هیچ منبعی مطابق با فیلترهای فعلی شما پیدا نشد."
+        },
+        "table": {
+          "title": "کتابخانه منابع",
+          "description": "منابع موجود برای والدین را مرور و بررسی کنید",
+          "columns": {
+            "title": "عنوان",
+            "category": "دسته‌بندی",
+            "summary": "خلاصه",
+            "createdAt": "تاریخ ایجاد",
+            "actions": "عملیات"
+          },
+          "viewAction": "مشاهده جزئیات"
+        },
+        "detailDialog": {
+          "title": "جزئیات منبع",
+          "description": "جزئیات کامل منبع انتخاب‌شده را بررسی کنید",
+          "resourceTitle": "عنوان منبع",
+          "slug": "اسلاگ",
+          "createdAt": "تاریخ ایجاد",
+          "summary": "خلاصه",
+          "content": "محتوا"
+        }
+      },
       "overview": {
         "page": {
           "title": "نمای کلی",

@@ -2111,6 +2111,78 @@
           "CAREER_MATCH_UPDATED": "Career Match Updated"
         }
       },
+      "resources": {
+        "page": {
+          "title": "Parent Resources",
+          "description": "Explore helpful resources for supporting your child’s growth and learning"
+        },
+        "common": {
+          "notAvailable": "Not available"
+        },
+        "kpis": {
+          "total": {
+            "title": "Total Resources",
+            "description": "All resources currently loaded"
+          },
+          "wellbeing": {
+            "title": "Wellbeing",
+            "description": "Resources focused on wellbeing and emotional support"
+          },
+          "career": {
+            "title": "Career Guidance",
+            "description": "Resources related to career awareness and guidance"
+          },
+          "support": {
+            "title": "Support Resources",
+            "description": "Resources for study support, teens, and communication"
+          }
+        },
+        "filtersCard": {
+          "title": "Filter Resources",
+          "description": "Find the most relevant resources by keyword or category"
+        },
+        "filters": {
+          "fields": {
+            "query": "Search",
+            "category": "Category"
+          },
+          "categoryOptions": {
+            "ALL": "All Categories"
+          }
+        },
+        "categories": {
+          "WELLBEING": "Wellbeing",
+          "CAREER_GUIDE": "Career Guide",
+          "SUPPORT_TEEN": "Support Teen",
+          "STUDY_SUPPORT": "Study Support",
+          "COMMUNICATION": "Communication"
+        },
+        "empty": {
+          "title": "No resources found",
+          "description": "There are no parent resources matching your current filters."
+        },
+        "table": {
+          "title": "Resources Library",
+          "description": "Browse and review available parent resources",
+          "columns": {
+            "title": "Title",
+            "category": "Category",
+            "summary": "Summary",
+            "createdAt": "Created At",
+            "actions": "Actions"
+          },
+          "viewAction": "View Details"
+        },
+        "detailDialog": {
+          "title": "Resource Details",
+          "description": "Review the full details of the selected resource",
+          "resourceTitle": "Resource Title",
+          "slug": "Slug",
+          "createdAt": "Created At",
+          "summary": "Summary",
+          "content": "Content"
+        }
+      },
       "overview": {
         "page": {
           "title": "Overview",

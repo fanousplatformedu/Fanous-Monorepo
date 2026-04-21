@@ -1190,3 +1190,41 @@ export type TOverviewSummaryCards = {
   totalSessions: number;
   totalActivities: number;
 };
+
+export type TResourcesSummaryCards = {
+  careerCount: number;
+  supportCount: number;
+  totalResources: number;
+  wellbeingCount: number;
+};
+
+export type TParentResourcesFilterValues = {
+  query: string;
+  category: string | "ALL";
+};
+
+export type TResourcesFilters = {
+  onReset: () => void;
+  value: TParentResourcesFilterValues;
+  onApply: (values: TParentResourcesFilterValues) => void;
+};
+
+export type TResourcesList = NonNullable<
+  TAPI.ParentResourcesQuery["parentResources"]
+>;
+export type TResourceItem = TResourcesList["items"][number];
+
+export type TResourcesTable = {
+  page: number;
+  total: number;
+  isFetching?: boolean;
+  items: TResourceItem[];
+  onPageChange: (page: number) => void;
+  onOpenDetail: (resource: TResourceItem) => void;
+};
+
+export type TResourceDetailDialog = {
+  open: boolean;
+  resource: TResourceItem | null;
+  onOpenChange: (open: boolean) => void;
+};

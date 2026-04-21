@@ -38,3 +38,8 @@ export const activitiesFiltersSchema = z.object({
   childId: z.string(),
   type: z.string(),
 });
+
+export const resourcesFiltersSchema = z.object({
+  query: z.string(),
+  category: z.string(),
+});
