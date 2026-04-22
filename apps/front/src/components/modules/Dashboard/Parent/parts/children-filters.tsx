@@ -1,7 +1,7 @@
 "use client";
 
 import { TChildrenFilter, TParentChildrenFilterValues } from "@/types/modules";
-import { childrenFiltersSchema } from "@/lib/validation/parent";
+import { childrenFiltersSchema } from "@/lib/validation/parent-schemas";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { zodResolver } from "@hookform/resolvers/zod";

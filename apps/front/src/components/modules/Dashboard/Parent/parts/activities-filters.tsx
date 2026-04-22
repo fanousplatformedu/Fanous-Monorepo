@@ -1,7 +1,7 @@
 "use client";
 
 import { TParentActivitiesFilterValues } from "@/types/modules";
-import { activitiesFiltersSchema } from "@/lib/validation/parent";
+import { activitiesFiltersSchema } from "@/lib/validation/parent-schemas";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { TActivitiesFilters } from "@/types/modules";
 import { zodResolver } from "@hookform/resolvers/zod";

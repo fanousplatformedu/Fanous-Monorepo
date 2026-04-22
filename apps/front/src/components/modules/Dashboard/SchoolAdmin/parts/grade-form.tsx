@@ -1,6 +1,9 @@
 "use client";
 
-import { gradeSchema, TGradeFormValues } from "@/lib/validation/school-admin";
+import {
+  gradeSchema,
+  TGradeFormValues,
+} from "@/lib/validation/school-admin-schemas";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { TGradeFormProps } from "@/types/modules";
 import { zodResolver } from "@hookform/resolvers/zod";

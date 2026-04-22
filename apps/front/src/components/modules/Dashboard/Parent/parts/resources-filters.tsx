@@ -1,7 +1,7 @@
 "use client";
 
 import { TParentResourcesFilterValues } from "@/types/modules";
-import { resourcesFiltersSchema } from "@/lib/validation/parent";
+import { resourcesFiltersSchema } from "@/lib/validation/parent-schemas";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { TResourcesFilters } from "@/types/modules";

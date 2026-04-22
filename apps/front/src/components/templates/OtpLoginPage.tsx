@@ -1,6 +1,9 @@
 "use client";
 
-import { requestOtpSchema, verifyOtpSchema } from "@/lib/validation/auth";
+import {
+  requestOtpSchema,
+  verifyOtpSchema,
+} from "@/lib/validation/auth-schemas";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { usePublicSchoolsQuery } from "@/lib/redux/api";
 import { getRoleDashboardPath } from "@/utils/auth-role-helper";

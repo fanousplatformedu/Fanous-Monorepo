@@ -1,7 +1,7 @@
 "use client";
 
 import { TParentCounselingFilterValues } from "@/types/modules";
-import { counselingFiltersSchema } from "@/lib/validation/parent";
+import { counselingFiltersSchema } from "@/lib/validation/parent-schemas";
 import { TParentCounselingFilter } from "@/types/modules";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";

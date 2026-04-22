@@ -58,3 +58,21 @@ export const gradeEditSchema = z.object({
 });
 
 export type TGradeEditValues = z.infer<typeof gradeEditSchema>;
+
+export const assignAssignmentsSchema = z.object({
+  counselorId: z.string().min(1),
+  studentIds: z.array(z.string()).min(1),
+});
+
+export type TAssignAssignmentsValues = z.infer<typeof assignAssignmentsSchema>;
+
+export const CounselorAssignmentsFilterSchema = z.object({
+  query: z.string(),
+  counselorId: z.string(),
+  studentId: z.string(),
+  status: z.string(),
+});
+
+export type TCounselorAssignmentsFilterValues = z.infer<
+  typeof CounselorAssignmentsFilterSchema
+>;

@@ -50,6 +50,10 @@ type AdminProfileResult {
   message: String!
 }
 
+input ArchiveCounselorStudentAssignmentInput {
+  assignmentId: String!
+}
+
 type AssessmentQuestion {
   code: Float!
   id: String!
@@ -136,6 +140,12 @@ type AssessmentStudentResultList {
 input AssignAssignmentInput {
   assignmentId: String!
   studentIds: [String!]
+}
+
+input AssignStudentsToCounselorInput {
+  counselorId: String!
+  schoolId: String!
+  studentIds: [String!]!
 }
 
 input AssignmentDraftAnswerInput {
@@ -418,6 +428,31 @@ type CounselorSessionList {
   total: Int!
 }
 
+type CounselorStudentAssignment {
+  assignedAt: DateTime!
+  counselor: SchoolCounselor!
+  counselorId: String!
+  id: String!
+  schoolId: String!
+  status: CounselorStudentLinkStatus!
+  student: SchoolStudentAssignmentCandidate!
+  studentId: String!
+  updatedAt: DateTime!
+}
+
+type CounselorStudentAssignmentList {
+  items: [CounselorStudentAssignment!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type CounselorStudentAssignmentResult {
+  affectedCount: Int!
+  message: String!
+  success: Boolean!
+}
+
 type CounselorStudentCard {
   assignedAt: DateTime!
   email: String
@@ -630,6 +665,16 @@ input ListClassroomsInput {
   take: Int! = 20
 }
 
+input ListCounselorStudentAssignmentsInput {
+  counselorId: String
+  query: String
+  schoolId: String!
+  skip: Int!
+  status: CounselorStudentLinkStatus
+  studentId: String
+  take: Int!
+}
+
 input ListEnrollmentsByClassroomInput {
   classroomId: String!
   schoolId: String!
@@ -726,12 +771,26 @@ input ListSchoolAdminsInput {
   take: Int! = 20
 }
 
+input ListSchoolCounselors {
+  query: String
+  schoolId: String!
+  skip: Int!
+  take: Int!
+}
+
 input ListSchoolMembersInput {
   query: String
   role: String
   skip: Int! = 0
   status: String
   take: Int! = 20
+}
+
+input ListSchoolStudentsForCounselorAssignment {
+  query: String
+  schoolId: String!
+  skip: Int!
+  take: Int!
 }
 
 input ListSchoolsInput {
@@ -756,8 +815,10 @@ input MarkNotificationReadInput {
 type Mutation {
   adminLogin(input: AdminLoginInput!): AuthPayload!
   archiveClassroom(id: String!): Classroom!
+  archiveCounselorStudentAssignment(input: ArchiveCounselorStudentAssignmentInput!): CounselorStudentAssignmentResult!
   archiveGrade(id: String!): Grade!
   assignAssignmentToStudents(input: AssignAssignmentInput!): String!
+  assignStudentsToCounselor(input: AssignStudentsToCounselorInput!): CounselorStudentAssignmentResult!
   cancelCounselingSession(input: CancelCounselingSessionInput!): NotificationStudentResult!
   changeAdminPassword(input: ChangeAdminPasswordInput!): PasswordResult!
   closeEnrollment(input: CloseEnrollmentInput!): Enrollment!
@@ -782,6 +843,7 @@ type Mutation {
   requestOtp(input: RequestOtpInput!): OtpResponse!
   resetAdminPassword(input: ResetAdminPasswordInput!): PasswordResult!
   restoreClassroom(id: String!): Classroom!
+  restoreCounselorStudentAssignment(input: RestoreCounselorStudentAssignmentInput!): CounselorStudentAssignmentResult!
   restoreGrade(id: String!): Grade!
   reviewAccessRequest(input: ReviewAccessRequestInput!): ReviewResult!
   reviewStudentAssessment(input: ReviewStudentAssessmentInput!): CounselorReviewResult!
@@ -1092,6 +1154,7 @@ type Query {
   counselorAssignments(input: CounselorAssignmentsInput!): CounselorAssignmentList!
   counselorDashboardSummary: CounselorDashboardSummary!
   counselorReviewDetail(reviewId: String!): CounselorReviewDetail!
+  counselorStudentAssignments(input: ListCounselorStudentAssignmentsInput!): CounselorStudentAssignmentList!
   counselorStudentDetail(studentId: String!): CounselorStudentDetail!
   enrollmentsByClassroom(input: ListEnrollmentsByClassroomInput!): EnrollmentList!
   grades(input: ListGradesInput!): GradeList!
@@ -1118,7 +1181,9 @@ type Query {
   schoolAdmins(input: ListSchoolAdminsInput!): SchoolAdminList!
   schoolAssessmentSummary(input: SchoolAssessmentSummaryInput): SchoolAssessmentSummary!
   schoolById(schoolId: String!): School!
+  schoolCounselors(input: ListSchoolCounselors!): SchoolCounselorList!
   schoolMembers(input: ListSchoolMembersInput!): UserList!
+  schoolStudentsForCounselorAssignment(input: ListSchoolStudentsForCounselorAssignment!): SchoolStudentAssignmentCandidateList!
   schools(input: ListSchoolsInput!): SchoolList!
   studentAssessmentQueue(input: StudentAssessmentQueueInput!): CounselorAssessmentQueueList!
   studentDashboardSummary: StudentDashboardSummary!
@@ -1146,6 +1211,10 @@ input RequestOtpInput {
 
 input ResetAdminPasswordInput {
   adminUserId: String!
+}
+
+input RestoreCounselorStudentAssignmentInput {
+  assignmentId: String!
 }
 
 type ResultCompareItem {
@@ -1260,8 +1329,40 @@ type SchoolAssignmentList {
   total: Int!
 }
 
+type SchoolCounselor {
+  avatarUrl: String
+  email: String
+  fullName: String
+  id: String!
+  mobile: String
+  status: UserStatus!
+}
+
+type SchoolCounselorList {
+  items: [SchoolCounselor!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
 type SchoolList {
   items: [School!]!
+  skip: Int!
+  take: Int!
+  total: Int!
+}
+
+type SchoolStudentAssignmentCandidate {
+  avatarUrl: String
+  email: String
+  fullName: String
+  id: String!
+  mobile: String
+  status: UserStatus!
+}
+
+type SchoolStudentAssignmentCandidateList {
+  items: [SchoolStudentAssignmentCandidate!]!
   skip: Int!
   take: Int!
   total: Int!

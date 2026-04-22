@@ -1,16 +1,11 @@
-import {
-  AccessRequestRole,
-  AccessRequestStatus,
-  AuditAction,
-  Prisma,
-  Role,
-} from "@prisma/client";
+import { AccessRequestRole, AuditAction, Prisma, Role } from "@prisma/client";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { SchoolStatus, UserStatus } from "@prisma/client";
 import { AccessRequestErrorCode } from "@accessRequest/enums/access-request-error-code.enum";
 import { AccessRequestMessage } from "@accessRequest/enums/access-request-message.enum";
 import { NotificationTemplate } from "@notif/enums/notif-template.enum";
+import { AccessRequestStatus } from "@prisma/client";
 import { NotificationService } from "@notif/services/notif.service";
 import { NotificationChannel } from "@notif/enums/notif-channel.enum";
 import { PrismaService } from "@prisma/prisma.service";

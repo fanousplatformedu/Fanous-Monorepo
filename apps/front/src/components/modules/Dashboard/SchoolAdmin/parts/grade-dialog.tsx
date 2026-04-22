@@ -3,8 +3,8 @@
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
 import { TGradeEditDialogProps } from "@/types/modules";
 import { FloatingInputField } from "@elements/floating-input-field";
-import { TGradeEditValues } from "@/lib/validation/school-admin";
-import { gradeEditSchema } from "@/lib/validation/school-admin";
+import { TGradeEditValues } from "@/lib/validation/school-admin-schemas";
+import { gradeEditSchema } from "@/lib/validation/school-admin-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useI18n } from "@/hooks/useI18n";

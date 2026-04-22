@@ -1,8 +1,8 @@
 "use client";
 
-import { TParentCounselingrequestValues } from "@/lib/validation/parent";
+import { TParentCounselingrequestValues } from "@/lib/validation/parent-schemas";
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
-import { requestSessionSchema } from "@/lib/validation/parent";
+import { requestSessionSchema } from "@/lib/validation/parent-schemas";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { TCounselingRequest } from "@/types/modules";

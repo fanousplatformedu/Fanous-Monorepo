@@ -63,7 +63,9 @@ export const getRoleBadgeTone = (role?: string) => {
     case "SCHOOL_ADMIN":
       return "green";
     case "STUDENT":
+      return "amber";
     case "PARENT":
+      return "amber";
     case "COUNSELOR":
       return "amber";
     default:

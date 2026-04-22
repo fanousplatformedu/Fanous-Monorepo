@@ -3,7 +3,7 @@
 import { useSubmitAccessRequestMutation } from "@/lib/redux/api";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { usePublicSchoolsQuery } from "@/lib/redux/api/endpoints/public.api";
-import { accessRequestSchema } from "@/lib/validation/auth";
+import { accessRequestSchema } from "@/lib/validation/auth-schemas";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { zodResolver } from "@hookform/resolvers/zod";

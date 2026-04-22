@@ -1,7 +1,7 @@
 "use client";
 
-import { TParentProfileFormValues } from "@/lib/validation/parent";
-import { parentProfileSchema } from "@/lib/validation/parent";
+import { TParentProfileFormValues } from "@/lib/validation/parent-schemas";
+import { parentProfileSchema } from "@/lib/validation/parent-schemas";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { TProfileForm } from "@/types/modules";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -8,13 +8,19 @@ export enum SchoolGqlInputNames {
   EnrollStudentInput = "EnrollStudentInput",
   SetAdminStatusInput = "SetAdminStatusInput",
   ListClassroomsInput = "ListClassroomsInput",
+  ListSchoolCounselors = "ListSchoolCounselors",
   SetSchoolStatusInput = "SetSchoolStatusInput",
   CloseEnrollmentInput = "CloseEnrollmentInput",
   UpdateClassroomInput = "UpdateClassroomInput",
   CreateClassroomInput = "CreateClassroomInput",
   ListSchoolAdminsInput = "ListSchoolAdminsInput",
   CreateSchoolAdminInput = "CreateSchoolAdminInput",
+  AssignStudentsToCounselorInput = "AssignStudentsToCounselorInput",
   ListEnrollmentsByClassroomInput = "ListEnrollmentsByClassroomInput",
+  ListCounselorStudentAssignmentsInput = "ListCounselorStudentAssignmentsInput",
+  RestoreCounselorStudentAssignmentInput = "RestoreCounselorStudentAssignmentInput",
+  ArchiveCounselorStudentAssignmentInput = "ArchiveCounselorStudentAssignmentInput",
+  ListSchoolStudentsForCounselorAssignment = "ListSchoolStudentsForCounselorAssignment",
 }
 
 export enum SchoolGqlObjectNames {
@@ -29,8 +35,15 @@ export enum SchoolGqlObjectNames {
   ClassroomList = "ClassroomList",
   EnrollmentList = "EnrollmentList",
   SchoolAdminList = "SchoolAdminList",
+  SchoolCounselor = "SchoolCounselor",
   PublicSchoolList = "PublicSchoolList",
+  SchoolCounselorList = "SchoolCounselorList",
   CreateSchoolAdminResult = "CreateSchoolAdminResult",
+  CounselorStudentAssignment = "CounselorStudentAssignment",
+  CounselorStudentAssignmentList = "CounselorStudentAssignmentList",
+  CounselorStudentAssignmentResult = "CounselorStudentAssignmentResult",
+  SchoolStudentAssignmentCandidate = "SchoolStudentAssignmentCandidate",
+  SchoolStudentAssignmentCandidateList = "SchoolStudentAssignmentCandidateList",
 }
 
 export enum SchoolGqlQueryNames {

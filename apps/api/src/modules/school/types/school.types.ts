@@ -1,4 +1,5 @@
 import { Role, SchoolStatus, UserStatus } from "@prisma/client";
+import { CounselorStudentLinkStatus } from "@prisma/client";
 
 export type TActor = { id: string; role: Role; schoolId: string | null };
 
@@ -29,9 +30,9 @@ export type TSetSchoolStatusArgs = TRequestMeta & {
 };
 
 export type TListSchoolsArgs = {
-  actor: TActor;
   take: number;
   skip: number;
+  actor: TActor;
   query?: string | null;
   status?: SchoolStatus | null;
 };
@@ -53,6 +54,56 @@ export type TListSchoolAdminsArgs = {
 
 export type TSetAdminStatusArgs = TRequestMeta & {
   actor: TActor;
-  adminUserId: string;
   status: UserStatus;
+  adminUserId: string;
+};
+
+export type TManagedSchoolActor = {
+  id: string;
+  role: Role;
+  schoolId: string | null;
+};
+
+export type TListSchoolCounselorsArgs = {
+  take: number;
+  skip: number;
+  schoolId: string;
+  query?: string | null;
+  actor: TManagedSchoolActor;
+};
+
+export type TListSchoolStudentsForAssignmentArgs = {
+  take: number;
+  skip: number;
+  schoolId: string;
+  query?: string | null;
+  actor: TManagedSchoolActor;
+};
+
+export type TAssignStudentsToCounselorArgs = {
+  schoolId: string;
+  counselorId: string;
+  studentIds: string[];
+  actor: TManagedSchoolActor;
+};
+
+export type TArchiveCounselorStudentAssignmentArgs = {
+  assignmentId: string;
+  actor: TManagedSchoolActor;
+};
+
+export type TRestoreCounselorStudentAssignmentArgs = {
+  assignmentId: string;
+  actor: TManagedSchoolActor;
+};
+
+export type TListCounselorStudentAssignmentsArgs = {
+  take: number;
+  skip: number;
+  schoolId: string;
+  query?: string | null;
+  studentId?: string | null;
+  actor: TManagedSchoolActor;
+  counselorId?: string | null;
+  status?: CounselorStudentLinkStatus | null;
 };

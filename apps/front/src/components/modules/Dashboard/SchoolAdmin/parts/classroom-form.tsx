@@ -1,6 +1,9 @@
 "use client";
 
-import { classroomSchema, TClassroomForm } from "@/lib/validation/school-admin";
+import {
+  classroomSchema,
+  TClassroomForm,
+} from "@/lib/validation/school-admin-schemas";
 import { TClassroomCreateFormProps } from "@/types/modules";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";

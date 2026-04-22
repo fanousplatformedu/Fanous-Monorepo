@@ -1,11 +1,14 @@
 "use client";
 
-import { CreateValues, UpdateValues } from "@/lib/validation/super-admin";
+import {
+  CreateValues,
+  UpdateValues,
+} from "@/lib/validation/super-admin-schemas";
 import { useUpdateSchoolMutation } from "@/lib/redux/api";
 import { useCreateSchoolMutation } from "@/lib/redux/api";
 import { TSchoolFormDialogProps } from "@/types/elements";
-import { updateSchoolSchema } from "@/lib/validation/super-admin";
-import { createSchoolSchema } from "@/lib/validation/super-admin";
+import { updateSchoolSchema } from "@/lib/validation/super-admin-schemas";
+import { createSchoolSchema } from "@/lib/validation/super-admin-schemas";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { getApiErrorMessage } from "@/utils/function-helper";
 import { zodResolver } from "@hookform/resolvers/zod";

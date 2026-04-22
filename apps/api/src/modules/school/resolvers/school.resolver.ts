@@ -1,6 +1,16 @@
+import { ListSchoolStudentsForCounselorAssignmentInput } from "@school/dtos/list-school-students-for-assignment.input";
+import { SchoolStudentAssignmentCandidateListEntity } from "@school/entities/school-student-assignment-candidate-list.entity";
+import { RestoreCounselorStudentAssignmentInput } from "@school/dtos/restore-counselor-student-assignment.input";
+import { CounselorStudentAssignmentResultEntity } from "@school/entities/counselor-student-assignment-result";
+import { ArchiveCounselorStudentAssignmentInput } from "@school/dtos/archive-counselor-student-assignmentinput";
+import { ListCounselorStudentAssignmentsInput } from "@school/dtos/list-counselor-student-assignment";
+import { CounselorStudentAssignmentListEntity } from "@school/entities/counselor-student-assignment-list";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { ListEnrollmentsByClassroomInput } from "@school/dtos/list-enrolls-by-classname";
+import { AssignStudentsToCounselorInput } from "@school/dtos/assign-student-to-counselor";
 import { CreateSchoolAdminResultEntity } from "@school/entities/create-school-admin-result.entity";
+import { ListSchoolCounselorsInput } from "@school/dtos/list-school-counselors.input";
+import { SchoolCounselorListEntity } from "@school/entities/school-counselor-list.entity";
 import { SchoolGqlMutationNames } from "@school/enums/gql-names.enum";
 import { CreateSchoolAdminInput } from "@school/dtos/create-school-admin.input";
 import { PublicSchoolListEntity } from "@school/entities/public-school-list.entity";
@@ -330,6 +340,106 @@ export class SchoolResolver {
       input,
     );
   }
+
+  // ============= Student to Counselor ===============
+  @Query(() => SchoolCounselorListEntity, {
+    name: "schoolCounselors",
+  })
+  @Roles(Role.SUPER_ADMIN, Role.SCHOOL_ADMIN)
+  schoolCounselors(
+    @CurrentUser() user: { id: string; role: Role; schoolId: string | null },
+    @Args("input") input: ListSchoolCounselorsInput,
+  ) {
+    return this.schoolsService.listSchoolCounselors({
+      actor: user,
+      schoolId: input.schoolId,
+      take: input.take,
+      skip: input.skip,
+      query: input.query ?? null,
+    });
+  }
+
+  @Query(() => SchoolStudentAssignmentCandidateListEntity, {
+    name: "schoolStudentsForCounselorAssignment",
+  })
+  @Roles(Role.SUPER_ADMIN, Role.SCHOOL_ADMIN)
+  schoolStudentsForCounselorAssignment(
+    @CurrentUser() user: { id: string; role: Role; schoolId: string | null },
+    @Args("input") input: ListSchoolStudentsForCounselorAssignmentInput,
+  ) {
+    return this.schoolsService.listSchoolStudentsForCounselorAssignment({
+      actor: user,
+      schoolId: input.schoolId,
+      take: input.take,
+      skip: input.skip,
+      query: input.query ?? null,
+    });
+  }
+
+  @Query(() => CounselorStudentAssignmentListEntity, {
+    name: "counselorStudentAssignments",
+  })
+  @Roles(Role.SUPER_ADMIN, Role.SCHOOL_ADMIN)
+  counselorStudentAssignments(
+    @CurrentUser() user: { id: string; role: Role; schoolId: string | null },
+    @Args("input") input: ListCounselorStudentAssignmentsInput,
+  ) {
+    return this.schoolsService.listCounselorStudentAssignments({
+      actor: user,
+      schoolId: input.schoolId,
+      take: input.take,
+      skip: input.skip,
+      query: input.query ?? null,
+      counselorId: input.counselorId ?? null,
+      studentId: input.studentId ?? null,
+      status: input.status ?? null,
+    });
+  }
+
+  @Mutation(() => CounselorStudentAssignmentResultEntity, {
+    name: "assignStudentsToCounselor",
+  })
+  @Roles(Role.SUPER_ADMIN, Role.SCHOOL_ADMIN)
+  assignStudentsToCounselor(
+    @CurrentUser() user: { id: string; role: Role; schoolId: string | null },
+    @Args("input") input: AssignStudentsToCounselorInput,
+  ) {
+    return this.schoolsService.assignStudentsToCounselor({
+      actor: user,
+      schoolId: input.schoolId,
+      counselorId: input.counselorId,
+      studentIds: input.studentIds,
+    });
+  }
+
+  @Mutation(() => CounselorStudentAssignmentResultEntity, {
+    name: "archiveCounselorStudentAssignment",
+  })
+  @Roles(Role.SUPER_ADMIN, Role.SCHOOL_ADMIN)
+  archiveCounselorStudentAssignment(
+    @CurrentUser() user: { id: string; role: Role; schoolId: string | null },
+    @Args("input") input: ArchiveCounselorStudentAssignmentInput,
+  ) {
+    return this.schoolsService.archiveCounselorStudentAssignment({
+      actor: user,
+      assignmentId: input.assignmentId,
+    });
+  }
+
+  @Mutation(() => CounselorStudentAssignmentResultEntity, {
+    name: "restoreCounselorStudentAssignment",
+  })
+  @Roles(Role.SUPER_ADMIN, Role.SCHOOL_ADMIN)
+  restoreCounselorStudentAssignment(
+    @CurrentUser() user: { id: string; role: Role; schoolId: string | null },
+    @Args("input") input: RestoreCounselorStudentAssignmentInput,
+  ) {
+    return this.schoolsService.restoreCounselorStudentAssignment({
+      actor: user,
+      assignmentId: input.assignmentId,
+    });
+  }
+
   // ============= Public ===============
   @Public()
   @Query(() => PublicSchoolListEntity, {

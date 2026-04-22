@@ -1,7 +1,7 @@
 "use client";
 
 import { TParentResultsFilterValues } from "@/types/modules";
-import { resultsFiltersSchema } from "@/lib/validation/parent";
+import { resultsFiltersSchema } from "@/lib/validation/parent-schemas";
 import { TParentResultFilters } from "@/types/modules";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -467,6 +467,127 @@ export const schoolAdminApi = baseApi.injectEndpoints({
         response.schoolAssessmentSummary,
       providesTags: [{ type: "Reports", id: "SUMMARY" }],
     }),
+
+    schoolCounselors: builder.query<
+      TAPI.SchoolCounselorsQuery["schoolCounselors"],
+      TAPI.ListSchoolCounselors
+    >({
+      query: (input) => ({
+        document: API.SchoolCounselorsDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.SchoolCounselorsQuery) =>
+        response.schoolCounselors,
+      providesTags: (result) =>
+        result
+          ? [
+              { type: "CounselorAssignments", id: "COUNSELORS_LIST" },
+              ...result.items.map((item) => ({
+                type: "CounselorAssignments" as const,
+                id: `COUNSELOR_${item.id}`,
+              })),
+            ]
+          : [{ type: "CounselorAssignments", id: "COUNSELORS_LIST" }],
+    }),
+
+    schoolStudentsForCounselorAssignment: builder.query<
+      TAPI.SchoolStudentsForCounselorAssignmentQuery["schoolStudentsForCounselorAssignment"],
+      TAPI.ListSchoolStudentsForCounselorAssignment
+    >({
+      query: (input) => ({
+        document: API.SchoolStudentsForCounselorAssignmentDocument,
+        variables: { input },
+      }),
+      transformResponse: (
+        response: TAPI.SchoolStudentsForCounselorAssignmentQuery,
+      ) => response.schoolStudentsForCounselorAssignment,
+      providesTags: (result) =>
+        result
+          ? [
+              { type: "CounselorAssignments", id: "STUDENTS_ASSIGNMENT_LIST" },
+              ...result.items.map((item) => ({
+                type: "CounselorAssignments" as const,
+                id: `STUDENT_${item.id}`,
+              })),
+            ]
+          : [{ type: "CounselorAssignments", id: "STUDENTS_ASSIGNMENT_LIST" }],
+    }),
+
+    counselorStudentAssignments: builder.query<
+      TAPI.CounselorStudentAssignmentsQuery["counselorStudentAssignments"],
+      TAPI.ListCounselorStudentAssignmentsInput
+    >({
+      query: (input) => ({
+        document: API.CounselorStudentAssignmentsDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.CounselorStudentAssignmentsQuery) =>
+        response.counselorStudentAssignments,
+      providesTags: (result) =>
+        result
+          ? [
+              { type: "CounselorAssignments", id: LIST_ID },
+              ...result.items.map((item) => ({
+                type: "CounselorAssignments" as const,
+                id: item.id,
+              })),
+            ]
+          : [{ type: "CounselorAssignments", id: LIST_ID }],
+    }),
+
+    assignStudentsToCounselor: builder.mutation<
+      TAPI.AssignStudentsToCounselorMutation["assignStudentsToCounselor"],
+      TAPI.AssignStudentsToCounselorInput
+    >({
+      query: (input) => ({
+        document: API.AssignStudentsToCounselorDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.AssignStudentsToCounselorMutation) =>
+        response.assignStudentsToCounselor,
+      invalidatesTags: [
+        { type: "CounselorAssignments", id: LIST_ID },
+        { type: "CounselorAssignments", id: "COUNSELORS_LIST" },
+        { type: "CounselorAssignments", id: "STUDENTS_ASSIGNMENT_LIST" },
+        { type: "AuditLogs", id: LIST_ID },
+      ],
+    }),
+
+    archiveCounselorStudentAssignment: builder.mutation<
+      TAPI.ArchiveCounselorStudentAssignmentMutation["archiveCounselorStudentAssignment"],
+      TAPI.ArchiveCounselorStudentAssignmentInput
+    >({
+      query: (input) => ({
+        document: API.ArchiveCounselorStudentAssignmentDocument,
+        variables: { input },
+      }),
+      transformResponse: (
+        response: TAPI.ArchiveCounselorStudentAssignmentMutation,
+      ) => response.archiveCounselorStudentAssignment,
+      invalidatesTags: (_result, _error, input) => [
+        { type: "CounselorAssignments", id: LIST_ID },
+        { type: "CounselorAssignments", id: input.assignmentId },
+        { type: "AuditLogs", id: LIST_ID },
+      ],
+    }),
+
+    restoreCounselorStudentAssignment: builder.mutation<
+      TAPI.RestoreCounselorStudentAssignmentMutation["restoreCounselorStudentAssignment"],
+      TAPI.RestoreCounselorStudentAssignmentInput
+    >({
+      query: (input) => ({
+        document: API.RestoreCounselorStudentAssignmentDocument,
+        variables: { input },
+      }),
+      transformResponse: (
+        response: TAPI.RestoreCounselorStudentAssignmentMutation,
+      ) => response.restoreCounselorStudentAssignment,
+      invalidatesTags: (_result, _error, input) => [
+        { type: "CounselorAssignments", id: LIST_ID },
+        { type: "CounselorAssignments", id: input.assignmentId },
+        { type: "AuditLogs", id: LIST_ID },
+      ],
+    }),
   }),
   overrideExisting: false,
 });
@@ -482,6 +603,7 @@ export const {
   useArchiveGradeMutation,
   useRestoreGradeMutation,
   useEnrollStudentMutation,
+  useSchoolCounselorsQuery,
   useAssessmentResultsQuery,
   useCreateClassroomMutation,
   useCloseEnrollmentMutation,
@@ -498,6 +620,11 @@ export const {
   useReviewAccessRequestMutation,
   useSchoolAssessmentSummaryQuery,
   useSchoolAdminAccessRequestsQuery,
+  useCounselorStudentAssignmentsQuery,
+  useAssignStudentsToCounselorMutation,
   useSchoolAdminChangePasswordMutation,
   useAssignAssignmentToStudentsMutation,
+  useSchoolStudentsForCounselorAssignmentQuery,
+  useArchiveCounselorStudentAssignmentMutation,
+  useRestoreCounselorStudentAssignmentMutation,
 } = schoolAdminApi;

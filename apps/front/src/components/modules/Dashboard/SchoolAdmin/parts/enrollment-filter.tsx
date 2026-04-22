@@ -1,8 +1,8 @@
 "use client";
 
 import { TEnrollmentFiltersProps, TOption } from "@/types/modules";
-import { enrollmentFilterSchema } from "@/lib/validation/school-admin";
-import { TEnrollmentFilterForm } from "@/lib/validation/school-admin";
+import { enrollmentFilterSchema } from "@/lib/validation/school-admin-schemas";
+import { TEnrollmentFilterForm } from "@/lib/validation/school-admin-schemas";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { ALL_GRADES_VALUE } from "@/utils/constant";

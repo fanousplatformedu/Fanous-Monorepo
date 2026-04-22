@@ -3,8 +3,8 @@
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
 import { TCreateAuditLogDialogProps } from "@/types/modules";
 import { useCreateAuditLogMutation } from "@/lib/redux/api";
-import { TSuperAuditLogValues } from "@/lib/validation/super-admin";
-import { superAuditLogSchema } from "@/lib/validation/super-admin";
+import { TSuperAuditLogValues } from "@/lib/validation/super-admin-schemas";
+import { superAuditLogSchema } from "@/lib/validation/super-admin-schemas";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { getApiErrorMessage } from "@/utils/function-helper";
 import { zodResolver } from "@hookform/resolvers/zod";

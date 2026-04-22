@@ -610,7 +610,8 @@
         "classrooms": "Classrooms",
         "assignments": "Assignments",
         "enrollments": "Enrollments",
-        "accessRequests": "Access Requests"
+        "accessRequests": "Access Requests",
+        "counselorAssignments": "Counselor Assignments"
       },
       "members": {
         "header": {
@@ -642,11 +643,11 @@
           "disableFailed": "Failed to disable member."
         },
         "roles": {
-          "superAdmin": "Super Admin",
-          "schoolAdmin": "School Admin",
-          "student": "Student",
-          "parent": "Parent",
-          "counselor": "Counselor"
+          "SUPER_ADMIN": "Super Admin",
+          "SCHOOL_ADMIN": "School Admin",
+          "STUDENT": "Student",
+          "PARENT": "Parent",
+          "COUNSELOR": "Counselor"
         },
         "kpis": {
           "total": {
@@ -1196,6 +1197,70 @@
           "description": "Latest recorded actions inside your school panel.",
           "empty": "No recent activity found.",
           "actor": "Actor"
+        }
+      },
+      "counselorAssignments": {
+        "page": {
+          "title": "Counselor Assignments",
+          "description": "Assign students to counselors and manage active or archived assignment links."
+        },
+        "summary": {
+          "totalAssignments": "Total assignments",
+          "activeAssignments": "Active assignments",
+          "archivedAssignments": "Archived assignments",
+          "activeCounselors": "Counselors"
+        },
+        "actions": {
+          "assignStudents": "Assign students"
+        },
+        "filtersCard": {
+          "title": "Filter assignments",
+          "description": "Search and narrow down counselor-student assignment records."
+        },
+        "filters": {
+          "query": "Search student or counselor",
+          "counselor": "Counselor",
+          "student": "Student",
+          "status": "Status",
+          "allCounselors": "All counselors",
+          "allStudents": "All students",
+          "allStatuses": "All statuses"
+        },
+        "table": {
+          "title": "Assignment records",
+          "description": "View current counselor-student assignment links and manage their status.",
+          "columns": {
+            "counselor": "Counselor",
+            "student": "Student",
+            "status": "Status",
+            "assignedAt": "Assigned at",
+            "actions": "Actions"
+          },
+          "archiveAction": "Archive",
+          "restoreAction": "Restore"
+        },
+        "assignDialog": {
+          "title": "Assign students to counselor",
+          "description": "Choose one counselor and assign one or more students.",
+          "submit": "Save assignment",
+          "clearSelection": "Clear selection",
+          "fields": {
+            "counselor": "Select counselor",
+            "students": "Select students",
+            "studentsHint": "You can choose multiple students for one counselor."
+          }
+        },
+        "empty": {
+          "title": "No assignment records found",
+          "description": "There are no counselor-student assignments matching your current filters."
+        },
+        "toasts": {
+          "assignSuccess": "Students were assigned successfully.",
+          "assignFailed": "Failed to assign students.",
+          "archiveSuccess": "Assignment archived successfully.",
+          "archiveFailed": "Failed to archive assignment.",
+          "restoreSuccess": "Assignment restored successfully.",
+          "restoreFailed": "Failed to restore assignment."
         }
       }
     },
@@ -2245,6 +2310,200 @@
         "resources": "Resources",
         "activities": "Activities",
         "counseling": "Counseling",
+        "profile": "Profile"
+      }
+    },
+    "counselor": {
+      "shell": {
+        "title": "Counselor Dashboard",
+        "subtitle": "Track students, reviews, sessions, and notifications."
+      },
+      "overview": {
+        "page": {
+          "title": "Overview",
+          "description": "A quick view of your students, pending reviews, sessions, and recent activity."
+        },
+        "empty": {
+          "title": "No dashboard data yet",
+          "description": "Once students, reviews, sessions, or notifications are available, your overview will appear here."
+        },
+        "common": {
+          "noItems": "No items available.",
+          "noChartData": "No chart data is available yet.",
+          "notAvailable": "Not available",
+          "unknownStudent": "Unknown student",
+          "reviewItem": "Review item",
+          "sessionItem": "Session item",
+          "notificationItem": "Notification"
+        },
+        "kpis": {
+          "students": {
+            "title": "My Students",
+            "description": "Students currently assigned to you."
+          },
+          "reviews": {
+            "title": "Pending Reviews",
+            "description": "Assessment reviews waiting for action."
+          },
+          "sessions": {
+            "title": "Sessions",
+            "description": "Scheduled or requested counseling sessions."
+          },
+          "notifications": {
+            "title": "Unread Notifications",
+            "description": "Items that still need your attention."
+          }
+        },
+        "charts": {
+          "students": {
+            "title": "Student Status Overview",
+            "description": "See the distribution of assigned students by status."
+          },
+          "reviews": {
+            "title": "Review Queue Status",
+            "description": "Track the current state of your assessment review queue."
+          },
+          "sessions": {
+            "title": "Session Status Overview",
+            "description": "Understand how counseling sessions are distributed by status."
+          }
+        },
+        "latest": {
+          "students": {
+            "title": "Latest Students",
+            "description": "Most recent student records connected to your account."
+          },
+          "reviews": {
+            "title": "Latest Reviews",
+            "description": "Recent review items that may need follow-up."
+          },
+          "sessions": {
+            "title": "Latest Sessions",
+            "description": "Your newest or upcoming counseling sessions."
+          },
+          "notifications": {
+            "title": "Latest Notifications",
+            "description": "Recent notifications delivered to your dashboard."
+          }
+        }
+      },
+      "student": {
+        "page": {
+          "title": "Students",
+          "description": "Review your assigned students, track progress, schedule sessions, and export reports."
+        },
+        "empty": {
+          "title": "No students found",
+          "description": "When students are assigned to you, they will appear here."
+        },
+        "summary": {
+          "total": {
+            "title": "Total Students",
+            "description": "All students assigned to you."
+          },
+          "visible": {
+            "title": "Visible Rows",
+            "description": "Students currently shown in the table."
+          },
+          "active": {
+            "title": "Active",
+            "description": "Students with active link status."
+          },
+          "archived": {
+            "title": "Archived",
+            "description": "Students currently archived."
+          }
+        },
+        "filtersCard": {
+          "title": "Student Filters",
+          "description": "Use filters to narrow the student list."
+        },
+        "filters": {
+          "fields": {
+            "query": "Search by name, email, or mobile",
+            "status": "Student status"
+          },
+          "statusOptions": {
+            "ALL": "All",
+            "ACTIVE": "Active",
+            "ARCHIVED": "Archived"
+          }
+        },
+        "table": {
+          "title": "Assigned Students",
+          "description": "Browse your assigned students and take action.",
+          "columns": {
+            "student": "Student",
+            "status": "Status",
+            "grade": "Grade",
+            "classroom": "Classroom",
+            "assignedAt": "Assigned At",
+            "actions": "Actions"
+          },
+          "actions": {
+            "view": "View",
+            "schedule": "Schedule",
+            "export": "Export"
+          }
+        },
+        "detailDialog": {
+          "title": "Student Detail",
+          "description": "Review student profile and progress timeline.",
+          "fields": {
+            "status": "Status",
+            "createdAt": "Created At",
+            "grade": "Grade",
+            "classroom": "Classroom"
+          },
+          "quickActions": "Quick Actions",
+          "progressTitle": "Progress Timeline",
+          "noTimeline": "No timeline data is available yet.",
+          "actions": {
+            "schedule": "Schedule Session",
+            "export": "Export Report"
+          }
+        },
+        "scheduleDialog": {
+          "title": "Schedule Counseling Session",
+          "description": "Create a new counseling session for this student.",
+          "fields": {
+            "title": "Session title",
+            "scheduledAt": "Scheduled date and time",
+            "meetingUrl": "Meeting link",
+            "note": "Note"
+          },
+          "actions": {
+            "submit": "Schedule Session"
+          }
+        },
+        "exportDialog": {
+          "title": "Export Student Report",
+          "description": "Choose the export format for this student report.",
+          "fields": {
+            "format": "Export format"
+          },
+          "formatOptions": {
+            "PDF": "PDF",
+            "EXCEL": "Excel"
+          },
+          "actions": {
+            "submit": "Export Report"
+          }
+        },
+        "toasts": {
+          "scheduleSuccess": "Counseling session scheduled successfully.",
+          "scheduleFailed": "Failed to schedule counseling session.",
+          "exportSuccess": "Student report exported successfully.",
+          "exportFailed": "Failed to export student report."
+        }
+      },
+      "nav": {
+        "overview": "Overview",
+        "students": "Students",
+        "reviews": "Reviews",
+        "assignments": "Assignments",
+        "sessions": "Sessions",
+        "notifications": "Notifications",
         "profile": "Profile"
       }
     },

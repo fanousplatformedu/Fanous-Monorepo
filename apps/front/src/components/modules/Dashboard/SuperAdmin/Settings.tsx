@@ -4,12 +4,12 @@ import {
   PasswordValues,
   ProfileValues,
   superAdminChangePasswordSchema,
-} from "@/lib/validation/super-admin";
+} from "@/lib/validation/super-admin-schemas";
 import { FloatingPasswordField } from "@elements/floating-password-field";
 import { SuperAdminSectionCard } from "@modules/Dashboard/SuperAdmin/parts/super-section-card";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { getApiErrorMessage } from "@/utils/function-helper";
-import { profileSchema } from "@/lib/validation/super-admin";
+import { profileSchema } from "@/lib/validation/super-admin-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useI18n } from "@/hooks/useI18n";

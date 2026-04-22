@@ -1,8 +1,8 @@
 "use client";
 
-import { TClassroomFiltersValues } from "@/lib/validation/school-admin";
+import { TClassroomFiltersValues } from "@/lib/validation/school-admin-schemas";
 import { TClassroomFiltersProps } from "@/types/modules";
-import { classroomFiltersSchema } from "@/lib/validation/school-admin";
+import { classroomFiltersSchema } from "@/lib/validation/school-admin-schemas";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -2,7 +2,10 @@
 
 import { useCreateSchoolAdminMutation, useSchoolsQuery } from "@/lib/redux/api";
 import { TSchoolAdminFormDialogProps } from "@/types/elements";
-import { createSchoolAdminSchema, Values } from "@/lib/validation/super-admin";
+import {
+  createSchoolAdminSchema,
+  Values,
+} from "@/lib/validation/super-admin-schemas";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { getApiErrorMessage } from "@/utils/function-helper";
 import { FloatingInputField } from "@elements/floating-input-field";

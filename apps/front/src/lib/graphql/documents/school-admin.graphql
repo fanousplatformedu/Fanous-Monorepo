@@ -394,3 +394,101 @@ query SchoolAssessmentSummary($input: SchoolAssessmentSummaryInput) {
     evaluatedStudentAssignments
   }
 }
+
+# ================ Counselor Assignment ===============
+query SchoolCounselors($input: ListSchoolCounselors!) {
+  schoolCounselors(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      email
+      mobile
+      status
+      fullName
+      avatarUrl
+    }
+  }
+}
+
+query SchoolStudentsForCounselorAssignment(
+  $input: ListSchoolStudentsForCounselorAssignment!
+) {
+  schoolStudentsForCounselorAssignment(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      email
+      mobile
+      status
+      fullName
+      avatarUrl
+    }
+  }
+}
+
+query CounselorStudentAssignments(
+  $input: ListCounselorStudentAssignmentsInput!
+) {
+  counselorStudentAssignments(input: $input) {
+    take
+    skip
+    total
+    items {
+      id
+      status
+      schoolId
+      studentId
+      updatedAt
+      assignedAt
+      counselorId
+      counselor {
+        id
+        email
+        mobile
+        status
+        fullName
+        avatarUrl
+      }
+      student {
+        id
+        email
+        mobile
+        status
+        fullName
+        avatarUrl
+      }
+    }
+  }
+}
+
+mutation AssignStudentsToCounselor($input: AssignStudentsToCounselorInput!) {
+  assignStudentsToCounselor(input: $input) {
+    success
+    message
+    affectedCount
+  }
+}
+
+mutation ArchiveCounselorStudentAssignment(
+  $input: ArchiveCounselorStudentAssignmentInput!
+) {
+  archiveCounselorStudentAssignment(input: $input) {
+    success
+    message
+    affectedCount
+  }
+}
+
+mutation RestoreCounselorStudentAssignment(
+  $input: RestoreCounselorStudentAssignmentInput!
+) {
+  restoreCounselorStudentAssignment(input: $input) {
+    success
+    message
+    affectedCount
+  }
+}

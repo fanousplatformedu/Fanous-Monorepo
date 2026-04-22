@@ -27,14 +27,15 @@ const DEFAULT_FILTERS: T.TSchoolMemberFilterValues = {
 const SchoolAdminMembersPage = () => {
   const { t } = useI18n();
 
+  // ============= States ==============
   const [page, setPage] = useState(1);
   const [filters, setFilters] =
     useState<T.TSchoolMemberFilterValues>(DEFAULT_FILTERS);
   const [selectedMember, setSelectedMember] =
     useState<T.TSchoolMemberRow | null>(null);
 
+  // =============== API Hooks ================
   const skip = (page - 1) * PAGE_SIZE;
-
   const { data, isLoading, isFetching } = useSchoolMembersQuery({
     skip,
     take: PAGE_SIZE,
@@ -42,31 +43,24 @@ const SchoolAdminMembersPage = () => {
     role: filters.role === "ALL" ? undefined : filters.role,
     status: filters.status === "ALL" ? undefined : filters.status,
   });
-
   const [removeMember, { isLoading: isRemoving }] =
     useRemoveSchoolMemberMutation();
-
   const items = useMemo<T.TSchoolMemberRow[]>(
     () => (data?.items ?? []) as T.TSchoolMemberRow[],
     [data],
   );
-
   const total = data?.total ?? 0;
-
   const activeCount = useMemo(
     () => items.filter((item) => item.status === "ACTIVE").length,
     [items],
   );
-
   const disabledCount = useMemo(
     () => items.filter((item) => item.status === "DISABLED").length,
     [items],
   );
-
   const getRoleLabel = (role: T.TSchoolMemberRole) => {
     return t(`dashboard.schoolAdmin.members.roles.${role}`);
   };
-
   const handleDisableConfirm = async () => {
     if (!selectedMember) return;
     try {
@@ -86,6 +80,7 @@ const SchoolAdminMembersPage = () => {
     }
   };
 
+  // =================== Guards ====================
   if (isLoading) return <DashboardLoadingCard rows={8} />;
 
   return (
@@ -178,6 +173,7 @@ const SchoolAdminMembersPage = () => {
 
                 <tbody>
                   {items.map((member) => {
+                    console.log(items);
                     const canDisable = member.status === "ACTIVE";
                     return (
                       <tr key={member.id} className="border-t border-border/40">

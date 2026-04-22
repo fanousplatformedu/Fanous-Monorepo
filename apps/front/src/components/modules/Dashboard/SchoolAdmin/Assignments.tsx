@@ -1,12 +1,12 @@
 "use client";
 
 import { TDialogMode, TSelectedAssignment } from "@/types/modules";
-import { createAssignmentSchema } from "@/lib/validation/school-admin";
+import { createAssignmentSchema } from "@/lib/validation/school-admin-schemas";
 import { toIsoFromLocalDateTime } from "@/utils/function-helper";
 import { AssignmentSummaryCards } from "@modules/Dashboard/SchoolAdmin/parts/assignment-card";
 import { AssignmentResultsTable } from "@modules/Dashboard/SchoolAdmin/parts/assignment-table";
 import { AssignmentActionDialog } from "@modules/Dashboard/SchoolAdmin/parts/assignment-dialog";
-import { TCreateAssignmentForm } from "@/lib/validation/school-admin";
+import { TCreateAssignmentForm } from "@/lib/validation/school-admin-schemas";
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
 import { AssignmentCreateForm } from "@modules/Dashboard/SchoolAdmin/parts/assignment-form";
 import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";

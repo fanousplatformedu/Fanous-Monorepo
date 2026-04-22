@@ -35,6 +35,7 @@ export const apiTagTypes = [
   "CounselorDashboard",
   "StudentNotifications",
   "CounselorAssignments",
+  "CounselorAssignments",
   "CounselorNotifications",
 ] as const;
 

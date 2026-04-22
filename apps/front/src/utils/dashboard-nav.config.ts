@@ -83,6 +83,12 @@ export const schoolAdminNav: TDashboardNavItem[] = [
     icon: "ClipboardList",
   },
   {
+    key: "counselorAssignments",
+    labelKey: "dashboard.schoolAdmin.nav.counselorAssignments",
+    href: "/school-admin/dashboard/counselor-assignments",
+    icon: "UsersRound",
+  },
+  {
     key: "audit",
     labelKey: "dashboard.schoolAdmin.nav.auditLogs",
     href: "/school-admin/dashboard/audit-logs",
@@ -176,6 +182,51 @@ export const parentNav: TDashboardNavItem[] = [
     key: "profile",
     labelKey: "dashboard.parent.nav.profile",
     href: "/parent/dashboard/profile",
+    icon: "UserRound",
+  },
+];
+
+export const counselorNav: TDashboardNavItem[] = [
+  {
+    key: "overview",
+    labelKey: "dashboard.counselor.nav.overview",
+    href: "/counselor/dashboard",
+    icon: "LayoutDashboard",
+  },
+  {
+    key: "students",
+    labelKey: "dashboard.counselor.nav.students",
+    href: "/counselor/dashboard/students",
+    icon: "UsersRound",
+  },
+  {
+    key: "reviews",
+    labelKey: "dashboard.counselor.nav.reviews",
+    href: "/counselor/dashboard/reviews",
+    icon: "ClipboardList",
+  },
+  {
+    key: "assignments",
+    labelKey: "dashboard.counselor.nav.assignments",
+    href: "/counselor/dashboard/assignments",
+    icon: "FileText",
+  },
+  {
+    key: "sessions",
+    labelKey: "dashboard.counselor.nav.sessions",
+    href: "/counselor/dashboard/sessions",
+    icon: "MessagesSquare",
+  },
+  {
+    key: "notifications",
+    labelKey: "dashboard.counselor.nav.notifications",
+    href: "/counselor/dashboard/notifications",
+    icon: "Bell",
+  },
+  {
+    key: "profile",
+    labelKey: "dashboard.counselor.nav.profile",
+    href: "/counselor/dashboard/profile",
     icon: "UserRound",
   },
 ];

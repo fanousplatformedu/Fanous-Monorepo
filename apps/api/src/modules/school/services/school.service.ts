@@ -1,13 +1,9 @@
-import {
-  AuditAction,
-  Prisma,
-  Role,
-  SchoolStatus,
-  UserStatus,
-} from "@prisma/client";
 import { BadRequestException, ForbiddenException } from "@nestjs/common";
+import { Role, SchoolStatus, UserStatus } from "@prisma/client";
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { CounselorStudentLinkStatus } from "@prisma/client";
 import { NotificationTemplate } from "@notif/enums/notif-template.enum";
+import { AuditAction, Prisma } from "@prisma/client";
 import { NotificationChannel } from "@notif/enums/notif-channel.enum";
 import { NotificationService } from "@notif/services/notif.service";
 import { SchoolErrorCode } from "@school/enums/school-error-code.enum";
@@ -904,6 +900,441 @@ export class SchoolService {
       total,
       take: input.take,
       skip: input.skip,
+    };
+  }
+
+  // =========== Assign to Counselor ============
+  async listSchoolCounselors(args: T.TListSchoolCounselorsArgs) {
+    const schoolId = await this.resolveManagedSchoolId(
+      args.actor,
+      args.schoolId,
+    );
+    const where: Prisma.UserWhereInput = {
+      schoolId,
+      role: Role.COUNSELOR,
+      ...(args.query?.trim()
+        ? {
+            OR: [
+              {
+                fullName: { contains: args.query.trim(), mode: "insensitive" },
+              },
+              { email: { contains: args.query.trim(), mode: "insensitive" } },
+              { mobile: { contains: args.query.trim(), mode: "insensitive" } },
+              {
+                username: { contains: args.query.trim(), mode: "insensitive" },
+              },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await this.prismaService.$transaction([
+      this.prismaService.user.findMany({
+        where,
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          mobile: true,
+          avatarUrl: true,
+          status: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: args.take,
+        skip: args.skip,
+      }),
+      this.prismaService.user.count({ where }),
+    ]);
+    return {
+      items,
+      total,
+      take: args.take,
+      skip: args.skip,
+    };
+  }
+
+  async listSchoolStudentsForCounselorAssignment(
+    args: T.TListSchoolStudentsForAssignmentArgs,
+  ) {
+    const schoolId = await this.resolveManagedSchoolId(
+      args.actor,
+      args.schoolId,
+    );
+    const where: Prisma.UserWhereInput = {
+      schoolId,
+      role: Role.STUDENT,
+      ...(args.query?.trim()
+        ? {
+            OR: [
+              {
+                fullName: { contains: args.query.trim(), mode: "insensitive" },
+              },
+              { email: { contains: args.query.trim(), mode: "insensitive" } },
+              { mobile: { contains: args.query.trim(), mode: "insensitive" } },
+              {
+                username: { contains: args.query.trim(), mode: "insensitive" },
+              },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await this.prismaService.$transaction([
+      this.prismaService.user.findMany({
+        where,
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          mobile: true,
+          avatarUrl: true,
+          status: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: args.take,
+        skip: args.skip,
+      }),
+      this.prismaService.user.count({ where }),
+    ]);
+    return {
+      items,
+      total,
+      take: args.take,
+      skip: args.skip,
+    };
+  }
+
+  async assignStudentsToCounselor(args: T.TAssignStudentsToCounselorArgs) {
+    const schoolId = await this.resolveManagedSchoolId(
+      args.actor,
+      args.schoolId,
+    );
+    const counselor = await this.prismaService.user.findFirst({
+      where: {
+        id: args.counselorId,
+        schoolId,
+        role: Role.COUNSELOR,
+        status: UserStatus.ACTIVE,
+      },
+      select: {
+        id: true,
+        fullName: true,
+      },
+    });
+
+    if (!counselor)
+      throw new NotFoundException({
+        code: SchoolErrorCode.COUNSELOR_NOT_FOUND,
+      });
+    const students = await this.prismaService.user.findMany({
+      where: {
+        id: { in: args.studentIds },
+        schoolId,
+        role: Role.STUDENT,
+        status: UserStatus.ACTIVE,
+      },
+      select: {
+        id: true,
+        fullName: true,
+      },
+    });
+
+    if (students.length !== args.studentIds.length)
+      throw new BadRequestException({
+        code: SchoolErrorCode.INVALID_STUDENT_IDS,
+      });
+    let affectedCount = 0;
+    await this.prismaService.$transaction(async (tx) => {
+      for (const studentId of args.studentIds) {
+        await tx.counselorStudentLink.updateMany({
+          where: {
+            schoolId,
+            studentId,
+            counselorId: { not: args.counselorId },
+            status: CounselorStudentLinkStatus.ACTIVE,
+          },
+          data: {
+            status: CounselorStudentLinkStatus.ARCHIVED,
+          },
+        });
+        const existing = await tx.counselorStudentLink.findFirst({
+          where: {
+            schoolId,
+            counselorId: args.counselorId,
+            studentId,
+          },
+          select: {
+            id: true,
+            status: true,
+          },
+        });
+        if (!existing) {
+          await tx.counselorStudentLink.create({
+            data: {
+              schoolId,
+              counselorId: args.counselorId,
+              studentId,
+              status: CounselorStudentLinkStatus.ACTIVE,
+            },
+          });
+          affectedCount++;
+        } else if (existing.status === CounselorStudentLinkStatus.ARCHIVED) {
+          await tx.counselorStudentLink.update({
+            where: { id: existing.id },
+            data: {
+              status: CounselorStudentLinkStatus.ACTIVE,
+            },
+          });
+          affectedCount++;
+        }
+        const studentAssignments = await tx.studentAssignment.findMany({
+          where: {
+            studentId,
+          },
+          select: {
+            assignmentId: true,
+            result: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+        for (const sa of studentAssignments) {
+          const existingReview = await tx.counselorReview.findFirst({
+            where: {
+              schoolId,
+              counselorId: args.counselorId,
+              studentId,
+              assignmentId: sa.assignmentId,
+            },
+            select: { id: true },
+          });
+          if (!existingReview) {
+            await tx.counselorReview.create({
+              data: {
+                schoolId,
+                counselorId: args.counselorId,
+                studentId,
+                assignmentId: sa.assignmentId,
+                resultId: sa.result?.id ?? null,
+                status: "PENDING",
+              },
+            });
+          }
+        }
+      }
+      await tx.auditLog.create({
+        data: {
+          action: AuditAction.MEMBER_CREATED,
+          actorId: args.actor.id,
+          schoolId,
+          entityType: "CounselorStudentLink",
+          entityId: args.counselorId,
+          metadata: {
+            counselorId: args.counselorId,
+            studentIds: args.studentIds,
+            affectedCount,
+          },
+        },
+      });
+    });
+    return {
+      success: true,
+      message: SchoolMessage.COUNSELOR_ASSIGNMENT_CREATED,
+      affectedCount,
+    };
+  }
+
+  async archiveCounselorStudentAssignment(
+    args: T.TArchiveCounselorStudentAssignmentArgs,
+  ) {
+    const assignment = await this.prismaService.counselorStudentLink.findUnique(
+      {
+        where: { id: args.assignmentId },
+        select: {
+          id: true,
+          schoolId: true,
+          counselorId: true,
+          studentId: true,
+          status: true,
+        },
+      },
+    );
+    if (!assignment)
+      throw new NotFoundException({
+        code: SchoolErrorCode.COUNSELOR_ASSIGNMENT_NOT_FOUND,
+      });
+    await this.resolveManagedSchoolId(args.actor, assignment.schoolId);
+    await this.prismaService.counselorStudentLink.update({
+      where: { id: assignment.id },
+      data: {
+        status: CounselorStudentLinkStatus.ARCHIVED,
+      },
+    });
+    await this.auditService.record({
+      action: AuditAction.MEMBER_CREATED,
+      actorId: args.actor.id,
+      schoolId: assignment.schoolId,
+      entityType: "CounselorStudentLink",
+      entityId: assignment.id,
+      metadata: {
+        action: "ARCHIVE",
+        counselorId: assignment.counselorId,
+        studentId: assignment.studentId,
+      },
+    });
+    return {
+      success: true,
+      message: SchoolMessage.COUNSELOR_ASSIGNMENT_ARCHIVED,
+      affectedCount: 1,
+    };
+  }
+
+  async restoreCounselorStudentAssignment(
+    args: T.TRestoreCounselorStudentAssignmentArgs,
+  ) {
+    const assignment = await this.prismaService.counselorStudentLink.findUnique(
+      {
+        where: { id: args.assignmentId },
+        select: {
+          id: true,
+          schoolId: true,
+          counselorId: true,
+          studentId: true,
+        },
+      },
+    );
+    if (!assignment)
+      throw new NotFoundException({
+        code: SchoolErrorCode.COUNSELOR_ASSIGNMENT_NOT_FOUND,
+      });
+    await this.resolveManagedSchoolId(args.actor, assignment.schoolId);
+    await this.prismaService.$transaction(async (tx) => {
+      await tx.counselorStudentLink.updateMany({
+        where: {
+          schoolId: assignment.schoolId,
+          studentId: assignment.studentId,
+          counselorId: { not: assignment.counselorId },
+          status: CounselorStudentLinkStatus.ACTIVE,
+        },
+        data: {
+          status: CounselorStudentLinkStatus.ARCHIVED,
+        },
+      });
+      await tx.counselorStudentLink.update({
+        where: { id: assignment.id },
+        data: {
+          status: CounselorStudentLinkStatus.ACTIVE,
+        },
+      });
+      await tx.auditLog.create({
+        data: {
+          action: AuditAction.MEMBER_CREATED,
+          actorId: args.actor.id,
+          schoolId: assignment.schoolId,
+          entityType: "CounselorStudentLink",
+          entityId: assignment.id,
+          metadata: {
+            action: "RESTORE",
+            counselorId: assignment.counselorId,
+            studentId: assignment.studentId,
+          },
+        },
+      });
+    });
+    return {
+      success: true,
+      message: SchoolMessage.COUNSELOR_ASSIGNMENT_RESTORED,
+      affectedCount: 1,
+    };
+  }
+
+  async listCounselorStudentAssignments(
+    args: T.TListCounselorStudentAssignmentsArgs,
+  ) {
+    const schoolId = await this.resolveManagedSchoolId(
+      args.actor,
+      args.schoolId,
+    );
+    const where: Prisma.CounselorStudentLinkWhereInput = {
+      schoolId,
+      ...(args.counselorId ? { counselorId: args.counselorId } : {}),
+      ...(args.studentId ? { studentId: args.studentId } : {}),
+      ...(args.status ? { status: args.status } : {}),
+      ...(args.query?.trim()
+        ? {
+            OR: [
+              {
+                counselor: {
+                  fullName: {
+                    contains: args.query.trim(),
+                    mode: "insensitive",
+                  },
+                },
+              },
+              {
+                counselor: {
+                  email: {
+                    contains: args.query.trim(),
+                    mode: "insensitive",
+                  },
+                },
+              },
+              {
+                student: {
+                  fullName: {
+                    contains: args.query.trim(),
+                    mode: "insensitive",
+                  },
+                },
+              },
+              {
+                student: {
+                  email: {
+                    contains: args.query.trim(),
+                    mode: "insensitive",
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await this.prismaService.$transaction([
+      this.prismaService.counselorStudentLink.findMany({
+        where,
+        include: {
+          counselor: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              mobile: true,
+              avatarUrl: true,
+              status: true,
+            },
+          },
+          student: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              mobile: true,
+              avatarUrl: true,
+              status: true,
+            },
+          },
+        },
+        orderBy: { assignedAt: "desc" },
+        take: args.take,
+        skip: args.skip,
+      }),
+      this.prismaService.counselorStudentLink.count({ where }),
+    ]);
+    return {
+      items,
+      total,
+      take: args.take,
+      skip: args.skip,
     };
   }
 
