@@ -1,25 +1,25 @@
 "use client";
 
+import { TCounselorScheduleSessionDialogFormValues } from "@/lib/validation/counselor-schema";
+import { counselorScheduleSessionDialogSchema } from "@/lib/validation/counselor-schema";
+import { TCounselorScheduleSessionDialog } from "@/types/modules";
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
-import { TScheduleSessionFormValues } from "@/types/modules";
-import { TScheduleSessionDialog } from "@/types/modules";
+import { FormProvider, useForm } from "react-hook-form";
 import { FloatingInputField } from "@elements/floating-input-field";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useI18n } from "@/hooks/useI18n";
-
-import * as F from "@ui/form";
 
 export const CounselorScheduleSessionDialog = ({
   open,
+  onSubmit,
   studentId,
   isLoading,
-  onSubmit,
   onOpenChange,
-}: TScheduleSessionDialog) => {
+}: TCounselorScheduleSessionDialog) => {
   const { t } = useI18n();
 
-  const form = useForm<TScheduleSessionFormValues>({
+  const form = useForm<TCounselorScheduleSessionDialogFormValues>({
+    resolver: zodResolver(counselorScheduleSessionDialogSchema),
     defaultValues: {
       title: "",
       note: "",
@@ -28,54 +28,46 @@ export const CounselorScheduleSessionDialog = ({
     },
   });
 
-  useEffect(() => {
-    if (open) {
-      form.reset({
-        title: "",
-        note: "",
-        meetingUrl: "",
-        scheduledAt: "",
-      });
+  const handleClose = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      form.reset();
     }
-  }, [form, open]);
-
-  const handleSubmit = async (values: TScheduleSessionFormValues) => {
-    if (!studentId) return;
-    await onSubmit({
-      studentId,
-      title: values.title.trim(),
-      note: values.note.trim() || undefined,
-      meetingUrl: values.meetingUrl.trim() || undefined,
-      scheduledAt: new Date(values.scheduledAt).toISOString(),
-    });
+    onOpenChange(nextOpen);
   };
 
   return (
     <AppDialog
       size="lg"
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleClose}
       title={t("dashboard.counselor.student.scheduleDialog.title")}
       description={t("dashboard.counselor.student.scheduleDialog.description")}
       footer={
         <AppDialogActions
           confirmType="submit"
           isLoading={isLoading}
+          confirmText={t("common.save")}
           cancelText={t("common.cancel")}
           loadingText={t("common.loading")}
-          onCancel={() => onOpenChange(false)}
-          form="counselor-schedule-session-form"
-          confirmText={t(
-            "dashboard.counselor.student.scheduleDialog.actions.submit",
-          )}
+          onCancel={() => handleClose(false)}
+          form="schedule-counselor-session-form"
         />
       }
     >
-      <F.Form {...form}>
+      <FormProvider {...form}>
         <form
+          id="schedule-counselor-session-form"
           className="space-y-4"
-          id="counselor-schedule-session-form"
-          onSubmit={form.handleSubmit(handleSubmit)}
+          onSubmit={form.handleSubmit(async (values) => {
+            if (!studentId) return;
+            await onSubmit({
+              studentId,
+              title: values.title,
+              note: values.note || undefined,
+              meetingUrl: values.meetingUrl || undefined,
+              scheduledAt: values.scheduledAt,
+            });
+          })}
         >
           <FloatingInputField
             name="title"
@@ -106,7 +98,7 @@ export const CounselorScheduleSessionDialog = ({
             label={t("dashboard.counselor.student.scheduleDialog.fields.note")}
           />
         </form>
-      </F.Form>
+      </FormProvider>
     </AppDialog>
   );
 };

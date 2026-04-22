@@ -456,3 +456,7 @@ export const accessRequestStyles = {
   footerContainer: "mt-6 text-center",
   footerText: "text-xs text-muted-foreground/60",
 } as const;
+
+// ================ Counselor Dashboard ==================
+export const cardBase =
+  "rounded-[1.75rem] border border-border/60 bg-card/70 p-5 backdrop-blur-2xl";

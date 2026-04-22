@@ -1,9 +1,9 @@
 "use client";
 
+import { TCounselorStudentTable } from "@/types/modules";
 import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-card";
 import { TableActionButton } from "@elements/table-action-button";
 import { TablePagination } from "@elements/table-pagination";
-import { TStudentsTable } from "@/types/modules";
 import { StatusBadge } from "@elements/status-badge";
 import { PAGE_SIZE } from "@/utils/constant";
 import { useI18n } from "@/hooks/useI18n";
@@ -19,7 +19,7 @@ export const CounselorStudentsTable = ({
   onSchedule,
   onPageChange,
   onViewDetail,
-}: TStudentsTable) => {
+}: TCounselorStudentTable) => {
   const { t } = useI18n();
 
   return (
@@ -38,13 +38,16 @@ export const CounselorStudentsTable = ({
                 {t("dashboard.counselor.student.table.columns.status")}
               </th>
               <th className="px-4 py-3 font-medium">
-                {t("dashboard.counselor.student.table.columns.grade")}
-              </th>
-              <th className="px-4 py-3 font-medium">
-                {t("dashboard.counselor.student.table.columns.classroom")}
-              </th>
-              <th className="px-4 py-3 font-medium">
                 {t("dashboard.counselor.student.table.columns.assignedAt")}
+              </th>
+              <th className="px-4 py-3 font-medium">
+                {t("dashboard.counselor.student.table.columns.pendingReviews")}
+              </th>
+              <th className="px-4 py-3 font-medium">
+                {t("dashboard.counselor.student.table.columns.latestResult")}
+              </th>
+              <th className="px-4 py-3 font-medium">
+                {t("dashboard.counselor.student.table.columns.nextSession")}
               </th>
               <th className="px-4 py-3 font-medium text-right">
                 {t("dashboard.counselor.student.table.columns.actions")}
@@ -54,48 +57,60 @@ export const CounselorStudentsTable = ({
 
           <tbody>
             {items.map((item) => (
-              <tr key={item.id} className="border-t border-border/40 align-top">
+              <tr key={item.id} className="border-t border-border/40">
                 <td className="px-4 py-3">
                   <div className="font-medium">{item.fullName || "-"}</div>
                   <div className="text-xs text-muted-foreground">
                     {item.email || item.mobile || "-"}
                   </div>
                 </td>
+
                 <td className="px-4 py-3">
-                  <StatusBadge value={item.status || "-"} />
+                  <StatusBadge value={item.linkStatus} />
                 </td>
-                =<td className="px-4 py-3">{item.gradeName || "-"}</td>
-                <td className="px-4 py-3">{item.classroomName || "-"}</td>
+
                 <td className="px-4 py-3">
-                  {item.assignedAt
-                    ? new Date(item.assignedAt).toLocaleDateString()
+                  {new Date(item.assignedAt).toLocaleDateString()}
+                </td>
+
+                <td className="px-4 py-3">{item.pendingReviews}</td>
+
+                <td className="px-4 py-3">
+                  {item.latestResultAt
+                    ? new Date(item.latestResultAt).toLocaleDateString()
                     : "-"}
                 </td>
+
+                <td className="px-4 py-3">
+                  {item.upcomingSessionAt
+                    ? new Date(item.upcomingSessionAt).toLocaleString()
+                    : "-"}
+                </td>
+
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
                     <TableActionButton
                       icon={L.Eye}
+                      label={t("dashboard.counselor.student.table.viewAction")}
                       onClick={() => onViewDetail(item.id)}
-                      label={t(
-                        "dashboard.counselor.student.table.actions.view",
-                      )}
                     />
+
                     <TableActionButton
-                      variant="brandSoft"
                       icon={L.CalendarPlus2}
-                      onClick={() => onSchedule(item.id)}
+                      variant="brandSoft"
                       label={t(
-                        "dashboard.counselor.student.table.actions.schedule",
+                        "dashboard.counselor.student.table.scheduleAction",
                       )}
+                      onClick={() => onSchedule(item.id)}
                     />
 
                     <TableActionButton
                       icon={L.Download}
-                      variant="brandSoft"
-                      onClick={() => onExport(item.id)}
+                      variant="brandChip"
                       label={t(
-                        "dashboard.counselor.student.table.actions.export",
+                        "dashboard.counselor.student.table.exportAction",
                       )}
+                      onClick={() => onExport(item.id)}
                     />
                   </div>
                 </td>

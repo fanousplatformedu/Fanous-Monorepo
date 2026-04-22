@@ -239,5 +239,5 @@ export type TAppDialogActionsProps = {
   confirmDisabled?: boolean;
   confirmType?: "button" | "submit";
   cancelVariant?: "brandSoft" | "brandOutline" | "ghost";
-  confirmVariant?: "brand" | "brandSoft" | "brandOutline";
+  confirmVariant?: "brand" | "brandSoft" | "brandChip";
 };

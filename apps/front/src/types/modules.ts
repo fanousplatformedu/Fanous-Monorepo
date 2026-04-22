@@ -1324,85 +1324,41 @@ export type TOverviewSummaryDashboardCards = {
   unreadNotifications: number;
 };
 
-
-export type TExportReportDialog = {
-  open: boolean;
-  isLoading?: boolean;
-  studentId: string | null;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (
-    values: TAPI.ExportCounselorStudentReportInput,
-  ) => void | Promise<void>;
-};
-
-export type TFormatExportValues = {
-  format: "PDF" | "EXCEL";
+export type TCounselorStudentSummaryCards = {
+  total: number;
+  activeCount: number;
+  isFetching?: boolean;
+  archivedCount: number;
+  reviewLoadCount: number;
 };
 
 
-export type TScheduleSessionDialog = {
-  open: boolean;
-  isLoading?: boolean;
-  studentId: string | null;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (
-    values: TAPI.ScheduleCounselorSessionInput,
-  ) => void | Promise<void>;
+export type TStudentFilterValues = {
+  query: string;
+  status: "ALL" | TAPI.CounselorStudentLinkStatus;
 };
 
-export type TScheduleSessionFormValues = {
-  title: string;
-  note: string;
-  meetingUrl: string;
-  scheduledAt: string;
+export type TCounselorStudentFilter = {
+  onReset: () => void;
+  value: TStudentFilterValues;
+  onApply: (values: TStudentFilterValues) => void;
 };
 
-export type TStudentDetailView = {
-  id: string;
-  email: string | null;
-  mobile: string | null;
-  status: string | null;
-  fullName: string | null;
-  avatarUrl: string | null;
-  gradeName: string | null;
-  createdAt: string | null;
-  classroomName: string | null;
-};
-
-export type TTimelinePoint = {
-  label: string;
-  overall: number;
-};
-
-export type TStudentDetailDialog = {
-  open: boolean;
-  isLoading?: boolean;
-  onExport: () => void;
-  onSchedule: () => void;
-  timeline: TTimelinePoint[];
-  student: TStudentDetailView | null;
-  onOpenChange: (open: boolean) => void;
-};
-
-
-export type TStudentProgressChart = {
-  label: string;
-  overall: number;
-};
 
 export type TStudentRow = {
   id: string;
+  fullName: string;
+  assignedAt: string;
   email: string | null;
   mobile: string | null;
-  status: string | null;
-  fullName: string | null;
-  avatarUrl: string | null;
-  gradeName: string | null;
-  assignedAt: string | null;
-  classroomName: string | null;
+  pendingReviews: number;
+  latestResultAt: string | null;
+  upcomingSessionAt: string | null;
+  linkStatus: TAPI.CounselorStudentLinkStatus;
 };
 
-export type TStudentsTable = {
+
+export type TCounselorStudentTable = {
   page: number;
   total: number;
   items: TStudentRow[];
@@ -1413,30 +1369,44 @@ export type TStudentsTable = {
   onViewDetail: (studentId: string) => void;
 };
 
-export type TStudentFilterValues = {
-  query: string;
-  status: "ALL" | TAPI.CounselorStudentLinkStatus;
+export type TStudentDetail = {
+  id: string;
+  fullName: string;
+  email: string | null;
+  mobile: string | null;
+  totalResults: number;
+  totalSessions: number;
+  pendingReviews: number;
+  latestResultAt: string | null;
+  latestSessionAt: string | null;
 };
 
-export type TStudentsFilter = {
-  onReset: () => void;
-  value: TStudentFilterValues;
-  onApply: (values: TStudentFilterValues) => void;
+
+export type TCounselorStudentDetailDialog = {
+  open: boolean;
+  isLoading?: boolean;
+  onExport: () => void;
+  onSchedule: () => void;
+  timeline: TTimelinePoint[];
+  student: TStudentDetail | null;
+  onOpenChange: (open: boolean) => void;
 };
 
 
-export type TStudentsSummaryCard = {
-  total: number;
-  activeCount: number;
-  visibleCount: number;
-  isFetching?: boolean;
-  archivedCount: number;
+export type TCounselorScheduleSessionDialog = {
+  open: boolean;
+  isLoading?: boolean;
+  studentId: string | null;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (values: TAPI.ScheduleCounselorSessionInput) => Promise<void>;
 };
 
-export type TStatusChartItem = {
-  key: string;
-  label: string;
-  value: number;
+export type TCounselorExportReportDialog = {
+  open: boolean;
+  isLoading?: boolean;
+  studentId: string | null;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (values: TAPI.ExportCounselorStudentReportInput) => Promise<void>;
 };
 
 export type TLatestListItem = {
@@ -1445,7 +1415,11 @@ export type TLatestListItem = {
   meta?: string;
   badge?: string;
   subtitle?: string;
+}
+
+
+export type TTimelinePoint = {
+  date: string;
+  label: string;
+  value: number;
 };
-
-
-

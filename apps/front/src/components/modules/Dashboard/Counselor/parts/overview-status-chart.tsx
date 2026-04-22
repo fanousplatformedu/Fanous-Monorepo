@@ -19,17 +19,28 @@ export const CounselorOverviewStatusChart = ({
       <div className="h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} barCategoryGap={24}>
+            <defs>
+              <linearGradient id="blueBarGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#60A5FA" />
+                <stop offset="50%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor="#1D4ED8" />
+              </linearGradient>
+            </defs>
+
             <CartesianGrid strokeDasharray="3 3" className="text-border/60" />
+
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 11, fill: "currentColor" }}
               className="text-muted-foreground"
+              tick={{ fontSize: 11, fill: "currentColor" }}
             />
+
             <YAxis
               allowDecimals={false}
-              tick={{ fontSize: 11, fill: "currentColor" }}
               className="text-muted-foreground"
+              tick={{ fontSize: 11, fill: "currentColor" }}
             />
+
             <Tooltip
               formatter={(value) => [value, t("common.count")]}
               contentStyle={{
@@ -39,10 +50,11 @@ export const CounselorOverviewStatusChart = ({
                 border: "1px solid hsl(var(--border))",
               }}
             />
+
             <Bar
               dataKey="value"
               radius={[12, 12, 0, 0]}
-              fill="hsl(var(--primary))"
+              fill="url(#blueBarGradient)"
             />
           </BarChart>
         </ResponsiveContainer>

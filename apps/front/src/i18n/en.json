@@ -2389,40 +2389,22 @@
       },
       "student": {
         "page": {
-          "title": "Students",
-          "description": "Review your assigned students, track progress, schedule sessions, and export reports."
-        },
-        "empty": {
-          "title": "No students found",
-          "description": "When students are assigned to you, they will appear here."
+          "title": "My Students",
+          "description": "Monitor assigned students, pending reviews, sessions, and report exports"
         },
         "summary": {
-          "total": {
-            "title": "Total Students",
-            "description": "All students assigned to you."
-          },
-          "visible": {
-            "title": "Visible Rows",
-            "description": "Students currently shown in the table."
-          },
-          "active": {
-            "title": "Active",
-            "description": "Students with active link status."
-          },
-          "archived": {
-            "title": "Archived",
-            "description": "Students currently archived."
-          }
+          "total": "Total Students",
+          "active": "Active Links",
+          "archived": "Archived Links",
+          "pendingReviews": "Pending Reviews"
         },
         "filtersCard": {
           "title": "Student Filters",
-          "description": "Use filters to narrow the student list."
+          "description": "Filter students by assignment status and search terms"
         },
         "filters": {
-          "fields": {
-            "query": "Search by name, email, or mobile",
-            "status": "Student status"
-          },
+          "query": "Search by name, email, or mobile",
+          "status": "Assignment Status",
           "statusOptions": {
             "ALL": "All",
             "ACTIVE": "Active",
@@ -2430,71 +2412,72 @@
           }
         },
         "table": {
-          "title": "Assigned Students",
-          "description": "Browse your assigned students and take action.",
+          "title": "Students List",
+          "description": "Review and manage the students assigned to you",
           "columns": {
             "student": "Student",
             "status": "Status",
-            "grade": "Grade",
-            "classroom": "Classroom",
             "assignedAt": "Assigned At",
+            "pendingReviews": "Pending Reviews",
+            "latestResult": "Latest Result",
+            "nextSession": "Next Session",
             "actions": "Actions"
           },
-          "actions": {
-            "view": "View",
-            "schedule": "Schedule",
-            "export": "Export"
-          }
+          "viewAction": "Details",
+          "scheduleAction": "Schedule",
+          "exportAction": "Export"
+        },
+        "empty": {
+          "title": "No students found",
+          "description": "No students are assigned to this counselor yet or nothing matched the current filters"
         },
         "detailDialog": {
-          "title": "Student Detail",
-          "description": "Review student profile and progress timeline.",
+          "title": "Student Details",
+          "description": "Review student summary, activity, and progress timeline",
+          "scheduleAction": "Schedule Session",
+          "exportAction": "Export Report",
           "fields": {
-            "status": "Status",
-            "createdAt": "Created At",
-            "grade": "Grade",
-            "classroom": "Classroom"
+            "fullName": "Full Name",
+            "email": "Email",
+            "mobile": "Mobile",
+            "pendingReviews": "Pending Reviews",
+            "totalResults": "Total Results",
+            "totalSessions": "Total Sessions",
+            "latestResultAt": "Latest Result",
+            "latestSessionAt": "Latest Session"
           },
-          "quickActions": "Quick Actions",
-          "progressTitle": "Progress Timeline",
-          "noTimeline": "No timeline data is available yet.",
-          "actions": {
-            "schedule": "Schedule Session",
-            "export": "Export Report"
+          "timeline": {
+            "title": "Progress Timeline",
+            "empty": "No timeline data is available for this student"
           }
         },
         "scheduleDialog": {
           "title": "Schedule Counseling Session",
-          "description": "Create a new counseling session for this student.",
+          "description": "Create a new counseling session for this student",
           "fields": {
-            "title": "Session title",
-            "scheduledAt": "Scheduled date and time",
-            "meetingUrl": "Meeting link",
+            "title": "Session Title",
+            "scheduledAt": "Scheduled At",
+            "meetingUrl": "Meeting URL",
             "note": "Note"
-          },
-          "actions": {
-            "submit": "Schedule Session"
           }
         },
         "exportDialog": {
           "title": "Export Student Report",
-          "description": "Choose the export format for this student report.",
+          "description": "Choose the export format for this student report",
+          "submit": "Generate Export",
           "fields": {
-            "format": "Export format"
+            "format": "File Format"
           },
-          "formatOptions": {
+          "formats": {
             "PDF": "PDF",
             "EXCEL": "Excel"
-          },
-          "actions": {
-            "submit": "Export Report"
           }
         },
         "toasts": {
-          "scheduleSuccess": "Counseling session scheduled successfully.",
-          "scheduleFailed": "Failed to schedule counseling session.",
-          "exportSuccess": "Student report exported successfully.",
-          "exportFailed": "Failed to export student report."
+          "scheduleSuccess": "Counseling session scheduled successfully",
+          "scheduleFailed": "Failed to schedule the counseling session",
+          "exportSuccess": "Student report export generated successfully",
+          "exportFailed": "Failed to generate the student report export"
         }
       },
       "nav": {
