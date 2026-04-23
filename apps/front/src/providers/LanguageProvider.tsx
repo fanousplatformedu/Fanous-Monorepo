@@ -1,6 +1,6 @@
 "use client";
 
-import { dictionaries, getByKey, isStringArray } from "@/i18n";
+import { dictionaries, getByKey, isStringArray } from "@/utils/function-helper";
 import { useMemo, useState, type ReactNode } from "react";
 import { I18nContextValue, TLanguage } from "@/types/providers";
 import { createContext, useEffect } from "react";

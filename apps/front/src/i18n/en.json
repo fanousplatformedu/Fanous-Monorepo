@@ -2480,6 +2480,80 @@
           "exportFailed": "Failed to generate the student report export"
         }
       },
+      "reviews": {
+        "page": {
+          "title": "Assessment Reviews",
+          "description": "Manage the review queue, inspect details, and submit feedback for student assessments"
+        },
+        "summary": {
+          "total": "Total Reviews",
+          "pending": "Pending",
+          "inReview": "In Review",
+          "reviewed": "Reviewed",
+          "returned": "Returned"
+        },
+        "filtersCard": {
+          "title": "Review Filters",
+          "description": "Narrow reviews by student, assignment, status, and search term"
+        },
+        "filters": {
+          "query": "Search",
+          "status": "Status",
+          "student": "Student",
+          "assignment": "Assignment"
+        },
+        "table": {
+          "title": "Reviews List",
+          "description": "All reviews related to students assigned to you",
+          "columns": {
+            "student": "Student",
+            "assignment": "Assignment",
+            "status": "Status",
+            "createdAt": "Created At",
+            "reviewedAt": "Reviewed At",
+            "actions": "Actions"
+          },
+          "viewAction": "View",
+          "reviewAction": "Review"
+        },
+        "detailDialog": {
+          "title": "Review Details",
+          "description": "Complete review, assignment, and evaluation status information",
+          "reviewAction": "Open Review Form",
+          "fields": {
+            "student": "Student",
+            "assignment": "Assignment",
+            "status": "Status",
+            "dominantKey": "Dominant Intelligence",
+            "createdAt": "Created At",
+            "reviewedAt": "Reviewed At"
+          },
+          "feedback": "Saved Feedback"
+        },
+        "actionDialog": {
+          "title": "Create / Update Review",
+          "description": "Change the review status and save your feedback",
+          "reviewInfo": "Student / Assignment",
+          "fields": {
+            "status": "New Status",
+            "feedback": "Feedback"
+          }
+        },
+        "status": {
+          "PENDING": "Pending",
+          "IN_REVIEW": "In Review",
+          "REVIEWED": "Reviewed",
+          "RETURNED": "Returned"
+        },
+        "empty": {
+          "title": "No reviews found",
+          "description": "There are no reviews for the selected filters or assigned students yet"
+        },
+        "toasts": {
+          "reviewSaved": "Review saved successfully",
+          "reviewFailed": "Failed to save review"
+        }
+      },
       "nav": {
         "overview": "Overview",
         "students": "Students",

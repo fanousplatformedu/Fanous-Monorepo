@@ -7,17 +7,17 @@ import { counselorNav } from "@/utils/dashboard-nav.config";
 import { Background } from "@elements/background";
 import { useI18n } from "@/hooks/useI18n";
 
-import CounselorOverviewPage from "@modules/Dashboard/Counselor/Overview";
+import CounselorReviewsPage from "@modules/Dashboard/Counselor/Reviews";
 
-const CounselorDashboardPage = () => {
+const CounselorReviewsDashboardPage = () => {
   const { t } = useI18n();
 
   return (
     <DashboardShell
       header={
         <DashboardHeader
-          title={t("dashboard.counselor.overview.page.title")}
-          description={t("dashboard.counselor.overview.page.description")}
+          title={t("dashboard.counselor.reviews.page.title")}
+          description={t("dashboard.counselor.reviews.page.description")}
         />
       }
       sidebar={
@@ -29,9 +29,9 @@ const CounselorDashboardPage = () => {
       }
     >
       <Background />
-      <CounselorOverviewPage />
+      <CounselorReviewsPage />
     </DashboardShell>
   );
 };
 
-export default CounselorDashboardPage;
+export default CounselorReviewsDashboardPage;

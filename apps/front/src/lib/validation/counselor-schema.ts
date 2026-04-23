@@ -23,3 +23,19 @@ export const counselorExportReportSchema = z.object({
 export type TCounselorExportReportFormValues = z.infer<
   typeof counselorExportReportSchema
 >;
+
+export const reviewFilterSchema = z.object({
+  query: z.string(),
+  status: z.enum(["ALL", "PENDING", "IN_REVIEW", "REVIEWED", "RETURNED"]),
+  studentId: z.string(),
+  assignmentId: z.string(),
+});
+
+export type TReviewFilterFormValues = z.infer<typeof reviewFilterSchema>;
+
+export const actionDialogSchema = z.object({
+  status: z.enum(["IN_REVIEW", "REVIEWED", "RETURNED"]),
+  feedback: z.string(),
+});
+
+export type TActionDialogFormValues = z.infer<typeof actionDialogSchema>;

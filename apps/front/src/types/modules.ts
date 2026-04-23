@@ -1419,7 +1419,114 @@ export type TLatestListItem = {
 
 
 export type TTimelinePoint = {
-  date: string;
+  date؟: string;
   label: string;
   value: number;
+};
+
+export type TStatusChartItem = {
+  key: string;
+  value: number;
+  label: string;
+};
+
+export type TStudentDetailView = {
+  id: string;
+  email: string | null;
+  status: string | null;
+  mobile: string | null;
+  fullName: string | null;
+  gradeName: string | null;
+  avatarUrl: string | null;
+  createdAt: string | null;
+  classroomName: string | null;
+};
+
+
+export type TReviewFilterValues = {
+  query: string;
+  studentId: string | "ALL";
+  assignmentId: string | "ALL";
+  status: "ALL" | "PENDING" | "IN_REVIEW" | "REVIEWED" | "RETURNED";
+};
+
+export type TReviewRow = {
+  status: string;
+  reviewId: string;
+  createdAt: string;
+  studentId: string;
+  studentName: string;
+  assignmentId: string;
+  resultId: string | null;
+  assignmentTitle: string;
+  reviewedAt: string | null;
+};
+
+export type TReviewDetail = {
+  id: string;
+  status: string;
+  studentId: string;
+  createdAt: string;
+  studentName: string;
+  assignmentId: string;
+  feedback: string | null;
+  resultId: string | null;
+  assignmentTitle: string;
+  reviewedAt: string | null;
+  dominantKey: string | null;
+};
+
+export type TReviewSummaryCards = {
+  total: number;
+  isFetching?: boolean;
+  pendingCount: number;
+  inReviewCount: number;
+  reviewedCount: number;
+  returnedCount: number;
+};
+
+export type TCounselorReviewsFilter = {
+  onReset: () => void;
+  value: TReviewFilterValues;
+  onApply: (values: TReviewFilterValues) => void;
+  studentOptions: Array<{ value: string; label: string }>;
+  assignmentOptions: Array<{ value: string; label: string }>;
+};
+
+export type TCounselorReviewsTable = {
+  page: number;
+  total: number;
+  items: TReviewRow[];
+  isFetching?: boolean;
+  onPageChange: (page: number) => void;
+  onViewDetail: (reviewId: string) => void;
+  onOpenAction: (reviewId: string) => void;
+};
+
+export type TCounselorReviewDetailDialog = {
+  open: boolean;
+  isLoading?: boolean;
+  onReview: () => void;
+  detail: TReviewDetail | null;
+  onOpenChange: (open: boolean) => void;
+};
+
+export type TReviewActionFormValues = {
+  feedback: string;
+  status: "IN_REVIEW" | "REVIEWED" | "RETURNED";
+};
+
+export type TCounselorReviewActionDialog = {
+  open: boolean;
+  isLoading?: boolean;
+  detail: TReviewDetail | null;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (values: TReviewActionFormValues) => void | Promise<void>;
+};
+
+export type TLocalSummaryCardProps = {
+  title: string;
+  value: number;
+  icon: LucideIcon;
+  isFetching?: boolean;
 };

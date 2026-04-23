@@ -3,6 +3,9 @@ import { TAuthIdentityPayload } from "@/types/constant";
 import { TStudentDetailView } from "@/types/modules";
 import { useI18n } from "@/hooks/useI18n";
 
+import en from "@i18n/en.json";
+import fa from "@i18n/fa.json";
+
 // ============ Otp Request =============
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const mapEmailOrMobile = (value: string): TAuthIdentityPayload => {
@@ -173,3 +176,32 @@ export const getStatusDistribution = (
         : t(`${labelPrefix}.${key}`, {}, key),
   }));
 };
+
+// ================= i18 ==================
+export const dictionaries = { en, fa } as const;
+
+export type Dictionary = typeof en;
+export type DictValue =
+  | string
+  | number
+  | boolean
+  | null
+  | DictObject
+  | DictValue[];
+export type DictObject = { [key: string]: DictValue };
+
+const isObject = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null;
+
+export const getByKey = (obj: unknown, key: string): unknown => {
+  const parts = key.split(".");
+  let cur: unknown = obj;
+  for (const part of parts) {
+    if (!isObject(cur)) return undefined;
+    cur = (cur as Record<string, unknown>)[part];
+  }
+  return cur;
+};
+
+export const isStringArray = (v: unknown): v is string[] =>
+  Array.isArray(v) && v.every((x) => typeof x === "string");

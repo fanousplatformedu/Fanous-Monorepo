@@ -26,6 +26,7 @@
       "@ui/*": ["./src/components/ui/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@lib/*": ["./src/lib/*"],
+      "@i18n/*": ["./src/i18n/*"],
       "@redux/*": ["./src/lib/redux/*"],
       "@validation/*": ["./src/lib/validation/*"],
       "@providers/*": ["./src/providers/*"],
