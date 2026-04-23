@@ -1,6 +1,5 @@
 import { TStatusChartItem, TStudentRow, TTimelinePoint } from "@/types/modules";
 import { TAuthIdentityPayload } from "@/types/constant";
-import { TStudentDetailView } from "@/types/modules";
 import { useI18n } from "@/hooks/useI18n";
 
 import en from "@i18n/en.json";
@@ -8,6 +7,7 @@ import fa from "@i18n/fa.json";
 
 // ============ Otp Request =============
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const mapEmailOrMobile = (value: string): TAuthIdentityPayload => {
   const normalized = value.trim();
   if (!normalized) return {};
@@ -48,7 +48,7 @@ export const getApiErrorMessage = (
   return fallback;
 };
 
-// ============== School Admin Dashboard =================
+// ============== Shared =================
 export const toIsoFromLocalDateTime = (value?: string): string | undefined => {
   if (!value?.trim()) return undefined;
   const date = new Date(value);
@@ -62,14 +62,13 @@ export const formatShortDate = (value: string) => {
   return `${date.getMonth() + 1}/${date.getDate()}`;
 };
 
-// ============== Profile ===============
 export const getInitials = (fullName?: string | null) => {
   if (!fullName?.trim()) return "P";
   const parts = fullName.trim().split(/\s+/).slice(0, 2);
   return parts.map((part) => part[0]?.toUpperCase() ?? "").join("") || "P";
 };
 
-// ============== Counselor Dashboard ===============
+// ============== Generic object helpers ===============
 const getValue = (obj: unknown, key: string): unknown => {
   if (!obj || typeof obj !== "object") return undefined;
   return (obj as Record<string, unknown>)[key];
@@ -77,60 +76,6 @@ const getValue = (obj: unknown, key: string): unknown => {
 
 export const getString = (value: unknown): string | null => {
   return typeof value === "string" ? value : null;
-};
-
-export const getRow = (item: unknown): TStudentRow => {
-  const currentEnrollment =
-    getValue(item, "currentEnrollment") ??
-    (Array.isArray(getValue(item, "enrollments"))
-      ? (getValue(item, "enrollments") as unknown[])[0]
-      : null);
-  const classroom = getValue(currentEnrollment, "classroom");
-  const grade = getValue(classroom, "grade");
-  return {
-    id: getString(getValue(item, "id")) ?? "",
-    fullName: getString(getValue(item, "fullName")),
-    email: getString(getValue(item, "email")),
-    mobile: getString(getValue(item, "mobile")),
-    avatarUrl: getString(getValue(item, "avatarUrl")),
-    status: getString(getValue(item, "status")),
-    assignedAt:
-      getString(getValue(item, "assignedAt")) ??
-      getString(getValue(item, "createdAt")),
-    gradeName: getString(getValue(grade, "name")),
-    classroomName: getString(getValue(classroom, "name")),
-  };
-};
-
-export const getDetail = (item: unknown): TStudentDetailView | null => {
-  if (!item) return null;
-  const currentEnrollment =
-    getValue(item, "currentEnrollment") ??
-    (Array.isArray(getValue(item, "enrollments"))
-      ? (getValue(item, "enrollments") as unknown[])[0]
-      : null);
-  const classroom = getValue(currentEnrollment, "classroom");
-  const grade = getValue(classroom, "grade");
-  return {
-    id: getString(getValue(item, "id")) ?? "",
-    fullName: getString(getValue(item, "fullName")),
-    email: getString(getValue(item, "email")),
-    mobile: getString(getValue(item, "mobile")),
-    avatarUrl: getString(getValue(item, "avatarUrl")),
-    status: getString(getValue(item, "status")),
-    gradeName: getString(getValue(grade, "name")),
-    classroomName: getString(getValue(classroom, "name")),
-    createdAt: getString(getValue(item, "createdAt")),
-  };
-};
-
-export const getTimeline = (
-  items: unknown[] | null | undefined,
-): TTimelinePoint[] => {
-  return (items ?? []).map((item) => ({
-    label: getString(getValue(item, "label")) ?? "-",
-    overall: Number(getValue(item, "overall") ?? 0),
-  }));
 };
 
 export const getNullableString = (value: unknown): string | undefined =>
@@ -154,6 +99,36 @@ export const getDateValue = (obj: unknown, keys: string[]): number => {
 export const getRecordValue = (obj: unknown, key: string): unknown => {
   if (!obj || typeof obj !== "object") return undefined;
   return (obj as Record<string, unknown>)[key];
+};
+
+// ============== Counselor helpers ===============
+export const getRow = (item: unknown): TStudentRow => {
+  return {
+    id: getString(getValue(item, "id")) ?? "",
+    fullName: getString(getValue(item, "fullName")) ?? "-",
+    assignedAt:
+      getString(getValue(item, "assignedAt")) ??
+      getString(getValue(item, "createdAt")) ??
+      new Date(0).toISOString(),
+    email: getString(getValue(item, "email")),
+    mobile: getString(getValue(item, "mobile")),
+    pendingReviews: Number(getValue(item, "pendingReviews") ?? 0),
+    latestResultAt: getString(getValue(item, "latestResultAt")),
+    upcomingSessionAt: getString(getValue(item, "upcomingSessionAt")),
+    linkStatus:
+      (getString(getValue(item, "linkStatus")) as TStudentRow["linkStatus"]) ??
+      "ACTIVE",
+  };
+};
+
+export const getTimeline = (
+  items: unknown[] | null | undefined,
+): TTimelinePoint[] => {
+  return (items ?? []).map((item) => ({
+    date: getString(getValue(item, "date")) ?? undefined,
+    label: getString(getValue(item, "label")) ?? "-",
+    value: Number(getValue(item, "value") ?? getValue(item, "overall") ?? 0),
+  }));
 };
 
 export const getStatusDistribution = (
@@ -182,12 +157,13 @@ export const dictionaries = { en, fa } as const;
 
 export type Dictionary = typeof en;
 export type DictValue =
+  | null
   | string
   | number
   | boolean
-  | null
   | DictObject
   | DictValue[];
+
 export type DictObject = { [key: string]: DictValue };
 
 const isObject = (v: unknown): v is Record<string, unknown> =>

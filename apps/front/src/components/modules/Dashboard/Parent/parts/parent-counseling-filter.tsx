@@ -51,6 +51,10 @@ export const ParentCounselingFilters = ({
       value: "CANCELED",
       label: t("dashboard.parent.counseling.filters.statusOptions.CANCELED"),
     },
+    {
+      value: "RESCHEDULED",
+      label: t("dashboard.parent.counseling.filters.statusOptions.RESCHEDULED"),
+    },
   ];
 
   const allChildrenOptions = [

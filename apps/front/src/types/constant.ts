@@ -60,3 +60,22 @@ export type TExportColumn<T> = {
   header: string;
   accessor: (row: T) => string | number | null | undefined;
 };
+
+export type TResultLike = {
+  musical?: number | null;
+  linguistic?: number | null;
+  logicalMath?: number | null;
+  naturalistic?: number | null;
+  visualSpatial?: number | null;
+  interpersonal?: number | null;
+  intrapersonal?: number | null;
+  assignmentTitle?: string | null;
+  bodilyKinesthetic?: number | null;
+  dominantIntelligence?: string | null;
+};
+
+export type TTranslate = (
+  key: string,
+  fallback?: string,
+  params?: Record<string, string>,
+) => string;

@@ -48,7 +48,6 @@ const ParentOverviewPage = () => {
     isSessionsLoading;
 
   // =============== Use Memo ================
-  const children = useMemo(() => childrenData?.items ?? [], [childrenData]);
   const results = useMemo(() => resultsData?.items ?? [], [resultsData]);
   const activities = useMemo(
     () => activitiesData?.items ?? [],

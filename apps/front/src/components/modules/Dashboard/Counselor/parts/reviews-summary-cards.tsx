@@ -1,7 +1,7 @@
 "use client";
 
 import { TReviewSummaryCards } from "@/types/modules";
-import { LocalSummaryCard } from "./review-summary-cards";
+import { LocalSummaryCard } from "@elements/summary-cards";
 import { useI18n } from "@/hooks/useI18n";
 
 import * as L from "lucide-react";

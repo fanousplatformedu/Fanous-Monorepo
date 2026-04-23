@@ -1,6 +1,7 @@
 "use client";
 
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
+import { ParentResourceCategoryBadge } from "./resource-category-badge";
 import { TResourceDetailDialog } from "@/types/modules";
 import { useI18n } from "@/hooks/useI18n";
 

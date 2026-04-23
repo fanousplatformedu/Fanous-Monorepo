@@ -76,3 +76,13 @@ export const CounselorAssignmentsFilterSchema = z.object({
 export type TCounselorAssignmentsFilterValues = z.infer<
   typeof CounselorAssignmentsFilterSchema
 >;
+
+export const accessRequestFilterSchema = z.object({
+  query: z.string(),
+  status: z.enum(["ALL", "PENDING", "APPROVED", "REJECTED", "CANCELED"]),
+  requestedRole: z.enum(["ALL", "STUDENT", "PARENT", "COUNSELOR"]),
+});
+
+export type TAccessRequestFilterFormValues = z.infer<
+  typeof accessRequestFilterSchema
+>;

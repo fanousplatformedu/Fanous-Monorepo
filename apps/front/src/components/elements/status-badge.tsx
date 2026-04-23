@@ -23,17 +23,34 @@ const statusClassMap: Record<string, string> = {
 
   ARCHIVED:
     "border-slate-500/20 bg-slate-500/10 text-slate-700 dark:text-slate-300",
+  PUBLISHED:
+    "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+  DRAFT:
+    "border-slate-500/20 bg-slate-500/10 text-slate-700 dark:text-slate-300",
+  CLOSED: "border-rose-500/20 bg-rose-500/10 text-rose-700 dark:text-rose-300",
+  IN_REVIEW:
+    "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+  REVIEWED:
+    "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+  RETURNED:
+    "border-rose-500/20 bg-rose-500/10 text-rose-700 dark:text-rose-300",
 };
 
 const statusKeyMap: Record<string, string> = {
+  DRAFT: "status.draft",
   ACTIVE: "status.active",
-  APPROVED: "status.approved",
+  CLOSED: "status.closed",
   PENDING: "status.pending",
-  SUSPENDED: "status.suspended",
-  REJECTED: "status.rejected",
-  DISABLED: "status.disabled",
   DELETED: "status.deleted",
+  APPROVED: "status.approved",
+  REJECTED: "status.rejected",
+  REVIEWED: "status.reviewed",
+  DISABLED: "status.disabled",
   ARCHIVED: "status.archived",
+  RETURNED: "status.returned",
+  IN_REVIEW: "status.inReview",
+  SUSPENDED: "status.suspended",
+  PUBLISHED: "status.published",
 };
 
 export const StatusBadge = ({ value, className }: TStatusBadgeProps) => {

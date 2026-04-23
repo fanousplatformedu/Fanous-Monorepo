@@ -39,3 +39,12 @@ export const actionDialogSchema = z.object({
 });
 
 export type TActionDialogFormValues = z.infer<typeof actionDialogSchema>;
+
+export const counselorAssignmentsFilterSchema = z.object({
+  query: z.string(),
+  studentId: z.string(),
+});
+
+export type TCounselorAssignmentsFilterFormValues = z.infer<
+  typeof counselorAssignmentsFilterSchema
+>;

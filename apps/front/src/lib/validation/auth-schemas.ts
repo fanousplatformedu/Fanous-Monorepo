@@ -5,6 +5,8 @@ export const adminLoginSchema = z.object({
   password: z.string().min(6),
 });
 
+export type TFormValues = z.infer<typeof adminLoginSchema>;
+
 export const accessRequestSchema = z
   .object({
     schoolId: z.string().min(1, "School is required"),

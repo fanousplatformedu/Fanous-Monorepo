@@ -4,12 +4,11 @@ import { TClassroomFiltersValues } from "@/lib/validation/school-admin-schemas";
 import { TCreateAssignmentForm } from "@/lib/validation/school-admin-schemas";
 import { TEnrollmentFilterForm } from "@/lib/validation/school-admin-schemas";
 import { TGradeFormValues } from "@/lib/validation/school-admin-schemas";
-import { adminLoginSchema } from "@/lib/validation/auth-schemas";
 import { TEnrollmentForm } from "@/lib/validation/school-admin-schemas";
 import { TClassroomForm } from "@/lib/validation/school-admin-schemas";
 import { UseFormReturn } from "react-hook-form";
+import { TFormValues } from "@/lib/validation/auth-schemas";
 import { LucideIcon } from "lucide-react";
-import { z } from "zod";
 
 import type * as TAPI from "@lib/graphql/generated";
 
@@ -57,8 +56,6 @@ export type TOtpFlipCardProps = {
   flipped: boolean;
   front: ReactNode;
 };
-
-export atExporttype TFormValues = z.infer<typeof adminLoginSchema>;
 
 export type TAdminLoginFormBaseProps<TMutationResult> = {
   title: string;
@@ -640,7 +637,6 @@ export type TCounselorAssignmentsTable = {
   onRestore: (assignmentId: string) => void;
 };
 
-
 export type TCounselorAssignmentsFilters = {
   value: {
     query: string;
@@ -658,7 +654,6 @@ export type TCounselorAssignmentsFilters = {
     status: "ALL" | "ACTIVE" | "ARCHIVED";
   }) => void;
 };
-
 
 export type TCounselorAssignmentsSummaryCards = {
   total: number;
@@ -991,6 +986,46 @@ export type TStudentResultDetail = {
   onChange: (tab: TDetailTab) => void;
 };
 
+export type TAccessRequestFilterValues = {
+  query: string;
+  status: "ALL" | "PENDING" | "APPROVED" | "REJECTED" | "CANCELED";
+  requestedRole: "ALL" | "STUDENT" | "PARENT" | "COUNSELOR";
+};
+
+export type TFilterValues = {
+  query: string;
+  gradeId: string;
+  scope: "ACTIVE_ONLY" | "ALL";
+};
+
+export type TAccessRequestRequestedRole =
+  | "ALL"
+  | "PARENT"
+  | "STUDENT"
+  | "COUNSELOR";
+
+// ========= Student - Assignments
+
+export type TStudentAssignmentFilterValues = {
+  query: string;
+  status: TStudentAssignmentStatusFilter;
+};
+
+export type TResultDominantIntelligence =
+  | "ALL"
+  | "LINGUISTIC"
+  | "LOGICAL_MATHEMATICAL"
+  | "MUSICAL"
+  | "BODILY_KINESTHETIC"
+  | "VISUAL_SPATIAL"
+  | "NATURALISTIC"
+  | "INTERPERSONAL"
+  | "INTRAPERSONAL";
+
+export type TResultFilterValues = {
+  dominantIntelligence: TResultDominantIntelligence;
+};
+
 export type TStudentResultTab = {
   topScores: TChartRow[];
   chartData: TChartRow[];
@@ -1058,11 +1093,29 @@ export type TCounselingRequest = {
   onSubmit: (values: TAPI.ParentRequestSessionInput) => void | Promise<void>;
 };
 
+export type TParentCounselingStatus =
+  | "REQUESTED"
+  | "CONFIRMED"
+  | "COMPLETED"
+  | "CANCELED"
+  | "RESCHEDULED";
+
 export type TParentCounselingFilterValues = {
   query: string;
-  childId: string | "ALL";
-  status: "ALL" | TAPI.CounselingSessionStatus;
+  childId: string;
+  status: "ALL" | TParentCounselingStatus;
 };
+
+export type TAccessRequestRowStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "CANCELED";
+
+export type TAccessRequestRequestedRoleValue =
+  | "STUDENT"
+  | "PARENT"
+  | "COUNSELOR";
 
 export type TParentCounselingFilter = {
   onReset: () => void;
@@ -1253,7 +1306,6 @@ export type TOverviewSummaryCards = {
   totalActivities: number;
 };
 
-
 export type TResourcesSummaryCards = {
   careerCount: number;
   supportCount: number;
@@ -1315,7 +1367,6 @@ export type TOverviewStatus = {
   emptyText: string;
 };
 
-
 export type TOverviewSummaryDashboardCards = {
   isFetching?: boolean;
   totalStudents: number;
@@ -1332,7 +1383,6 @@ export type TCounselorStudentSummaryCards = {
   reviewLoadCount: number;
 };
 
-
 export type TStudentFilterValues = {
   query: string;
   status: "ALL" | TAPI.CounselorStudentLinkStatus;
@@ -1343,7 +1393,6 @@ export type TCounselorStudentFilter = {
   value: TStudentFilterValues;
   onApply: (values: TStudentFilterValues) => void;
 };
-
 
 export type TStudentRow = {
   id: string;
@@ -1356,7 +1405,6 @@ export type TStudentRow = {
   upcomingSessionAt: string | null;
   linkStatus: TAPI.CounselorStudentLinkStatus;
 };
-
 
 export type TCounselorStudentTable = {
   page: number;
@@ -1381,7 +1429,6 @@ export type TStudentDetail = {
   latestSessionAt: string | null;
 };
 
-
 export type TCounselorStudentDetailDialog = {
   open: boolean;
   isLoading?: boolean;
@@ -1391,7 +1438,6 @@ export type TCounselorStudentDetailDialog = {
   student: TStudentDetail | null;
   onOpenChange: (open: boolean) => void;
 };
-
 
 export type TCounselorScheduleSessionDialog = {
   open: boolean;
@@ -1415,11 +1461,10 @@ export type TLatestListItem = {
   meta?: string;
   badge?: string;
   subtitle?: string;
-}
-
+};
 
 export type TTimelinePoint = {
-  date؟: string;
+  date?: string;
   label: string;
   value: number;
 };
@@ -1441,7 +1486,6 @@ export type TStudentDetailView = {
   createdAt: string | null;
   classroomName: string | null;
 };
-
 
 export type TReviewFilterValues = {
   query: string;
@@ -1529,4 +1573,43 @@ export type TLocalSummaryCardProps = {
   value: number;
   icon: LucideIcon;
   isFetching?: boolean;
+};
+
+export type TAssignmentFilterValues = {
+  query: string;
+  studentId: string;
+};
+
+export type TCounselorAssignmentRow = {
+  title: string;
+  status: string;
+  assignmentId: string;
+  dueAt: string | null;
+  reviewedCount: number;
+  pendingReviews: number;
+  publishedAt: string | null;
+  totalAssignedStudents: number;
+};
+
+export type TAssignmentSummaryCards = {
+  total: number;
+  isFetching?: boolean;
+  reviewedCount: number;
+  publishedCount: number;
+  pendingReviewsCount: number;
+};
+
+export type TCounselorAssignmentsFilterProps = {
+  onReset: () => void;
+  value: TAssignmentFilterValues;
+  studentOptions: TSelectOption[];
+  onApply: (values: TAssignmentFilterValues) => void;
+};
+
+export type TCounselorAssignmentsTableProps = {
+  page: number;
+  total: number;
+  isFetching?: boolean;
+  items: TCounselorAssignmentRow[];
+  onPageChange: (page: number) => void;
 };

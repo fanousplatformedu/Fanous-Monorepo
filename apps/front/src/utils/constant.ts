@@ -1,5 +1,7 @@
 import { TChartRow, TSummaryPoint } from "@/types/modules";
-import { TNavItem, TSocialItem } from "@/types/constant";
+import { TSocialItem } from "@/types/constant";
+import { TNavItem } from "@/types/constant";
+import { useI18n } from "@/hooks/useI18n";
 
 import * as L from "lucide-react";
 
@@ -119,53 +121,29 @@ export const sizeClassMap = {
 };
 
 // ============ Student Result Detail =============
-type TTranslate = (
-  key: string,
-  params?: Record<string, string>,
-  fallback?: string,
-) => string;
+type TTranslate = ReturnType<typeof useI18n>["t"];
 
 export const getShortIntelligenceLabel = (key: string, t: TTranslate) => {
   const map: Record<string, string> = {
-    LINGUISTIC: t(
-      "dashboard.student.results.detail.shortLabels.LINGUISTIC",
-      {},
-      "Ling",
-    ),
+    LINGUISTIC: t("dashboard.student.results.detail.shortLabels.LINGUISTIC"),
     LOGICAL_MATHEMATICAL: t(
       "dashboard.student.results.detail.shortLabels.LOGICAL_MATHEMATICAL",
-      {},
-      "Logic",
     ),
-    MUSICAL: t(
-      "dashboard.student.results.detail.shortLabels.MUSICAL",
-      {},
-      "Music",
-    ),
+    MUSICAL: t("dashboard.student.results.detail.shortLabels.MUSICAL"),
     BODILY_KINESTHETIC: t(
       "dashboard.student.results.detail.shortLabels.BODILY_KINESTHETIC",
-      {},
-      "Body",
     ),
     VISUAL_SPATIAL: t(
       "dashboard.student.results.detail.shortLabels.VISUAL_SPATIAL",
-      {},
-      "Visual",
     ),
     NATURALISTIC: t(
       "dashboard.student.results.detail.shortLabels.NATURALISTIC",
-      {},
-      "Nature",
     ),
     INTERPERSONAL: t(
       "dashboard.student.results.detail.shortLabels.INTERPERSONAL",
-      {},
-      "Social",
     ),
     INTRAPERSONAL: t(
       "dashboard.student.results.detail.shortLabels.INTRAPERSONAL",
-      {},
-      "Self",
     ),
   };
   return map[key] ?? key;
@@ -180,7 +158,22 @@ export const getDominantInsightText = (
   return t(`dashboard.student.results.intelligences.${dominantIntelligence}`);
 };
 
-export const buildChartData = (result: any, t: TTranslate): TChartRow[] => {
+export const buildChartData = (
+  result:
+    | {
+        linguistic?: number | null;
+        logicalMath?: number | null;
+        musical?: number | null;
+        bodilyKinesthetic?: number | null;
+        visualSpatial?: number | null;
+        naturalistic?: number | null;
+        interpersonal?: number | null;
+        intrapersonal?: number | null;
+      }
+    | null
+    | undefined,
+  t: TTranslate,
+): TChartRow[] => {
   if (!result) return [];
   const rows: Array<{ key: string; value: number }> = [
     { key: "LINGUISTIC", value: Number(result.linguistic ?? 0) },
@@ -214,12 +207,7 @@ export const getAverageScore = (chartData: TChartRow[]) => {
 };
 
 export const getNarrativeSummary = (scoreSummary: unknown, t: TTranslate) => {
-  if (!scoreSummary)
-    return t(
-      "dashboard.student.results.detail.noSummary",
-      {},
-      "No summary is available for this result yet.",
-    );
+  if (!scoreSummary) return t("dashboard.student.results.detail.noSummary");
   if (typeof scoreSummary === "string") return scoreSummary;
   try {
     return JSON.stringify(scoreSummary, null, 2);
@@ -234,7 +222,13 @@ export const buildSummaryPoints = ({
   topStrength,
   t,
 }: {
-  result: any;
+  result:
+    | {
+        assignmentTitle?: string | null;
+        dominantIntelligence?: string | null;
+      }
+    | null
+    | undefined;
   averageScore: number;
   topStrength?: string;
   t: TTranslate;
@@ -255,20 +249,12 @@ export const buildSummaryPoints = ({
     },
     {
       icon: L.Percent,
-      label: t(
-        "dashboard.student.results.detail.averageScore",
-        {},
-        "Average score",
-      ),
+      label: t("dashboard.student.results.detail.averageScore"),
       value: `${averageScore}%`,
     },
     {
       icon: L.Award,
-      label: t(
-        "dashboard.student.results.detail.topStrength",
-        {},
-        "Top strength",
-      ),
+      label: t("dashboard.student.results.detail.topStrength"),
       value: topStrength || t("dashboard.student.results.common.notAvailable"),
     },
   ];

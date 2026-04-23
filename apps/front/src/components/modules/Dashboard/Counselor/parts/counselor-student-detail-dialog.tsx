@@ -11,7 +11,6 @@ export const CounselorStudentDetailDialog = ({
   open,
   student,
   timeline,
-  onExport,
   isLoading,
   onSchedule,
   onOpenChange,

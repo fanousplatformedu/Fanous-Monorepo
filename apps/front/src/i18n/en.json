@@ -1511,6 +1511,19 @@
           "compareSelected": "Compare Selected"
         },
         "detail": {
+          "topStrength": "Top strength",
+          "averageScore": "Average score",
+          "noSummary": "No summary is available for this result yet.",
+          "shortLabels": {
+            "LINGUISTIC": "Ling",
+            "LOGICAL_MATHEMATICAL": "Logic",
+            "MUSICAL": "Music",
+            "BODILY_KINESTHETIC": "Body",
+            "VISUAL_SPATIAL": "Visual",
+            "NATURALISTIC": "Nature",
+            "INTERPERSONAL": "Social",
+            "INTRAPERSONAL": "Self"
+          },
           "title": "Result Detail",
           "description": "Detailed intelligence profile, summary, and recommended career matches.",
           "assignment": "Assignment",
@@ -2554,6 +2567,43 @@
           "reviewFailed": "Failed to save review"
         }
       },
+      "assignments": {
+        "page": {
+          "title": "Assignments",
+          "description": "Track assignments linked to your assigned students."
+        },
+        "summary": {
+          "total": "Total assignments",
+          "published": "Published assignments",
+          "pendingReviews": "Pending reviews",
+          "reviewed": "Reviewed items"
+        },
+        "filtersCard": {
+          "title": "Filters",
+          "description": "Filter assignments by keyword or student."
+        },
+        "filters": {
+          "query": "Search by title",
+          "student": "Student"
+        },
+        "table": {
+          "title": "Assignments list",
+          "description": "Review assignment coverage and review workload.",
+          "columns": {
+            "title": "Title",
+            "status": "Status",
+            "dueAt": "Due date",
+            "publishedAt": "Published at",
+            "totalAssigned": "Assigned students",
+            "pendingReviews": "Pending reviews",
+            "reviewedCount": "Reviewed"
+          }
+        },
+        "empty": {
+          "title": "No assignments found",
+          "description": "There are no assignments matching the current filters."
+        }
+      },
       "nav": {
         "overview": "Overview",
         "students": "Students",
@@ -2571,13 +2621,19 @@
     "summary": "Page {{page}} of {{totalPages}} — Total {{total}} items"
   },
   "status": {
+    "draft": "Draft",
     "active": "Active",
-    "suspended": "Suspended",
+    "closed": "Closed",
+    "pending": "Pending",
+    "deleted": "Deleted",
     "archived": "Archived",
     "disabled": "Disabled",
-    "deleted": "Deleted",
-    "pending": "Pending",
+    "rejected": "Rejected",
     "approved": "Approved",
-    "rejected": "Rejected"
+    "returned": "Returned",
+    "reviewed": "Reviewed",
+    "inReview": "In Review",
+    "suspended": "Suspended",
+    "published": "Published"
   }
 }

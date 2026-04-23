@@ -19,11 +19,24 @@ export type TParentCounselingrequestValues = z.infer<
   typeof requestSessionSchema
 >;
 
+export const counselingStatusSchema = z.enum([
+  "ALL",
+  "REQUESTED",
+  "CONFIRMED",
+  "COMPLETED",
+  "CANCELED",
+  "RESCHEDULED",
+]);
+
 export const counselingFiltersSchema = z.object({
   query: z.string(),
-  status: z.string(),
   childId: z.string(),
+  status: counselingStatusSchema,
 });
+
+export type TParentCounselingFilterFormValues = z.infer<
+  typeof counselingFiltersSchema
+>;
 
 export const childrenFiltersSchema = z.object({
   query: z.string(),

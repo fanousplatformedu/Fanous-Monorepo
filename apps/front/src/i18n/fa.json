@@ -1521,6 +1521,19 @@
           "compareSelected": "مقایسه موارد انتخاب‌شده"
         },
         "detail": {
+          "topStrength": "بالاترین توانمندی",
+          "averageScore": "میانگین امتیاز",
+          "noSummary": "هنوز خلاصه‌ای برای این نتیجه در دسترس نیست.",
+          "shortLabels": {
+            "LINGUISTIC": "زبانی",
+            "LOGICAL_MATHEMATICAL": "منطقی",
+            "MUSICAL": "موسیقی",
+            "BODILY_KINESTHETIC": "بدنی",
+            "VISUAL_SPATIAL": "دیداری",
+            "NATURALISTIC": "طبیعت",
+            "INTERPERSONAL": "اجتماعی",
+            "INTRAPERSONAL": "درونی"
+          },
           "title": "جزئیات نتیجه",
           "description": "پروفایل کامل هوش‌ها، خلاصه نتیجه و پیشنهادهای شغلی را مشاهده کنید.",
           "assignment": "ارزیابی",
@@ -2564,6 +2577,43 @@
           "reviewFailed": "ثبت بررسی انجام نشد"
         }
       },
+      "assignments": {
+        "page": {
+          "title": "تکالیف",
+          "description": "تکالیف مربوط به دانش‌آموزان ارجاع‌شده به مشاور را مشاهده و پیگیری کنید."
+        },
+        "summary": {
+          "total": "کل تکالیف",
+          "published": "تکالیف منتشرشده",
+          "pendingReviews": "بررسی‌های در انتظار",
+          "reviewed": "موارد بررسی‌شده"
+        },
+        "filtersCard": {
+          "title": "فیلترها",
+          "description": "تکالیف را بر اساس عنوان یا دانش‌آموز فیلتر کنید."
+        },
+        "filters": {
+          "query": "جستجو بر اساس عنوان",
+          "student": "دانش‌آموز"
+        },
+        "table": {
+          "title": "لیست تکالیف",
+          "description": "پوشش تکالیف و حجم بررسی‌ها را مشاهده کنید.",
+          "columns": {
+            "title": "عنوان",
+            "status": "وضعیت",
+            "dueAt": "مهلت",
+            "publishedAt": "تاریخ انتشار",
+            "totalAssigned": "تعداد دانش‌آموزان",
+            "pendingReviews": "بررسی‌های در انتظار",
+            "reviewedCount": "بررسی‌شده"
+          }
+        },
+        "empty": {
+          "title": "تکلیفی یافت نشد",
+          "description": "هیچ تکلیفی با فیلترهای فعلی پیدا نشد."
+        }
+      },
       "nav": {
         "overview": "نمای کلی",
         "students": "دانش‌آموزان",
@@ -2582,12 +2632,18 @@
   },
   "status": {
     "active": "فعال",
+    "closed": "بسته",
+    "draft": "پیش‌نویس",
     "suspended": "معلق",
-    "archived": "آرشیوشده",
-    "disabled": "غیرفعال",
     "deleted": "حذف‌شده",
+    "rejected": "ردشده",
+    "disabled": "غیرفعال",
+    "archived": "آرشیوشده",
     "pending": "در انتظار",
     "approved": "تاییدشده",
-    "rejected": "ردشده"
+    "reviewed": "بررسی‌شده",
+    "published": "منتشرشده",
+    "returned": "برگشت‌خورده",
+    "inReview": "در حال بررسی"
   }
 }
