@@ -25,8 +25,12 @@ export const requestOtpSchema = z.object({
   emailOrMobile: z.string().min(3, "Email or mobile is required"),
 });
 
+export type RequestValues = z.infer<typeof requestOtpSchema>;
+
 export const verifyOtpSchema = z.object({
   schoolCode: z.string().min(1, "School is required"),
   emailOrMobile: z.string().min(3, "Email or mobile is required"),
   code: z.string().min(4).max(6),
 });
+
+export type VerifyValues = z.infer<typeof verifyOtpSchema>;

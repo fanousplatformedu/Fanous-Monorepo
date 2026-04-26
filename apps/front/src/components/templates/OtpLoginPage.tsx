@@ -1,16 +1,15 @@
 "use client";
 
-import {
-  requestOtpSchema,
-  verifyOtpSchema,
-} from "@/lib/validation/auth-schemas";
+import { RequestValues, VerifyValues } from "@/lib/validation/auth-schemas";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { usePublicSchoolsQuery } from "@/lib/redux/api";
 import { getRoleDashboardPath } from "@/utils/auth-role-helper";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { useMemo, useState } from "react";
+import { requestOtpSchema } from "@/lib/validation/auth-schemas";
 import { mapEmailOrMobile } from "@/utils/function-helper";
+import { verifyOtpSchema } from "@/lib/validation/auth-schemas";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Background } from "@elements/background";
@@ -18,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/hooks/useI18n";
 import { Button } from "@ui/button";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import * as API from "@/lib/redux/api";
 import * as C from "@ui/card";
@@ -31,30 +29,32 @@ import AuthPageShell from "@modules/Auth/AuthPageShell";
 import AuthPageBadge from "@modules/Auth/AuthPageBadge";
 import OtpFlipCard from "@modules/Auth/OtpFlipCard";
 
-type RequestValues = z.infer<typeof requestOtpSchema>;
-type VerifyValues = z.infer<typeof verifyOtpSchema>;
-
 const OtpLoginPage = () => {
   const { t } = useI18n();
+
+  // ========== Router ============
   const router = useRouter();
   const dispatch = useAppDispatch();
 
+  // ============ States ============
   const [flipped, setFlipped] = useState(false);
 
+  // ============ API Hooks ===============
   const [requestOtp, { isLoading: requesting }] = API.useRequestOtpMutation();
   const [verifyOtp, { isLoading: verifying }] = API.useVerifyOtpMutation();
-
   const {
     data: schoolsData,
     isLoading: isSchoolsLoading,
     isError: isSchoolsError,
   } = usePublicSchoolsQuery();
 
+  // ============ Use Memo =============
   const availableSchools = useMemo(
     () => (schoolsData?.items ?? []).filter((school) => Boolean(school.code)),
     [schoolsData],
   );
 
+  // ============= Hook Form ============
   const requestForm = useForm<RequestValues>({
     resolver: zodResolver(requestOtpSchema),
     defaultValues: {
@@ -62,7 +62,6 @@ const OtpLoginPage = () => {
       emailOrMobile: "",
     },
   });
-
   const verifyForm = useForm<VerifyValues>({
     resolver: zodResolver(verifyOtpSchema),
     defaultValues: {
@@ -72,6 +71,7 @@ const OtpLoginPage = () => {
     },
   });
 
+  // ============== Submit Handler =================
   const onRequest: SubmitHandler<RequestValues> = async (values) => {
     try {
       const identityPayload = mapEmailOrMobile(values.emailOrMobile);
@@ -98,6 +98,7 @@ const OtpLoginPage = () => {
     }
   };
 
+  // ============= Submit Handler =================
   const onVerify: SubmitHandler<VerifyValues> = async (values) => {
     try {
       const identityPayload = mapEmailOrMobile(values.emailOrMobile);
@@ -148,6 +149,7 @@ const OtpLoginPage = () => {
     label: school.name,
   }));
 
+  // ============= Front Card =============
   const cardFront = (
     <AuthGlassCard className="min-h-[540px]">
       <C.CardHeader className="space-y-3 px-7 pt-8 text-center">
@@ -226,6 +228,7 @@ const OtpLoginPage = () => {
     </AuthGlassCard>
   );
 
+  // ============ Back Card ===============
   const cardBack = (
     <AuthGlassCard className="min-h-[540px]">
       <C.CardHeader className="space-y-3 px-7 pt-8 text-center">
@@ -240,27 +243,27 @@ const OtpLoginPage = () => {
       <C.CardContent className="px-7 pb-7">
         <F.Form {...verifyForm}>
           <form
-            onSubmit={verifyForm.handleSubmit(onVerify)}
             className="space-y-5"
+            onSubmit={verifyForm.handleSubmit(onVerify)}
           >
             <FloatingSelectField
-              control={verifyForm.control}
               name="schoolCode"
-              label={t("form.school")}
-              disabled={isSchoolsLoading || schoolOptions.length === 0}
               options={schoolOptions}
+              label={t("form.school")}
+              control={verifyForm.control}
+              disabled={isSchoolsLoading || schoolOptions.length === 0}
             />
 
             <FloatingInputField
-              control={verifyForm.control}
               name="emailOrMobile"
+              control={verifyForm.control}
               label={t("form.emailOrMobile")}
             />
 
             <FloatingInputField
-              control={verifyForm.control}
               name="code"
               label={t("form.otp")}
+              control={verifyForm.control}
             />
 
             <div className="flex gap-3 pt-1">
