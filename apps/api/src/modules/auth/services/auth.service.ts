@@ -3,7 +3,9 @@ import { UserStatus, OtpChannel, OtpPurpose } from "@prisma/client";
 import { Role, SchoolStatus, SessionStatus } from "@prisma/client";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { setAuthCookies, clearAuthCookies } from "@auth/utils/auth.cookies";
+import { ServiceUnavailableException } from "@nestjs/common";
 import { randomBytes, createHash } from "crypto";
+import { NotificationService } from "@modules/notif/services/notif.service";
 import { LogoutResultEntity } from "@auth/entities/logout-result.entity";
 import { AuthPayloadEntity } from "@auth/entities/auth-payload.entity";
 import { Request, Response } from "express";
@@ -20,6 +22,12 @@ import * as argon2 from "argon2";
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly notifService: NotificationService,
+  ) {}
+
   private readonly accessSeconds = parseInt(
     process.env.JWT_ACCESS_TTL_SECONDS ?? "900",
     10,
@@ -34,16 +42,11 @@ export class AuthService {
   private readonly cookieSecure =
     (process.env.COOKIE_SECURE ?? "true") === "true";
   private readonly cookieSameSite =
-    (process.env.COOKIE_SAMESITE as any) ?? "lax";
+    (process.env.COOKIE_SAMESITE as "lax" | "strict" | "none" | undefined) ??
+    "lax";
 
   private readonly adminRoles: Role[] = [Role.SCHOOL_ADMIN, Role.SUPER_ADMIN];
 
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly jwtService: JwtService,
-  ) {}
-
-  // ===================== Admin username/password =====================
   async adminLogin(
     input: AdminLoginInput,
     req: Request,
@@ -93,7 +96,7 @@ export class AuthService {
 
     await this.issueTokensAndSetCookies(
       user.id,
-      user.role, // ✅ Role
+      user.role,
       user.schoolId ?? null,
       req,
       res,
@@ -113,7 +116,6 @@ export class AuthService {
     };
   }
 
-  // ===================== OTP Request =====================
   async requestOtp(input: RequestOtpInput): Promise<OtpResponseEntity> {
     const { destination, channel, schoolId } =
       await this.resolveDestinationAndTenant(input);
@@ -122,15 +124,21 @@ export class AuthService {
     await this.ensureUserAndSchoolActive(user.id);
 
     const latest = await this.prismaService.otpCode.findFirst({
-      where: { schoolId: user.schoolId!, destination, consumedAt: null },
+      where: {
+        schoolId: user.schoolId!,
+        destination,
+        consumedAt: null,
+      },
       orderBy: { createdAt: "desc" },
     });
 
     const now = new Date();
+
     if (latest?.resendAfter && latest.resendAfter > now) {
       const diff = Math.ceil(
         (latest.resendAfter.getTime() - now.getTime()) / 1000,
       );
+
       throw new BadRequestException({
         code: AuthErrorCode.OTP_RESEND_COOLDOWN,
         resendAfterSeconds: diff,
@@ -139,7 +147,6 @@ export class AuthService {
 
     const code = this.generateOtpCode();
     const codeHash = await argon2.hash(code);
-
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
     const resendAfter = new Date(Date.now() + 60 * 1000);
 
@@ -157,12 +164,23 @@ export class AuthService {
       },
     });
 
-    console.log(`[DEV OTP] ${destination} => ${code}`);
-
-    return { message: AuthMessage.OTP_SENT, resendAfterSeconds: 60 };
+    if (channel === OtpChannel.SMS) {
+      const result = await this.notifService.sendOtpSms(destination, code);
+      if (result.message !== "SENT") {
+        throw new ServiceUnavailableException({
+          code: AuthErrorCode.OTP_SEND_FAILED,
+          message: result.errorMessage,
+        });
+      }
+    } else {
+      console.log(`[DEV EMAIL OTP] ${destination} => ${code}`);
+    }
+    return {
+      message: AuthMessage.OTP_SENT,
+      resendAfterSeconds: 60,
+    };
   }
 
-  // ===================== OTP Verify =====================
   async verifyOtp(
     input: VerifyOtpInput,
     req: Request,
@@ -170,10 +188,8 @@ export class AuthService {
   ): Promise<AuthPayloadEntity> {
     const { destination, channel, schoolId } =
       await this.resolveDestinationAndTenant(input);
-
     const user = await this.findUserForOtp(destination, channel, schoolId);
     await this.ensureUserAndSchoolActive(user.id);
-
     const otp = await this.prismaService.otpCode.findFirst({
       where: {
         schoolId: user.schoolId!,
@@ -183,7 +199,6 @@ export class AuthService {
       },
       orderBy: { createdAt: "desc" },
     });
-
     if (!otp)
       throw new UnauthorizedException({ code: AuthErrorCode.OTP_INVALID });
     if (otp.expiresAt < new Date())
@@ -192,7 +207,6 @@ export class AuthService {
       throw new UnauthorizedException({
         code: AuthErrorCode.OTP_TOO_MANY_ATTEMPTS,
       });
-
     const ok = await argon2.verify(otp.codeHash, input.code);
     if (!ok) {
       await this.prismaService.otpCode.update({
@@ -201,12 +215,10 @@ export class AuthService {
       });
       throw new UnauthorizedException({ code: AuthErrorCode.OTP_INVALID });
     }
-
     await this.prismaService.otpCode.update({
       where: { id: otp.id },
       data: { consumedAt: new Date() },
     });
-
     await this.issueTokensAndSetCookies(
       user.id,
       user.role,
@@ -214,12 +226,10 @@ export class AuthService {
       req,
       res,
     );
-
     await this.prismaService.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
-
     return {
       message: AuthMessage.OTP_VERIFIED,
       userId: user.id,
@@ -229,17 +239,13 @@ export class AuthService {
     };
   }
 
-  // ===================== Refresh =====================
   async refreshAuth(req: Request, res: Response): Promise<AuthPayloadEntity> {
     const sid: string | undefined = req.cookies?.sid;
     const refreshToken: string | undefined = req.cookies?.refresh_token;
-
-    if (!sid || !refreshToken) {
+    if (!sid || !refreshToken)
       throw new UnauthorizedException({
         code: AuthErrorCode.SESSION_NOT_FOUND,
       });
-    }
-
     const session = await this.prismaService.authSession.findUnique({
       where: { sid },
       include: {
@@ -254,31 +260,24 @@ export class AuthService {
         },
       },
     });
-
     if (!session)
       throw new UnauthorizedException({
         code: AuthErrorCode.SESSION_NOT_FOUND,
       });
-
     if (
       session.status !== SessionStatus.ACTIVE ||
       session.expiresAt < new Date()
-    ) {
+    )
       throw new UnauthorizedException({ code: AuthErrorCode.SESSION_REVOKED });
-    }
-
-    if (session.user.status !== UserStatus.ACTIVE) {
+    if (session.user.status !== UserStatus.ACTIVE)
       throw new ForbiddenException({ code: AuthErrorCode.USER_DISABLED });
-    }
     if (session.user.role !== Role.SUPER_ADMIN) {
       if (
         !session.user.schoolId ||
         session.user.school?.status !== SchoolStatus.ACTIVE
-      ) {
+      )
         throw new ForbiddenException({ code: AuthErrorCode.SCHOOL_SUSPENDED });
-      }
     }
-
     const refreshHash = this.sha256(refreshToken);
     if (refreshHash !== session.refreshTokenHash) {
       await this.prismaService.authSession.update({
@@ -287,12 +286,10 @@ export class AuthService {
       });
       throw new UnauthorizedException({ code: AuthErrorCode.REFRESH_INVALID });
     }
-
     await this.prismaService.authSession.update({
       where: { sid },
       data: { status: SessionStatus.REVOKED, revokedAt: new Date() },
     });
-
     await this.issueTokensAndSetCookies(
       session.user.id,
       session.user.role,
@@ -301,7 +298,6 @@ export class AuthService {
       res,
       sid,
     );
-
     return {
       message: AuthMessage.REFRESHED,
       userId: session.user.id,
@@ -310,23 +306,19 @@ export class AuthService {
     };
   }
 
-  // ===================== Logout =====================
   async logout(req: Request, res: Response): Promise<LogoutResultEntity> {
     const sid: string | undefined = req.cookies?.sid;
-
     if (sid) {
       await this.prismaService.authSession.updateMany({
         where: { sid, status: SessionStatus.ACTIVE },
         data: { status: SessionStatus.REVOKED, revokedAt: new Date() },
       });
     }
-
     clearAuthCookies(res, {
       domain: this.cookieDomain,
       secure: this.cookieSecure,
       sameSite: this.cookieSameSite,
     });
-
     return { message: AuthMessage.LOGGED_OUT };
   }
 
@@ -339,17 +331,14 @@ export class AuthService {
       where: { userId, status: SessionStatus.ACTIVE },
       data: { status: SessionStatus.REVOKED, revokedAt: new Date() },
     });
-
     clearAuthCookies(res, {
       domain: this.cookieDomain,
       secure: this.cookieSecure,
       sameSite: this.cookieSameSite,
     });
-
     return { message: AuthMessage.LOGGED_OUT };
   }
 
-  // ===================== Helpers =====================
   private async issueTokensAndSetCookies(
     userId: string,
     role: Role,
@@ -360,7 +349,6 @@ export class AuthService {
   ) {
     const sid = this.randomToken(18);
     const refreshToken = this.randomToken(32);
-
     const accessToken = await this.jwtService.signAsync(
       { sub: userId, role, sid },
       {
@@ -368,9 +356,7 @@ export class AuthService {
         expiresIn: this.accessSeconds,
       },
     );
-
     const refreshHash = this.sha256(refreshToken);
-
     await this.prismaService.authSession.create({
       data: {
         sid,
@@ -384,7 +370,6 @@ export class AuthService {
         expiresAt: new Date(Date.now() + this.refreshSeconds * 1000),
       },
     });
-
     setAuthCookies(
       res,
       { accessToken, refreshToken, sid },
@@ -411,30 +396,24 @@ export class AuthService {
   }> {
     const hasEmail = !!input.email;
     const hasMobile = !!input.mobile;
-
-    if ((hasEmail && hasMobile) || (!hasEmail && !hasMobile)) {
-      throw new BadRequestException("Provide either email or mobile");
-    }
-
+    if ((hasEmail && hasMobile) || (!hasEmail && !hasMobile))
+      throw new BadRequestException({
+        code: AuthErrorCode.INVALID_CREDENTIALS,
+        message: "Provide either email or mobile.",
+      });
     const channel: OtpChannel = hasEmail ? OtpChannel.EMAIL : OtpChannel.SMS;
-
     const destination = hasEmail
       ? this.normalizeEmail(input.email!)
       : this.normalizeMobile(input.mobile!);
-
     if (input.schoolCode) {
       const school = await this.prismaService.school.findFirst({
         where: { code: input.schoolCode },
         select: { id: true },
       });
-
-      if (!school) {
+      if (!school)
         throw new BadRequestException({ code: AuthErrorCode.TENANT_NOT_FOUND });
-      }
-
       return { destination, channel, schoolId: school.id };
     }
-
     return { destination, channel, schoolId: null };
   }
 
@@ -447,7 +426,6 @@ export class AuthService {
       channel === OtpChannel.EMAIL
         ? { email: destination }
         : { mobile: destination };
-
     const select = {
       id: true,
       role: true,
@@ -455,18 +433,15 @@ export class AuthService {
       status: true,
       fullName: true,
     };
-
     if (schoolId) {
       const user = await this.prismaService.user.findFirst({
         where: { ...whereBase, schoolId, status: UserStatus.ACTIVE },
         select,
       });
-
-      if (!user) {
+      if (!user)
         throw new UnauthorizedException({
           code: AuthErrorCode.ACCESS_NOT_APPROVED,
         });
-      }
       return user;
     }
 
@@ -475,15 +450,12 @@ export class AuthService {
       select,
       take: 2,
     });
-
-    if (users.length === 0) {
+    if (users.length === 0)
       throw new UnauthorizedException({
         code: AuthErrorCode.ACCESS_NOT_APPROVED,
       });
-    }
-    if (users.length > 1) {
+    if (users.length > 1)
       throw new BadRequestException({ code: AuthErrorCode.AMBIGUOUS_TENANT });
-    }
     return users[0];
   }
 
@@ -497,18 +469,15 @@ export class AuthService {
         school: { select: { status: true } },
       },
     });
-
     if (!user)
       throw new UnauthorizedException({
         code: AuthErrorCode.INVALID_CREDENTIALS,
       });
     if (user.status !== UserStatus.ACTIVE)
       throw new ForbiddenException({ code: AuthErrorCode.USER_DISABLED });
-
     if (user.role !== Role.SUPER_ADMIN) {
-      if (!user.schoolId || user.school?.status !== SchoolStatus.ACTIVE) {
+      if (!user.schoolId || user.school?.status !== SchoolStatus.ACTIVE)
         throw new ForbiddenException({ code: AuthErrorCode.SCHOOL_SUSPENDED });
-      }
     }
   }
 
@@ -521,7 +490,12 @@ export class AuthService {
   }
 
   private normalizeMobile(mobile: string) {
-    return mobile.trim();
+    const value = mobile.trim().replace(/\s+/g, "");
+    if (value.startsWith("+98")) return `0${value.slice(3)}`;
+    if (value.startsWith("0098")) return `0${value.slice(4)}`;
+    if (value.startsWith("98") && value.length === 12)
+      return `0${value.slice(2)}`;
+    return value;
   }
 
   private randomToken(bytes: number) {

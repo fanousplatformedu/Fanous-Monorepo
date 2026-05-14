@@ -14,10 +14,9 @@ export type TSendEmailArgs = {
   subject: string;
 };
 
-// ✅ base مشترک برای همه templateها
 type TNotifyBase = {
+  appName?: string;
   destination: string;
-  appName?: string; // ✅ حالا برای همه موجود است
 };
 
 export type TNotifyTemplateArgs =
@@ -45,3 +44,17 @@ export type TNotifyTemplateArgs =
       template: NotificationTemplate.ACCESS_REQUEST_REJECTED;
       channel: NotificationChannel.SMS | NotificationChannel.EMAIL;
     });
+
+export type TKavenegarSendSmsArgs = {
+  to: string;
+  message: string;
+  sender?: string;
+};
+
+export type TKavenegarVerifyLookupArgs = {
+  token: string;
+  token2?: string;
+  token3?: string;
+  receptor: string;
+  template: string;
+};

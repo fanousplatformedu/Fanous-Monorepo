@@ -7,18 +7,14 @@ import { NotificationTemplate } from "@notif/enums/notif-template.enum";
 import { NotificationChannel } from "@notif/enums/notif-channel.enum";
 import { TNotifyTemplateArgs } from "@notif/types/notif.types";
 import { NotificationMessage } from "@notif/enums/notif-message.enum";
+import { KavenegarService } from "@notif/services/kavenegar.service";
 
 import nodemailer from "nodemailer";
-import axios from "axios";
 
 @Injectable()
 export class NotificationService {
   private readonly appName = process.env.APP_NAME ?? "App";
   private readonly baseUrl = process.env.APP_BASE_URL ?? "";
-
-  private readonly kavenegarKey = process.env.KAVENEGAR_API_KEY ?? "";
-  private readonly kavenegarSender = process.env.KAVENEGAR_SENDER ?? "";
-
   private readonly mailHost = process.env.MAIL_HOST ?? "";
   private readonly mailPort = parseInt(process.env.MAIL_PORT ?? "465", 10);
   private readonly mailUser = process.env.MAIL_USER ?? "";
@@ -26,20 +22,22 @@ export class NotificationService {
   private readonly mailFromAddress = process.env.MAIL_FROM_ADDRESS ?? "";
   private readonly mailFromName = process.env.MAIL_FROM_NAME ?? this.appName;
 
-  private smtpTransport = this.createTransport();
+  private readonly otpTemplate =
+    process.env.KAVENEGAR_OTP_TEMPLATE ?? "loginotp";
+  private readonly accessApprovedTemplate =
+    process.env.KAVENEGAR_TEMPLATE_ACCESS_APPROVED ?? "";
+  private readonly accessRejectedTemplate =
+    process.env.KAVENEGAR_TEMPLATE_ACCESS_REJECTED ?? "";
+  private readonly smtpTransport = this.createTransport();
+
+  constructor(private readonly kavenegarService: KavenegarService) {}
 
   async notifyByTemplate(
     args: TNotifyTemplateArgs,
   ): Promise<NotificationResultEntity> {
+    if (args.channel === NotificationChannel.SMS)
+      return this.sendSmsByTemplate(args);
     const rendered = this.renderTemplate(args);
-
-    if (args.channel === NotificationChannel.SMS) {
-      return this.sendSms({
-        to: this.normalizeMobile(args.destination),
-        message: rendered.text,
-      });
-    }
-
     return this.sendEmail({
       to: this.normalizeEmail(args.destination),
       subject: rendered.subject ?? this.appName,
@@ -49,62 +47,22 @@ export class NotificationService {
   }
 
   async sendSms(args: TSendSmsArgs): Promise<NotificationResultEntity> {
-    if (!this.kavenegarKey) {
-      throw new ServiceUnavailableException({
-        code: NotificationErrorCode.PROVIDER_NOT_CONFIGURED,
-      });
-    }
-
     const to = this.normalizeMobile(args.to);
-
-    if (!to) {
+    if (!to)
       throw new BadRequestException({
         code: NotificationErrorCode.INVALID_DESTINATION,
       });
-    }
-
-    const sender = args.sender ?? this.kavenegarSender;
-
-    if (!sender) {
-      throw new ServiceUnavailableException({
-        code: NotificationErrorCode.PROVIDER_NOT_CONFIGURED,
-        message: "KAVENEGAR_SENDER environment variable is missing",
-      });
-    }
-
     try {
-      const url = `https://api.kavenegar.com/v1/${this.kavenegarKey}/sms/send.json`;
-
-      const resp = await axios.get(url, {
-        params: {
-          receptor: to,
-          sender,
-          message: args.message,
-        },
-        timeout: 12000,
+      const result = await this.kavenegarService.sendSms({
+        to,
+        message: args.message,
+        sender: args.sender,
       });
-
-      const data = resp.data;
-      const status = data?.return?.status;
-
-      if (status !== 200) {
-        return {
-          message: NotificationMessage.FAILED,
-          channel: NotificationChannel.SMS,
-          destination: to,
-          errorCode: NotificationErrorCode.KAVENEGAR_ERROR,
-          errorMessage:
-            data?.return?.message ?? "Kavenegar provider returned an error",
-        };
-      }
-
-      const messageId = data?.entries?.[0]?.messageid?.toString?.();
-
       return {
         message: NotificationMessage.SENT,
         channel: NotificationChannel.SMS,
         destination: to,
-        providerMessageId: messageId,
+        providerMessageId: result.providerMessageId,
       };
     } catch (e: any) {
       return {
@@ -123,20 +81,15 @@ export class NotificationService {
       !this.mailUser ||
       !this.mailPass ||
       !this.mailFromAddress
-    ) {
+    )
       throw new ServiceUnavailableException({
         code: NotificationErrorCode.PROVIDER_NOT_CONFIGURED,
       });
-    }
-
     const to = this.normalizeEmail(args.to);
-
-    if (!to) {
+    if (!to)
       throw new BadRequestException({
         code: NotificationErrorCode.INVALID_DESTINATION,
       });
-    }
-
     try {
       const info = await this.smtpTransport.sendMail({
         from: `"${this.mailFromName}" <${this.mailFromAddress}>`,
@@ -145,7 +98,6 @@ export class NotificationService {
         text: args.text,
         html: args.html,
       });
-
       return {
         message: NotificationMessage.SENT,
         channel: NotificationChannel.EMAIL,
@@ -163,9 +115,124 @@ export class NotificationService {
     }
   }
 
+  async sendOtpSms(
+    to: string,
+    otpCode: string,
+  ): Promise<NotificationResultEntity> {
+    const receptor = this.normalizeMobile(to);
+    if (!receptor)
+      throw new BadRequestException({
+        code: NotificationErrorCode.INVALID_DESTINATION,
+      });
+    try {
+      await this.kavenegarService.verifyLookup({
+        receptor,
+        token: otpCode,
+        template: this.otpTemplate,
+      });
+      return {
+        message: NotificationMessage.SENT,
+        channel: NotificationChannel.SMS,
+        destination: receptor,
+      };
+    } catch (e: any) {
+      return {
+        message: NotificationMessage.FAILED,
+        channel: NotificationChannel.SMS,
+        destination: receptor,
+        errorCode: NotificationErrorCode.PROVIDER_ERROR,
+        errorMessage: e?.message ?? "Unexpected OTP provider error",
+      };
+    }
+  }
+
+  private async sendSmsByTemplate(
+    args: TNotifyTemplateArgs,
+  ): Promise<NotificationResultEntity> {
+    const destination = this.normalizeMobile(args.destination);
+    if (!destination)
+      throw new BadRequestException({
+        code: NotificationErrorCode.INVALID_DESTINATION,
+      });
+    try {
+      switch (args.template) {
+        case NotificationTemplate.OTP_LOGIN: {
+          await this.kavenegarService.verifyLookup({
+            receptor: destination,
+            token: args.otpCode ?? "",
+            template: this.otpTemplate,
+          });
+          return {
+            message: NotificationMessage.SENT,
+            channel: NotificationChannel.SMS,
+            destination,
+          };
+        }
+        case NotificationTemplate.ACCESS_REQUEST_APPROVED: {
+          if (!this.accessApprovedTemplate) {
+            return {
+              message: NotificationMessage.FAILED,
+              channel: NotificationChannel.SMS,
+              destination,
+              errorCode: NotificationErrorCode.PROVIDER_NOT_CONFIGURED,
+              errorMessage:
+                "KAVENEGAR_TEMPLATE_ACCESS_APPROVED is not configured",
+            };
+          }
+          await this.kavenegarService.verifyLookup({
+            receptor: destination,
+            token: args.roleTitle ?? "USER",
+            template: this.accessApprovedTemplate,
+          });
+          return {
+            message: NotificationMessage.SENT,
+            channel: NotificationChannel.SMS,
+            destination,
+          };
+        }
+        case NotificationTemplate.ACCESS_REQUEST_REJECTED: {
+          if (!this.accessRejectedTemplate) {
+            return {
+              message: NotificationMessage.FAILED,
+              channel: NotificationChannel.SMS,
+              destination,
+              errorCode: NotificationErrorCode.PROVIDER_NOT_CONFIGURED,
+              errorMessage:
+                "KAVENEGAR_TEMPLATE_ACCESS_REJECTED is not configured",
+            };
+          }
+          await this.kavenegarService.verifyLookup({
+            receptor: destination,
+            token: args.reason ?? "REJECTED",
+            template: this.accessRejectedTemplate,
+          });
+          return {
+            message: NotificationMessage.SENT,
+            channel: NotificationChannel.SMS,
+            destination,
+          };
+        }
+        default: {
+          const rendered = this.renderTemplate(args);
+          return this.sendSms({
+            to: destination,
+            message: rendered.text,
+          });
+        }
+      }
+    } catch (e: any) {
+      return {
+        message: NotificationMessage.FAILED,
+        channel: NotificationChannel.SMS,
+        destination,
+        errorCode: NotificationErrorCode.PROVIDER_ERROR,
+        errorMessage: e?.message ?? "Unexpected SMS template provider error",
+      };
+    }
+  }
+
   private createTransport() {
     const secure = this.mailPort === 465;
-
     return nodemailer.createTransport({
       host: this.mailHost,
       port: this.mailPort,
@@ -183,19 +250,16 @@ export class NotificationService {
     html?: string;
   } {
     const app = args.appName ?? this.appName;
-
     switch (args.template) {
       case NotificationTemplate.OTP_LOGIN: {
         const text =
           `${app}\n` +
           `Your login verification code is: ${args.otpCode}\n` +
           `If you did not request this code, please ignore this message.`;
-
         const html =
           `<p><strong>${app}</strong></p>` +
           `<p>Your login verification code is: <strong>${args.otpCode}</strong></p>` +
           `<p>If you did not request this code, please ignore this message.</p>`;
-
         return {
           subject: `${app} - Login Verification Code`,
           text,
@@ -205,7 +269,6 @@ export class NotificationService {
 
       case NotificationTemplate.ADMIN_CREDENTIALS: {
         const loginUrl = this.baseUrl ? `${this.baseUrl}/auth/login` : "";
-
         const text =
           `${app}\n` +
           `A school administrator account has been created for you.\n` +
@@ -214,7 +277,6 @@ export class NotificationService {
           `Password: ${args.password}\n` +
           (loginUrl ? `Login: ${loginUrl}\n` : "") +
           `For security reasons, please change your password after logging in.`;
-
         const html =
           `<p><strong>${app}</strong></p>` +
           `<p>A school administrator account has been created for you.</p>` +
@@ -225,14 +287,12 @@ export class NotificationService {
             ? `<p><a href="${loginUrl}">Login to the dashboard</a></p>`
             : "") +
           `<p>Please change your password after your first login.</p>`;
-
         return {
           subject: `${app} - Administrator Account Credentials`,
           text,
           html,
         };
       }
-
       case NotificationTemplate.ACCESS_REQUEST_APPROVED: {
         const text =
           `${app}\n` +
@@ -255,17 +315,14 @@ export class NotificationService {
 
       case NotificationTemplate.ACCESS_REQUEST_REJECTED: {
         const reasonLine = args.reason ? `\nReason: ${args.reason}` : "";
-
         const text =
           `${app}\n` +
           `Your access request for the school "${args.schoolName}" has been rejected.` +
           reasonLine;
-
         const html =
           `<p><strong>${app}</strong></p>` +
           `<p>Your access request for the school "<strong>${args.schoolName}</strong>" has been rejected.</p>` +
           (args.reason ? `<p>Reason: ${args.reason}</p>` : "");
-
         return {
           subject: `${app} - Access Request Rejected`,
           text,
@@ -280,6 +337,6 @@ export class NotificationService {
   }
 
   private normalizeMobile(mobile: string) {
-    return mobile?.trim();
+    return this.kavenegarService.normalizeIranMobile(mobile);
   }
 }
