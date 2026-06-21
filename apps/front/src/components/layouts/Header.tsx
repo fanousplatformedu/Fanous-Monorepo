@@ -67,7 +67,7 @@ const Header = () => {
             >
               <Languages className="h-4.5 w-4.5" />
             </Button>
-            <ThemeToggleBtn />
+            {/* <ThemeToggleBtn /> */}
             {currentUser ? (
               <div className="hidden sm:block">
                 <UserMenu />
