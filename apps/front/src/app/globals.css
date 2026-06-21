@@ -1,6 +1,28 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+@font-face {
+	font-family: YekanBakhFaNum;
+	font-style: normal;
+	font-weight: normal;
+	src: url('../../public/fonts/yekanbakh/woff2/YekanBakhFaNum-Regular.woff2') format('woff2')  
+
+}
+
+@font-face {
+	font-family: YekanBakhFaNum;
+	font-style: normal;
+	font-weight: bold;
+	src: url('../../public/fonts/yekanbakh/woff2/YekanBakhFaNum-Bold.woff2') format('woff2')  
+
+}
+
+:lang(fa) {
+  font-family: YekanBakhFaNum, sans-serif;
+}
+
+
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or
     ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
@@ -668,3 +690,5 @@ html {
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+
