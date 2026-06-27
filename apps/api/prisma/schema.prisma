@@ -459,7 +459,7 @@ model Enrollment {
   studentId String
   student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  startedAt DateTime
+  startedAt DateTime?
   endedAt   DateTime?
 
   createdAt DateTime @default(now())

@@ -687,6 +687,46 @@
           "fullName": "Full name",
           "email": "Email",
           "role": "Role"
+        },
+        "bulkUpload": {
+          "button": "Bulk Enroll Students",
+          "dialog": {
+            "title": "Bulk Enroll Students",
+            "description": "Upload an Excel file (.xlsx / .xls). Row 1 is the header. Columns must be in order: A: Full Name, B: Email, C: Classroom Name."
+          },
+          "dropzone": {
+            "idle": "Drop your file here",
+            "idleHint": "or click to browse — .xlsx / .xls, max 10 MB",
+            "replace": "Click to replace",
+            "pickHint": "KB · Click to replace"
+          },
+          "hint": "Row 1 is the header. Columns: A: Full Name, B: Email, C: Classroom Name.",
+          "progress": {
+            "uploading": "Uploading…",
+            "processing": "Processing…"
+          },
+          "success": {
+            "title": "{{count}} student enrolled successfully",
+            "titlePlural": "{{count}} students enrolled successfully",
+            "subtitle": "Accounts have been created and classrooms assigned"
+          },
+          "errors": {
+            "invalidType": "Only .xlsx or .xls files are accepted.",
+            "tooLarge": "File is too large. Maximum size is 10 MB.",
+            "networkError": "Network error. Please try again.",
+            "uploadFailed": "Upload failed.",
+            "unexpectedResponse": "Unexpected response from server."
+          },
+          "actions": {
+            "enroll": "Enroll Students",
+            "enrolling": "Enrolling…",
+            "uploadAnother": "Upload Another",
+            "cancel": "Cancel",
+            "close": "Close"
+          },
+          "toasts": {
+            "success": "Students enrolled — refreshing members list…"
+          }
         }
       },
       "settings": {

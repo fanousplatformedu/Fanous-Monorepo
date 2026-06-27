@@ -42,11 +42,12 @@ import { SchoolEntity } from "@school/entities/school.entity";
 import { GradeEntity } from "@school/entities/grade.entity";
 import { CurrentUser } from "@auth/decorators/current-user.decorator";
 import { RolesGuard } from "@auth/guards/roles.guard";
-import { UseGuards } from "@nestjs/common";
+import { HttpException, HttpStatus, UseGuards } from "@nestjs/common";
 import { Public } from "@auth/decorators/public.decorator";
 import { Roles } from "@auth/decorators/roles.decorator";
 import { Role } from "@prisma/client";
-
+import { FileUpload, GraphQLUpload } from "graphql-upload-ts";
+import * as ExcelJS from "exceljs";
 @Resolver()
 export class SchoolResolver {
   constructor(private readonly schoolsService: SchoolService) {}
@@ -439,6 +440,9 @@ export class SchoolResolver {
       assignmentId: input.assignmentId,
     });
   }
+
+  
+
 
   // ============= Public ===============
   @Public()

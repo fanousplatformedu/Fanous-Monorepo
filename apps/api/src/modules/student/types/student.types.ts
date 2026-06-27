@@ -105,3 +105,7 @@ export type TListMyCounselingSessionsArgs = {
   query?: string | null;
   status?: CounselingSessionStatus | null;
 };
+
+export type BulkStudent = {
+  name: string
+}

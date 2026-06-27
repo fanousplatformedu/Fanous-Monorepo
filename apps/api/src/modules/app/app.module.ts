@@ -18,6 +18,7 @@ import { UserModule } from "@user/user.module";
 import { APP_GUARD } from "@nestjs/core";
 import { Module } from "@nestjs/common";
 import { join } from "path";
+import { GraphQLUpload } from "graphql-upload-ts";
 
 @Module({
   imports: [

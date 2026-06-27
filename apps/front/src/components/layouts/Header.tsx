@@ -3,7 +3,7 @@
 import { useCurrentUserHeaderQuery } from "@/lib/redux/api";
 import { Languages, Menu, X } from "lucide-react";
 import { HeaderMobileMenu } from "@/components/layouts/parts/header-mobile";
-import { ThemeToggleBtn } from "@elements/theme-toggle-btn";
+// import { ThemeToggleBtn } from "@elements/theme-toggle-btn";
 import { headerStyles } from "@/utils/style";
 import { useScrolled } from "@/hooks/useScrolled";
 import { usePathname } from "next/navigation";

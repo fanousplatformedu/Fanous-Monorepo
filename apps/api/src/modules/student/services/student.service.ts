@@ -1,6 +1,16 @@
-import { CounselingSessionStatus, InAppNotificationType } from "@prisma/client";
+import {
+  $Enums,
+  CounselingSessionStatus,
+  InAppNotificationType,
+} from "@prisma/client";
 import { AuditAction, Role, StudentAssignmentStatus } from "@prisma/client";
-import { BadRequestException, ForbiddenException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  InternalServerErrorException,
+} from "@nestjs/common";
 import { getCareerMatchesByDominantIntelligence } from "@student/utils/career-match-map";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { calculateIntelligenceScores } from "@student/utils/student-assessment-scoring";
@@ -11,7 +21,7 @@ import { StudentErrorCode } from "@student/enums/student-error-code.enum";
 import { StudentMessage } from "@student/enums/student-message.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { AuditService } from "@audit/services/audit.service";
-
+import * as ExcelJS from "exceljs";
 import * as T from "@student/types/student.types";
 
 @Injectable()
@@ -952,6 +962,94 @@ export class StudentService {
       total,
       take,
       skip,
+    };
+  }
+
+  async createBulkStudents(
+    schoolId: string,
+    schoolAdminId: string,
+    file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException("No file uploaded");
+    }
+
+    const school = await this.prismaService.school.findUnique({
+      where: {
+        id: schoolId,
+        users: {
+          some: {
+            AND: {
+              id: schoolAdminId,
+              role: { in: [$Enums.Role.SCHOOL_ADMIN, $Enums.Role.SUPER_ADMIN] },
+              schoolId,
+            },
+          },
+        },
+      },
+    });
+
+    if (!school)
+      throw new HttpException(
+        "School is not assigned for this user",
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.buffer as any);
+
+    const worksheet = workbook.getWorksheet(1); // Get first sheet
+    const users: { name: string; email: string; classroomName: string }[] = [];
+    if (!worksheet)
+      throw new HttpException("File is empty", HttpStatus.NOT_ACCEPTABLE);
+    // 2. Iterate (repeat) through rows
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // Skip header row
+
+      const rowValues = row.values as any[];
+      users.push({
+        name: rowValues[1], // Column A
+        email: rowValues[2].text, // Column B
+        classroomName: rowValues[3],
+      });
+    });
+
+    try {
+      for (const user of users) {
+        const classroom = await this.prismaService.classroom.findFirst({
+          where: {
+            name: { equals: user.classroomName.trim() },
+            schoolId,
+          },
+        });
+
+        if (!classroom)
+          throw new NotFoundException(
+            `Classroom not found for student:name ${user.name} email:${user.email} classroom:${user.classroomName}`,
+          );
+
+        await this.prismaService.user.create({
+          data: {
+            schoolId,
+            role: $Enums.Role.STUDENT,
+            fullName: user.name,
+            email: user.email,
+            enrollments: {
+              create: {
+                schoolId,
+                classroomId: classroom.id,
+              },
+            },
+          },
+        });
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+    return {
+      message: "File processed successfully",
+      count: users.length,
+      data: users,
     };
   }
 }

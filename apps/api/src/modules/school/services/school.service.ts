@@ -837,6 +837,7 @@ export class SchoolService {
     if (!enrollment) throw new NotFoundException("Enrollment not found");
     await this.resolveManagedSchoolId(actor, enrollment.schoolId);
     const endedAt = input.endedAt ? new Date(input.endedAt) : new Date();
+    if(!enrollment?.startedAt) throw new BadRequestException("startedAt not set")
     if (endedAt < enrollment.startedAt)
       throw new BadRequestException("endedAt must be after startedAt");
     const updated = await this.prismaService.enrollment.update({

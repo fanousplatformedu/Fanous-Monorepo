@@ -3,14 +3,15 @@
 import { TBrandProps } from "@/types/elements";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
-
+import logo from "../../../public/assets/images/IMG_20260623_150009_493.jpg"
 import Link from "next/link";
+import Image from "next/image";
 
 export const Brand = ({ href = "/", size = "md" }: TBrandProps) => {
   const { t } = useI18n();
 
   const box =
-    size === "md" ? "h-9 w-9 rounded-xl text-lg" : "h-10 w-10 rounded-2xl";
+    size === "md" ? "h-12 w-12 rounded-xl text-lg" : "h-10 w-10 rounded-2xl";
   const text = size === "md" ? "text-[10px] sm:text-xs" : "text-xs";
 
   return (
@@ -28,10 +29,10 @@ export const Brand = ({ href = "/", size = "md" }: TBrandProps) => {
           "text-primary-foreground",
           "bg-[linear-gradient(135deg,rgba(59,130,246,1),rgba(147,197,253,1))]",
           "dark:bg-[linear-gradient(135deg,rgba(214,170,110,1),rgba(241,230,214,1))]",
-          "transition-transform group-hover:scale-105",
+          "transition-transform group-hover:scale-105 rounded-full",
         )}
       >
-        F
+        <Image alt="logo" width={60} height={60} className="rounded-full" src={logo} />
       </div>
 
       <div className="flex flex-col leading-tight">
