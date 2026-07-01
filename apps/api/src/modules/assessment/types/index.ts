@@ -48,9 +48,23 @@ export type TListAssessmentResultsArgs = {
   assignmentId?: string | null;
 };
 
+export type TAssessmentResultArgs = {
+  actor: TAssessmentActor;
+  assignmentId: string;
+  studentId: string;
+};
+
 export type TSchoolAssessmentSummaryArgs = {
   actor: TAssessmentActor;
   assignmentId?: string | null;
+};
+
+export type TSchoolAssignemntDetailArgs = {
+  actor: TAssessmentActor;
+  assignmentId: string;
+  take?: number;
+  skip?: number;
+  query?: string | null;
 };
 
 export type TIntelligenceScoreMap = Record<IntelligenceKey, number>;

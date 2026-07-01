@@ -44,6 +44,7 @@ export enum SchoolGqlObjectNames {
   CounselorStudentAssignmentResult = "CounselorStudentAssignmentResult",
   SchoolStudentAssignmentCandidate = "SchoolStudentAssignmentCandidate",
   SchoolStudentAssignmentCandidateList = "SchoolStudentAssignmentCandidateList",
+  SchoolStudentAnalytics = ""
 }
 
 export enum SchoolGqlQueryNames {

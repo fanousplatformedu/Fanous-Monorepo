@@ -19,6 +19,10 @@ import { RolesGuard } from "@auth/guards/roles.guard";
 import { UseGuards } from "@nestjs/common";
 import { Roles } from "@auth/decorators/roles.decorator";
 import { Role } from "@prisma/client";
+import { AssessmentResultInput } from "../dtos/assessment-result.input";
+import { AssessmentResultEntity } from "../entities/assessment-result.entity";
+import { AssignmentEntity } from "../entities/assignemnt.entity";
+import { AssignmentDetailInput } from "../dtos/assignment-detail.input";
 
 @Resolver()
 export class AssessmentResolver {
@@ -137,6 +141,22 @@ export class AssessmentResolver {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SCHOOL_ADMIN)
+  @Query(() => AssessmentResultEntity, {
+    name: AssessmentGqlQueryNames.AssessmentResult,
+  })
+  assessmentResult(
+    @CurrentUser() user: any,
+    @Args("input") input: AssessmentResultInput,
+  ) {
+    return this.assessmentService.assessmentResult({
+      actor: { id: user.id, role: user.role, schoolId: user.schoolId },
+      studentId: input.studentId,
+      assignmentId: input.assignmentId,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SCHOOL_ADMIN)
   @Query(() => SchoolAssessmentSummaryEntity, {
     name: AssessmentGqlQueryNames.SchoolAssessmentSummary,
   })
@@ -147,6 +167,24 @@ export class AssessmentResolver {
     return this.assessmentService.schoolAssessmentSummary({
       actor: { id: user.id, role: user.role, schoolId: user.schoolId },
       assignmentId: input?.assignmentId ?? null,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SCHOOL_ADMIN)
+  @Query(() => AssignmentEntity, {
+    name: AssessmentGqlQueryNames.AssignmentDetail,
+  })
+  schoolAssignemntDetail(
+    @CurrentUser() user: any,
+    @Args("input") input: AssignmentDetailInput,
+  ) {
+    return this.assessmentService.assignmentDetail({
+      actor: { id: user.id, role: user.role, schoolId: user.schoolId },
+      take: input.take,
+      skip: input.skip,
+      query: input.query ?? null,
+      assignmentId: input.assignmentId ,
     });
   }
 }

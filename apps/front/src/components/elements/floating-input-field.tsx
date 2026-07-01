@@ -30,9 +30,9 @@ export const FloatingInputField = <T extends FieldValues>({
               <F.FormLabel
                 className={cn(
                   "pointer-events-none absolute left-4 z-10 transition-all duration-200",
-                  focused || hasValue
+                  (focused || hasValue) || type == "datetime-local"
                     ? "top-2 text-xs text-primary"
-                    : "top-1/2 -translate-y-1/2 text-sm text-muted-foreground",
+                    :  "top-1/2 -translate-y-1/2 text-sm text-muted-foreground" 
                 )}
               >
                 {label}

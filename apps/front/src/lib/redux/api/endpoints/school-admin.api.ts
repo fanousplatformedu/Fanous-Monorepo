@@ -385,6 +385,16 @@ export const schoolAdminApi = baseApi.injectEndpoints({
       ],
     }),
 
+    schoolStudentsAnalytics: builder.query<
+      TAPI.SchoolStudentAnalyticsQuery["schoolStudentAnalytics"],
+      void
+    >({
+      query: () => ({ document: API.SchoolStudentAnalyticsDocument }),
+      transformResponse: (response: TAPI.SchoolStudentAnalyticsQuery) =>
+        response.schoolStudentAnalytics,
+      providesTags: [{ type: "Analytics", id: "schoolStudent" }],
+    }),
+
     assignments: builder.query<
       TAPI.AssignmentsQuery["assignments"],
       TAPI.ListAssignmentsInput
@@ -588,6 +598,36 @@ export const schoolAdminApi = baseApi.injectEndpoints({
         { type: "AuditLogs", id: LIST_ID },
       ],
     }),
+
+    assessmentResult: builder.query<
+      TAPI.AssessmentResultQuery["assessmentResult"],
+      TAPI.AssessmentResultInput
+    >({
+      query: (input) => ({
+        document: API.AssessmentResultDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.AssessmentResultQuery) =>
+        response.assessmentResult,
+      providesTags(result) {
+        return result ? [{ type: "AssessmentResult", id: result.id }] : [];
+      },
+    }),
+
+    assignmentDetail: builder.query<
+      TAPI.AssignmentDetailQuery["AssignmentDetail"],
+      TAPI.AssignmentDetailInput
+    >({
+      query: (input) => ({
+        document: API.AssignmentDetailDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.AssignmentDetailQuery) =>
+        response.AssignmentDetail,
+      providesTags(result) {
+        return result ? [{ type: "AssessmentDetail", id: result.id }] : [];
+      },
+    }),
   }),
   overrideExisting: false,
 });
@@ -627,4 +667,7 @@ export const {
   useSchoolStudentsForCounselorAssignmentQuery,
   useArchiveCounselorStudentAssignmentMutation,
   useRestoreCounselorStudentAssignmentMutation,
+  useSchoolStudentsAnalyticsQuery,
+  useAssessmentResultQuery,
+  useAssignmentDetailQuery,
 } = schoolAdminApi;

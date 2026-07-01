@@ -6,25 +6,30 @@ export enum AssessmentGqlInputNames {
   SubmitStudentAnswersInput = "SubmitStudentAnswersInput",
   ListAssessmentResultsInput = "ListAssessmentResultsInput",
   SchoolAssessmentSummaryInput = "SchoolAssessmentSummaryInput",
+  AssessmentResultInput = "AssessmentResultInput",
+  AssignmentDetailInput = "AssignmentDetailInput",
 }
 
 export enum AssessmentGqlObjectNames {
   AssignmentRef = "AssignmentRef",
   SchoolAssignment = "SchoolAssignment",
-  AssessmentResult = "AssessmentResult",
+  AssessmentResultItem = "AssessmentResultItem",
   AssessmentStudent = "AssessmentStudent",
   StudentAssignment = "StudentAssignment",
   AssessmentQuestion = "AssessmentQuestion",
   AssessmentResultList = "AssessmentResultList",
   SchoolAssignmentList = "SchoolAssignmentList",
   SchoolAssessmentSummary = "SchoolAssessmentSummary",
+  AssignmentDetail = "AssignmentDetail",
 }
 
 export enum AssessmentGqlQueryNames {
   Assignments = "assignments",
   AssessmentResults = "assessmentResults",
+  AssessmentResult = "assessmentResult",
   AssessmentQuestions = "assessmentQuestions",
   SchoolAssessmentSummary = "schoolAssessmentSummary",
+  AssignmentDetail = "AssignmentDetail",
 }
 
 export enum AssessmentGqlMutationNames {

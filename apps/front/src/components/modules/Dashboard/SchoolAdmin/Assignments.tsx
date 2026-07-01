@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import * as API from "@/lib/redux/api";
 import * as L from "lucide-react";
 import * as F from "@ui/form";
+import Link from "next/link";
 
 const SchoolAdminAssignmentsPage = () => {
   const { t } = useI18n();
@@ -35,6 +36,9 @@ const SchoolAdminAssignmentsPage = () => {
   const [dialogMode, setDialogMode] = useState<TDialogMode>(null);
   const [selectedAssignment, setSelectedAssignment] =
     useState<TSelectedAssignment | null>(null);
+
+  const { data: me } = API.useSchoolAdminMeQuery();
+  const schoolId = me?.schoolId ?? "";
 
   const { data: questions, isLoading: isQuestionsLoading } =
     API.useAssessmentQuestionsQuery();
@@ -63,6 +67,20 @@ const SchoolAdminAssignmentsPage = () => {
     skip: (resultsPage - 1) * PAGE_SIZE,
   });
 
+  // Fetch data for the assign dialog dropdowns
+  const { data: gradesData } = API.useGradesQuery(
+    { take: 50, skip: 0, schoolId },
+    { skip: !schoolId },
+  );
+  const { data: classroomsData } = API.useClassroomsQuery(
+    { take: 50, skip: 0, schoolId },
+    { skip: !schoolId },
+  );
+  const { data: membersData } = API.useSchoolMembersQuery(
+    { take: 50, skip: 0, role: "STUDENT" },
+    { skip: !schoolId },
+  );
+
   const [createAssignment, { isLoading: isCreating }] =
     API.useCreateAssignmentMutation();
 
@@ -79,6 +97,9 @@ const SchoolAdminAssignmentsPage = () => {
       dueAt: "",
       description: "",
       targetMode: "ALL_STUDENTS",
+      targetGradeId: "",
+      targetClassroomId: "",
+      targetStudentIds: [],
     },
   });
 
@@ -93,6 +114,34 @@ const SchoolAdminAssignmentsPage = () => {
   const resultItems = useMemo(() => resultsData?.items ?? [], [resultsData]);
   const resultsTotal = resultsData?.total ?? 0;
 
+  // Build options for the assign dialog
+  const gradeOptions = useMemo(
+    () =>
+      (gradesData?.items ?? []).map((g) => ({
+        value: g.id,
+        label: g.name + (g.code ? ` (${g.code})` : ""),
+      })),
+    [gradesData],
+  );
+
+  const classroomOptions = useMemo(
+    () =>
+      (classroomsData?.items ?? []).map((c) => ({
+        value: c.id,
+        label: c.name + (c.code ? ` (${c.code})` : ""),
+      })),
+    [classroomsData],
+  );
+
+  const studentOptions = useMemo(
+    () =>
+      (membersData?.items ?? []).map((m) => ({
+        value: m.id,
+        label: m.fullName || m.email || m.id,
+      })),
+    [membersData],
+  );
+
   const onSubmit = async (values: TCreateAssignmentForm) => {
     try {
       await createAssignment({
@@ -100,6 +149,8 @@ const SchoolAdminAssignmentsPage = () => {
         description: values.description?.trim() || undefined,
         dueAt: toIsoFromLocalDateTime(values.dueAt),
         targetMode: values.targetMode,
+        targetGradeId: values.targetGradeId || undefined,
+        targetClassroomId: values.targetClassroomId || undefined,
       }).unwrap();
       toast.success(
         t("dashboard.schoolAdmin.assignments.toasts.createSuccess"),
@@ -109,6 +160,9 @@ const SchoolAdminAssignmentsPage = () => {
         description: "",
         dueAt: "",
         targetMode: "ALL_STUDENTS",
+        targetGradeId: "",
+        targetClassroomId: "",
+        targetStudentIds: [],
       });
       setPage(1);
     } catch (error: unknown) {
@@ -202,6 +256,9 @@ const SchoolAdminAssignmentsPage = () => {
               form={form}
               onSubmit={onSubmit}
               isLoading={isCreating}
+              gradeOptions={gradeOptions}
+              classroomOptions={classroomOptions}
+              studentOptions={studentOptions}
             />
           </F.Form>
         </DashboardSection>
@@ -262,7 +319,13 @@ const SchoolAdminAssignmentsPage = () => {
                   {assignmentList.map((item) => (
                     <tr key={item.id} className="border-t border-border/40">
                       <td className="px-4 py-3">
-                        <div className="font-medium">{item.title}</div>
+                        <div className="font-medium">
+                          <Link
+                            href={`/school-admin/dashboard/assignment/${item.id}`}
+                          >
+                            {item.title}
+                          </Link>
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           {item.description || "-"}
                         </div>

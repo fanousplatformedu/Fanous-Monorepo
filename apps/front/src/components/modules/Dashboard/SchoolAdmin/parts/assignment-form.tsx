@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  SearchableMultiSelectField,
+  SearchableSingleSelectField,
+} from "@elements/searchable-select-field";
 import { TAssignmentCreateFormProps } from "@/types/modules";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
@@ -10,19 +14,44 @@ export const AssignmentCreateForm = ({
   form,
   isLoading,
   onSubmit,
+  gradeOptions,
+  classroomOptions,
+  studentOptions,
 }: TAssignmentCreateFormProps) => {
   const { t } = useI18n();
 
+  const targetMode = form.watch("targetMode");
+
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      {/* Row 1: title + description */}
       <div className="grid gap-4 md:grid-cols-2">
         <FloatingInputField
           name="title"
           control={form.control}
           label={t("dashboard.schoolAdmin.assignments.form.fields.title")}
         />
+        <FloatingInputField
+          name="description"
+          control={form.control}
+          label={t("dashboard.schoolAdmin.assignments.form.fields.description")}
+        />
+      </div>
 
+      {/* Row 2: due date */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <FloatingInputField
+          name="dueAt"
+          type="datetime-local"
+          control={form.control}
+          label={t("dashboard.schoolAdmin.assignments.form.fields.dueAt")}
+        />
+      </div>
+
+      {/* Row 3: target mode + conditional picker — always on the same line */}
+      <div className="grid gap-4 md:grid-cols-2">
         <FloatingSelectField
+        
           name="targetMode"
           control={form.control}
           label={t("dashboard.schoolAdmin.assignments.form.fields.targetMode")}
@@ -51,24 +80,38 @@ export const AssignmentCreateForm = ({
             },
           ]}
         />
+
+        {targetMode === "BY_GRADE" ? (
+          <SearchableSingleSelectField
+            name="targetGradeId"
+            control={form.control}
+            label={t(
+              "dashboard.schoolAdmin.assignments.form.fields.targetGrade",
+            )}
+            options={gradeOptions}
+          />
+        ) : targetMode === "BY_CLASSROOM" ? (
+          <SearchableSingleSelectField
+            name="targetClassroomId"
+            control={form.control}
+            label={t(
+              "dashboard.schoolAdmin.assignments.form.fields.targetClassroom",
+            )}
+            options={classroomOptions}
+          />
+        ) : targetMode === "BY_STUDENT_IDS" ? (
+          <SearchableMultiSelectField
+            name="targetStudentIds"
+            control={form.control}
+            label={t(
+              "dashboard.schoolAdmin.assignments.form.fields.targetStudents",
+            )}
+            options={studentOptions}
+          />
+        ) : null}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <FloatingInputField
-          name="description"
-          control={form.control}
-          label={t("dashboard.schoolAdmin.assignments.form.fields.description")}
-        />
-
-        <FloatingInputField
-          name="dueAt"
-          type="datetime-local"
-          control={form.control}
-          label={t("dashboard.schoolAdmin.assignments.form.fields.dueAt")}
-        />
-      </div>
-
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-1">
         <Button
           type="submit"
           variant="brand"

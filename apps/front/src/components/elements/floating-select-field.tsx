@@ -34,6 +34,7 @@ export const FloatingSelectField = <T extends FieldValues>({
                       "focus:border-primary/30 focus:bg-card/65 focus:ring-0 focus-visible:ring-0",
                       "shadow-none focus-visible:shadow-[0_0_0_1px_rgba(59,130,246,0.08)]",
                       "dark:focus-visible:shadow-[0_0_0_1px_rgba(243,226,199,0.10)]",
+                      "[&[data-size]]:h-14",
                     )}
                   >
                     <S.SelectValue placeholder={label} />

@@ -195,8 +195,8 @@ model School {
 
 // ============== USER DOMAIN ================
 model User {
-  id String @id @default(cuid())
-
+  id       String  @id @default(cuid())
+  isActive Boolean @default(true)
   schoolId String?
   school   School? @relation(fields: [schoolId], references: [id], onDelete: Restrict)
 

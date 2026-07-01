@@ -792,9 +792,9 @@
           "studentSearchPlaceholder": "جستجو با نام، ایمیل یا موبایل دانش‌آموز"
         },
         "kpis": {
-          "classrooms": "کلاس‌های موجود",
-          "students": "دانش‌آموزان موجود",
-          "selectedClassroom": "کلاس انتخاب‌شده"
+          "totalStudents": "کل دانش آموزان",
+          "activeStudents": "فعال",
+          "inActiveStudents": "غیرفعال"
         },
         "summary": {
           "classroom": "کلاس جاری",
@@ -854,6 +854,17 @@
         },
         "common": {
           "notSelected": "انتخاب نشده"
+        }
+      },
+      "assignmentDetail":{
+   
+        "assignedStudent":{
+          "columns":{
+            "startedAt": "تاریخ شروع",
+            "completionRate": "درصد تکمیل",
+            "name": "نام",
+            "familyName": "نام خانوادگی"
+          }
         }
       },
       "classrooms": {
@@ -1110,7 +1121,107 @@
             "title": "عنوان تکلیف",
             "description": "توضیحات",
             "targetMode": "نوع هدف‌گذاری",
-            "dueAt": "مهلت تحویل"
+            "dueAt": "مهلت تحویل",
+            "targetGrade": "انتخاب پایه",
+            "targetClassroom": "انتخاب کلاس",
+            "targetStudents": "انتخاب دانش‌آموزان",
+            "targetStudentsEmpty": "هیچ دانش‌آموز فعالی یافت نشد.",
+            "targetStudentsCount": "{{count}} دانش‌آموز انتخاب شده",
+            "clearSelection": "پاک کردن انتخاب"
+          }
+        },
+        "table": {
+          "title": "تکالیف",
+          "description": "مدیریت تکالیف ایجادشده و ارسال آن‌ها برای دانش‌آموزان.",
+          "columns": {
+            "title": "عنوان",
+            "status": "وضعیت",
+            "target": "هدف",
+            "due": "مهلت",
+            "published": "منتشر شده",
+            "actions": "عملیات"
+          }
+        },
+        "results": {
+          "title": "نتایج ارزیابی",
+          "description": "مشاهده رکوردهای ارسال‌شده و ارزیابی‌شده دانش‌آموزان.",
+          "empty": {
+            "title": "نتیجه ارزیابی یافت نشد",
+            "description": "پس از ارسال تکالیف توسط دانش‌آموزان، نتایج در اینجا نمایش داده می‌شود."
+          },
+          "columns": {
+            "student": "دانش‌آموز",
+            "assignment": "تکلیف",
+            "status": "وضعیت",
+            "completionRate": "نرخ تکمیل",
+            "dominantKey": "هوش غالب",
+            "createdAt": "تاریخ ایجاد"
+          }
+        },
+        "dialog": {
+          "common": {
+            "title": "عنوان تکلیف",
+            "status": "وضعیت فعلی"
+          },
+          "publish": {
+            "title": "انتشار تکلیف",
+            "description": "آیا از انتشار این تکلیف مطمئن هستید؟"
+          },
+          "assign": {
+            "title": "ارسال برای دانش‌آموزان",
+            "description": "آیا از ارسال این تکلیف برای دانش‌آموزان مطمئن هستید؟"
+          }
+        },
+        "actions": {
+          "create": "ایجاد تکلیف",
+          "creating": "در حال ایجاد...",
+          "publish": "انتشار",
+          "assign": "ارسال"
+        },
+        "status": {
+          "DRAFT": "پیش‌نویس",
+          "PUBLISHED": "منتشر شده",
+          "CLOSED": "بسته"
+        },
+        "targetMode": {
+          "ALL_STUDENTS": "همه دانش‌آموزان",
+          "BY_GRADE": "بر اساس پایه",
+          "BY_CLASSROOM": "بر اساس کلاس",
+          "BY_STUDENT_IDS": "دانش‌آموزان مشخص"
+        },
+        "empty": {
+          "title": "تکلیفی یافت نشد",
+          "description": "اولین تکلیف ارزیابی خود را ایجاد کنید."
+        },
+        "toasts": {
+          "createSuccess": "تکلیف با موفقیت ایجاد شد.",
+          "createFailed": "ایجاد تکلیف انجام نشد.",
+          "publishSuccess": "تکلیف با موفقیت منتشر شد.",
+          "publishFailed": "انتشار تکلیف انجام نشد.",
+          "assignSuccess": "تکلیف با موفقیت برای دانش‌آموزان ارسال شد.",
+          "assignFailed": "ارسال ارزیابی برای دانش‌آموزان انجام نشد."
+        }
+      },
+      "assessment": {
+        "page": {
+          "title": "آزمون",
+          "description": "مشاهده نتایج آزمون."
+        },
+        "summary": {},
+        "form": {
+          "title": "ایجاد تکلیف",
+          "description": "ایجاد، انتشار و ارسال تکالیف ارزیابی. تعداد سوالات فعال: {{count}}",
+          "fields": {
+            "title": "عنوان تکلیف",
+            "description": "توضیحات",
+            "targetMode": "نوع هدف‌گذاری",
+            "dueAt": "مهلت تحویل",
+            "targetGrade": "انتخاب پایه",
+            "targetClassroom": "انتخاب کلاس",
+            "targetStudents": "انتخاب دانش‌آموزان",
+            "targetStudentsEmpty": "هیچ دانش‌آموز فعالی یافت نشد.",
+            "targetStudentsCount": "{{count}} دانش‌آموز انتخاب شده",
+            "clearSelection": "پاک کردن انتخاب"
           }
         },
         "table": {

@@ -276,6 +276,37 @@ query AssessmentQuestions {
   }
 }
 
+query AssignmentDetail($input: AssignmentDetailInput!) {
+  AssignmentDetail(input: $input) {
+    id
+    schoolId
+    title
+    description
+    status
+    targetMode
+    userId
+    studentAssignments {
+      id
+      status
+      createdAt
+      updatedAt
+      assignmentId
+      studentId
+      startedAt
+      submittedAt
+      evaluatedAt
+      completionRate
+      student {
+        id
+        fullName
+      }
+      result {
+        id
+      }
+    }
+  }
+}
+
 mutation CreateAssignment($input: CreateAssignmentInput!) {
   createAssignment(input: $input) {
     id
@@ -490,5 +521,52 @@ mutation RestoreCounselorStudentAssignment(
     success
     message
     affectedCount
+  }
+}
+
+query schoolStudentAnalytics {
+  schoolStudentAnalytics {
+    active
+    inActive
+    total
+  }
+}
+
+query AssessmentResult($input: AssessmentResultInput!) {
+  assessmentResult(input: $input) {
+    bodilyKinesthetic
+    createdAt
+    dominantKey
+    id
+    interpersonal
+    intrapersonal
+    linguistic
+    logicalMath
+    musical
+    naturalistic
+    schoolId
+    studentAssignmentId
+    studentId
+    summaryJson
+    visualSpatial
+    student {
+      id
+      email
+      fullName
+    }
+    studentAssignment {
+      id
+      status
+      startedAt
+      studentId
+      submittedAt
+      evaluatedAt
+      assignmentId
+      completionRate
+      assignment {
+        id
+        title
+      }
+    }
   }
 }

@@ -5,7 +5,7 @@ import { GraphQLISODateTime } from "@nestjs/graphql";
 import { Field, ObjectType } from "@nestjs/graphql";
 import { GraphQLJSON } from "graphql-type-json";
 
-@ObjectType(AssessmentGqlObjectNames.AssessmentResult)
+@ObjectType(AssessmentGqlObjectNames.AssessmentResultItem)
 export class AssessmentResultEntity {
   @Field() musical!: number;
   @Field() linguistic!: number;

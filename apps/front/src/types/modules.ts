@@ -223,8 +223,8 @@ export type TEnrollmentFormProps = {
 
 export type TEnrollmentStatsProps = {
   studentsCount: number;
-  classroomsCount: number;
-  selectedClassroomName: string;
+  activeStudentCount: number;
+  inActiveStudentCount: number;
 };
 
 export type TEnrollmentTableProps = {
@@ -542,6 +542,16 @@ export type TAssignmentResultsTableProps = {
   onPageChange: (page: number) => void;
 };
 
+export type TAssignmentDetailStudentsTableProps = {
+  assignmentId: string;
+  page: number;
+  total: number;
+  isLoading: boolean;
+  isFetching: boolean;
+  items: TAPI.AssignmentDetailQuery["AssignmentDetail"]["studentAssignments"];
+  onPageChange: (page: number) => void;
+};
+
 export type TSelectedAssignment = {
   id: string;
   title: string;
@@ -586,6 +596,9 @@ export type TAssignmentSummaryCardsProps = {
 
 export type TAssignmentCreateFormProps = {
   isLoading: boolean;
+  gradeOptions: TOption[];
+  classroomOptions: TOption[];
+  studentOptions: TOption[];
   form: UseFormReturn<TCreateAssignmentForm>;
   onSubmit: (values: TCreateAssignmentForm) => Promise<void>;
 };
@@ -1612,4 +1625,8 @@ export type TCounselorAssignmentsTableProps = {
   isFetching?: boolean;
   items: TCounselorAssignmentRow[];
   onPageChange: (page: number) => void;
+};
+
+export type TAssesmentResultProps = {
+  assessmentId: string;
 };

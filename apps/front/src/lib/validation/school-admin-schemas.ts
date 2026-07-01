@@ -1,16 +1,46 @@
 import { z } from "zod";
 
-export const createAssignmentSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  dueAt: z.string().optional(),
-  targetMode: z.enum([
-    "ALL_STUDENTS",
-    "BY_STUDENT_IDS",
-    "BY_GRADE",
-    "BY_CLASSROOM",
-  ]),
-});
+export const createAssignmentSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().optional(),
+    dueAt: z.string().optional(),
+    targetMode: z.enum([
+      "ALL_STUDENTS",
+      "BY_STUDENT_IDS",
+      "BY_GRADE",
+      "BY_CLASSROOM",
+    ]),
+    targetGradeId: z.string().optional(),
+    targetClassroomId: z.string().optional(),
+    targetStudentIds: z.array(z.string()).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.targetMode === "BY_GRADE" && !data.targetGradeId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetGradeId"],
+        message: "Grade is required",
+      });
+    }
+    if (data.targetMode === "BY_CLASSROOM" && !data.targetClassroomId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetClassroomId"],
+        message: "Classroom is required",
+      });
+    }
+    if (
+      data.targetMode === "BY_STUDENT_IDS" &&
+      (!data.targetStudentIds || data.targetStudentIds.length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["targetStudentIds"],
+        message: "Select at least one student",
+      });
+    }
+  });
 
 export type TCreateAssignmentForm = z.infer<typeof createAssignmentSchema>;
 

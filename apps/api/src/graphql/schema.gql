@@ -63,7 +63,30 @@ type AssessmentQuestion {
   text: String!
 }
 
-type AssessmentResult {
+type AssessmentResultDetail {
+  assignmentTitle: String!
+  bodilyKinesthetic: Float!
+  careerMatches: [CareerMatch!]!
+  createdAt: String!
+  dominantIntelligence: String!
+  id: String!
+  interpersonal: Float!
+  intrapersonal: Float!
+  linguistic: Float!
+  logicalMath: Float!
+  musical: Float!
+  naturalistic: Float!
+  scoreSummary: String
+  studentAssignmentId: String!
+  visualSpatial: Float!
+}
+
+input AssessmentResultInput {
+  assignmentId: String!
+  studentId: String!
+}
+
+type AssessmentResultItem {
   bodilyKinesthetic: Float!
   createdAt: DateTime!
   dominantKey: String
@@ -83,26 +106,8 @@ type AssessmentResult {
   visualSpatial: Float!
 }
 
-type AssessmentResultDetail {
-  assignmentTitle: String!
-  bodilyKinesthetic: Float!
-  careerMatches: [CareerMatch!]!
-  createdAt: String!
-  dominantIntelligence: String!
-  id: String!
-  interpersonal: Float!
-  intrapersonal: Float!
-  linguistic: Float!
-  logicalMath: Float!
-  musical: Float!
-  naturalistic: Float!
-  scoreSummary: String
-  studentAssignmentId: String!
-  visualSpatial: Float!
-}
-
 type AssessmentResultList {
-  items: [AssessmentResult!]!
+  items: [AssessmentResultItem!]!
   skip: Int!
   take: Int!
   total: Int!
@@ -148,9 +153,29 @@ input AssignStudentsToCounselorInput {
   studentIds: [String!]!
 }
 
+input AssignmentDetailInput {
+  assignmentId: String!
+  query: String
+  skip: Int! = 0
+  take: Int! = 20
+}
+
 input AssignmentDraftAnswerInput {
   questionNumber: Int!
   value: Int!
+}
+
+type AssignmentEntity {
+  description: String
+  dueAt: DateTime
+  hasResult: Boolean!
+  id: ID!
+  schoolId: String!
+  status: AssignmentStatus!
+  studentAssignments: [StudentAssignmentEntity!]!
+  targetMode: AssignmentTargetMode!
+  title: String!
+  userId: String
 }
 
 type AssignmentRef {
@@ -162,6 +187,13 @@ enum AssignmentStatus {
   CLOSED
   DRAFT
   PUBLISHED
+}
+
+enum AssignmentTargetMode {
+  ALL_STUDENTS
+  BY_CLASSROOM
+  BY_GRADE
+  BY_STUDENT_IDS
 }
 
 type AuditCreateResult {
@@ -1139,10 +1171,12 @@ type PublicSchoolList {
 }
 
 type Query {
+  AssignmentDetail(input: AssignmentDetailInput!): AssignmentEntity!
   HealthCheck: String!
   accessRequestById(id: String!): AccessRequest!
   accessRequests(input: ListAccessRequestsInput!): AccessRequestList!
   assessmentQuestions: [AssessmentQuestion!]!
+  assessmentResult(input: AssessmentResultInput!): AssessmentResultItem!
   assessmentResults(input: ListAssessmentResultsInput!): AssessmentResultList!
   assignments(input: ListAssignmentsInput!): SchoolAssignmentList!
   auditLogById(id: String!): AuditLog!
@@ -1183,6 +1217,7 @@ type Query {
   schoolById(schoolId: String!): School!
   schoolCounselors(input: ListSchoolCounselors!): SchoolCounselorList!
   schoolMembers(input: ListSchoolMembersInput!): UserList!
+  schoolStudentAnalytics: SchoolStudentAnalyticsEntity!
   schoolStudentsForCounselorAssignment(input: ListSchoolStudentsForCounselorAssignment!): SchoolStudentAssignmentCandidateList!
   schools(input: ListSchoolsInput!): SchoolList!
   studentAssessmentQueue(input: StudentAssessmentQueueInput!): CounselorAssessmentQueueList!
@@ -1352,6 +1387,12 @@ type SchoolList {
   total: Int!
 }
 
+type SchoolStudentAnalyticsEntity {
+  active: Int!
+  inActive: Int!
+  total: Int!
+}
+
 type SchoolStudentAssignmentCandidate {
   avatarUrl: String
   email: String
@@ -1389,6 +1430,11 @@ input SetAdminStatusInput {
 input SetSchoolStatusInput {
   schoolId: String!
   status: String!
+}
+
+type Student {
+  fullName: String
+  id: ID!
 }
 
 type StudentActivity {
@@ -1465,6 +1511,21 @@ type StudentAssignmentDetail {
   questions: [StudentAssignmentQuestion!]!
   status: String!
   title: String!
+}
+
+type StudentAssignmentEntity {
+  assignmentId: String!
+  completionRate: Float!
+  createdAt: DateTime!
+  evaluatedAt: DateTime
+  id: ID!
+  result: AssessmentResultItem
+  startedAt: DateTime
+  status: StudentAssignmentStatus!
+  student: Student!
+  studentId: String!
+  submittedAt: DateTime
+  updatedAt: DateTime!
 }
 
 type StudentAssignmentList {

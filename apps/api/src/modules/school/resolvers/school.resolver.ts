@@ -42,12 +42,12 @@ import { SchoolEntity } from "@school/entities/school.entity";
 import { GradeEntity } from "@school/entities/grade.entity";
 import { CurrentUser } from "@auth/decorators/current-user.decorator";
 import { RolesGuard } from "@auth/guards/roles.guard";
-import { HttpException, HttpStatus, UseGuards } from "@nestjs/common";
+import {  NotFoundException, UseGuards } from "@nestjs/common";
 import { Public } from "@auth/decorators/public.decorator";
 import { Roles } from "@auth/decorators/roles.decorator";
 import { Role } from "@prisma/client";
-import { FileUpload, GraphQLUpload } from "graphql-upload-ts";
-import * as ExcelJS from "exceljs";
+import { SchoolStudentAnalyticsEntity } from "../entities/school-strudents-status";
+
 @Resolver()
 export class SchoolResolver {
   constructor(private readonly schoolsService: SchoolService) {}
@@ -441,8 +441,16 @@ export class SchoolResolver {
     });
   }
 
-  
-
+  @Query(() => SchoolStudentAnalyticsEntity, {
+    name: "schoolStudentAnalytics",
+  })
+  @Roles(Role.SCHOOL_ADMIN, Role.SUPER_ADMIN)
+  schoolStudentAnalytics(
+    @CurrentUser() user: { id: string; role: Role; schoolId: string | null },
+  ) {
+    if(!user?.schoolId) throw new NotFoundException("user didn't assign to a school.")
+    return  this.schoolsService.schoolStudentAnalytics(user.schoolId)
+  }
 
   // ============= Public ===============
   @Public()

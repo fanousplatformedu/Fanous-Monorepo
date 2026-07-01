@@ -19,7 +19,7 @@ export class AssessmentService {
   private ensureSchoolAdminScope(actor: T.TAssessmentActor) {
     if (actor.role !== Role.SCHOOL_ADMIN)
       throw new ForbiddenException({ code: AssessmentErrorCode.FORBIDDEN });
-    if (!actor.schoolId)
+    if (!actor?.schoolId)
       throw new ForbiddenException({
         code: AssessmentErrorCode.SCHOOL_SCOPE_REQUIRED,
       });
@@ -699,6 +699,85 @@ export class AssessmentService {
     };
   }
 
+  async assessmentResult(args: T.TAssessmentResultArgs) {
+    this.ensureSchoolAdminScope(args.actor);
+    const schoolId = args.actor.schoolId!;
+
+    const assessment = await this.prismaService.assessmentResult.findFirst({
+      where: {
+        schoolId,
+        studentAssignment: {
+          assignmentId: args.assignmentId,
+        },
+
+        studentId: args.studentId,
+      },
+      include: {
+        student: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+          },
+        },
+        studentAssignment: {
+          select: {
+            id: true,
+            studentId: true,
+            assignmentId: true,
+            status: true,
+            startedAt: true,
+            submittedAt: true,
+            evaluatedAt: true,
+            completionRate: true,
+            assignment: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    // const assessment = await this.prismaService.assessmentResult.findFirst({
+    //   where: {
+    //     schoolId,
+
+    //     studentId: args.studentId,
+    //   },
+    //   include: {
+    //     student: {
+    //       select: {
+    //         id: true,
+    //         fullName: true,
+    //         email: true,
+    //       },
+    //     },
+    //     studentAssignment: {
+    //       select: {
+    //         id: true,
+    //         studentId: true,
+    //         assignmentId: true,
+    //         status: true,
+    //         startedAt: true,
+    //         submittedAt: true,
+    //         evaluatedAt: true,
+    //         completionRate: true,
+    //         assignment: {
+    //           select: {
+    //             id: true,
+    //             title: true,
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // });
+
+    return assessment;
+  }
+
   async schoolAssessmentSummary(args: T.TSchoolAssessmentSummaryArgs) {
     this.ensureSchoolAdminScope(args.actor);
     const schoolId = args.actor.schoolId!;
@@ -819,5 +898,32 @@ export class AssessmentService {
       avgVisualSpatial: avg("visualSpatial"),
       avgBodilyKinesthetic: avg("bodilyKinesthetic"),
     };
+  }
+
+  async assignmentDetail(args: T.TSchoolAssignemntDetailArgs) {
+    this.ensureSchoolAdminScope(args.actor);
+    if (!args.actor?.schoolId)
+      throw new BadRequestException("Missing school ID");
+    const assignment = await this.prismaService.schoolAssignment.findUnique({
+      where: { id: args.assignmentId, schoolId: args.actor.schoolId },
+      include: {
+        studentAssignments: {
+          take: args.take,
+          skip: args.skip,
+          orderBy: { evaluatedAt: "desc" },
+          include: {
+            student: {
+              select: {
+                id: true,
+                fullName: true,
+              },
+            },
+            result: true,
+          },
+        },
+      },
+    });
+
+    return assignment;
   }
 }

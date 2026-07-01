@@ -241,3 +241,13 @@ export type TAppDialogActionsProps = {
   cancelVariant?: "brandSoft" | "brandOutline" | "ghost";
   confirmVariant?: "brand" | "brandSoft" | "brandChip";
 };
+
+export type AsyncPageProps = {
+  params: Promise<any>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export type PageProps = {
+  params: any;
+  searchParams: { [key: string]: string | string[] | undefined };
+};

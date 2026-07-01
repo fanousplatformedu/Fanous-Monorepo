@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import * as T from "@/lib/redux/api";
 import * as L from "lucide-react";
 
+
 const SchoolAdminEnrollmentsPage = () => {
   const { t } = useI18n();
 
@@ -76,6 +77,7 @@ const SchoolAdminEnrollmentsPage = () => {
         take: 500,
         skip: 0,
         role: "STUDENT",
+    
       },
       { skip: !schoolId },
     );
@@ -95,6 +97,8 @@ const SchoolAdminEnrollmentsPage = () => {
   );
 
   const skip = (page - 1) * PAGE_SIZE;
+
+
 
   const {
     data: enrollmentsData,
@@ -352,7 +356,11 @@ const SchoolAdminEnrollmentsPage = () => {
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="space-y-6 flex flex-col gap-5">
+        <EnrollmentStats
+
+      
+        />
         <DashboardSection
           title={t("dashboard.schoolAdmin.enrollments.form.title")}
           description={t("dashboard.schoolAdmin.enrollments.form.description")}
@@ -382,15 +390,6 @@ const SchoolAdminEnrollmentsPage = () => {
               "dashboard.schoolAdmin.enrollments.messages.duplicateActive",
             )}
             onSubmit={handleSubmit}
-          />
-
-          <EnrollmentStats
-            studentsCount={allStudents.length}
-            classroomsCount={classrooms.length}
-            selectedClassroomName={
-              selectedClassroom?.name ||
-              t("dashboard.schoolAdmin.enrollments.common.notSelected")
-            }
           />
         </DashboardSection>
 

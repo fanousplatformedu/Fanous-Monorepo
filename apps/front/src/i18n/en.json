@@ -783,9 +783,9 @@
           "studentSearchPlaceholder": "Search by student name, email or mobile"
         },
         "kpis": {
-          "classrooms": "Available classrooms",
-          "students": "Available students",
-          "selectedClassroom": "Selected classroom"
+          "totalStudents": "All",
+          "activeStudents": "Active",
+          "inActiveStudents": "Inactive"
         },
         "summary": {
           "classroom": "Current classroom",
@@ -1101,7 +1101,13 @@
             "title": "Assignment title",
             "description": "Description",
             "targetMode": "Target mode",
-            "dueAt": "Due date"
+            "dueAt": "Due date",
+            "targetGrade": "Select grade",
+            "targetClassroom": "Select classroom",
+            "targetStudents": "Select students",
+            "targetStudentsEmpty": "No active students found.",
+            "targetStudentsCount": "{{count}} student(s) selected",
+            "clearSelection": "Clear selection"
           }
         },
         "table": {
@@ -1143,7 +1149,125 @@
           },
           "assign": {
             "title": "Assign to Students",
-            "description": "Are you sure you want to dispatch this assignment to students?"
+            "description": "Select a target type and choose items to assign this assessment to the matching students."
+          }
+        },
+        "assign": {
+          "byGrade": "By Grade",
+          "byClassroom": "By Classroom",
+          "byStudent": "By Student",
+          "selectedCount": "{{count}} selected",
+          "clearSelection": "Clear selection",
+          "empty": {
+            "grade": "No grades found.",
+            "classroom": "No classrooms found.",
+            "student": "No students found."
+          }
+        },
+        "actions": {
+          "create": "Create Assignment",
+          "creating": "Creating...",
+          "publish": "Publish",
+          "assign": "Assign"
+        },
+        "status": {
+          "DRAFT": "Draft",
+          "PUBLISHED": "Published",
+          "CLOSED": "Closed"
+        },
+        "targetMode": {
+          "ALL_STUDENTS": "All students",
+          "BY_GRADE": "By grade",
+          "BY_CLASSROOM": "By classroom",
+          "BY_STUDENT_IDS": "Specific students"
+        },
+        "empty": {
+          "title": "No assignments found",
+          "description": "Create your first assessment assignment to get started."
+        },
+        "toasts": {
+          "createSuccess": "Assignment created successfully.",
+          "createFailed": "Failed to create assignment.",
+          "publishSuccess": "Assignment published successfully.",
+          "publishFailed": "Failed to publish assignment.",
+          "assignSuccess": "Assignment assigned successfully.",
+          "assignFailed": "Failed to assign assessment to students."
+        }
+      },
+      "assessment": {
+        "page": {
+          "title": "Assessment",
+          "description": "View assessment results."
+        },
+        "summary": {},
+        "form": {
+          "title": "Create Assignment",
+          "description": "Create, publish, and dispatch assessment assignments. Active questions: {{count}}",
+          "fields": {
+            "title": "Assignment title",
+            "description": "Description",
+            "targetMode": "Target mode",
+            "dueAt": "Due date",
+            "targetGrade": "Select grade",
+            "targetClassroom": "Select classroom",
+            "targetStudents": "Select students",
+            "targetStudentsEmpty": "No active students found.",
+            "targetStudentsCount": "{{count}} student(s) selected",
+            "clearSelection": "Clear selection"
+          }
+        },
+        "table": {
+          "title": "Assignments",
+          "description": "Manage created assignments and dispatch them to students.",
+          "columns": {
+            "title": "Title",
+            "status": "Status",
+            "target": "Target",
+            "due": "Due",
+            "published": "Published",
+            "actions": "Actions"
+          }
+        },
+        "results": {
+          "title": "Assessment Results",
+          "description": "Review submitted and evaluated student assessment records.",
+          "empty": {
+            "title": "No assessment results found",
+            "description": "Assessment results will appear here after students submit their assignments."
+          },
+          "columns": {
+            "student": "Student",
+            "assignment": "Assignment",
+            "status": "Status",
+            "completionRate": "Completion",
+            "dominantKey": "Dominant intelligence",
+            "createdAt": "Created"
+          }
+        },
+        "dialog": {
+          "common": {
+            "title": "Assignment title",
+            "status": "Current status"
+          },
+          "publish": {
+            "title": "Publish Assignment",
+            "description": "Are you sure you want to publish this assignment?"
+          },
+          "assign": {
+            "title": "Assign to Students",
+            "description": "Select a target type and choose items to assign this assessment to the matching students."
+          }
+        },
+        "assign": {
+          "byGrade": "By Grade",
+          "byClassroom": "By Classroom",
+          "byStudent": "By Student",
+          "selectedCount": "{{count}} selected",
+          "clearSelection": "Clear selection",
+          "empty": {
+            "grade": "No grades found.",
+            "classroom": "No classrooms found.",
+            "student": "No students found."
           }
         },
         "actions": {
