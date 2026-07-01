@@ -8,7 +8,7 @@ import { useCurrentUserHeaderQuery } from "@/lib/redux/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { baseApi, headerAuthApi } from "@/lib/redux/api";
 import { getRoleDashboardPath } from "@/utils/auth-role-helper";
-import { getUserInitials } from "@/utils/function-helper";
+import { getUserInitials, formatPersonName } from "@/utils/function-helper";
 import { TUserMenuProps } from "@/types/elements";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { useRouter } from "next/navigation";
@@ -43,10 +43,14 @@ export const UserMenu = ({ mobile = false, onActionDone }: TUserMenuProps) => {
     if (!user) return null;
     const dashboardPath = getRoleDashboardPath(user.role);
     const profilePath = getRoleProfilePath(user.role);
-    const displayName = user.fullName || user.email || "User";
-    const initials = getUserInitials(user.fullName, user.email);
-    const shortName = user.fullName
-      ? user.fullName.split(" ").slice(0, 2).join(" ")
+    const displayName =
+      formatPersonName(user.firstName, user.lastName) || user.email || "User";
+    const initials = getUserInitials(user.firstName, user.lastName, user.email);
+    const shortName = formatPersonName(user.firstName, user.lastName)
+      ? formatPersonName(user.firstName, user.lastName)
+          .split(" ")
+          .slice(0, 2)
+          .join(" ")
       : user.email || "User";
     return {
       dashboardPath,

@@ -2,7 +2,7 @@
 
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
 import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
-import { getApiErrorMessage } from "@/utils/function-helper";
+import { getApiErrorMessage, formatPersonName } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
 import { EnrollmentFilters } from "@modules/Dashboard/SchoolAdmin/parts/enrollment-filter";
 import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
@@ -187,7 +187,8 @@ const SchoolAdminEnrollmentsPage = () => {
         allStudents.map((student) => [
           student.id,
           {
-            fullName: student.fullName,
+            firstName: student.firstName,
+            lastName: student.lastName,
             email: student.email,
             mobile: student.mobile,
             status: student.status,
@@ -248,7 +249,7 @@ const SchoolAdminEnrollmentsPage = () => {
         .map((student) => ({
           value: student.id,
           label:
-            student.fullName || student.email || student.mobile || student.id,
+            formatPersonName(student.firstName, student.lastName) || student.email || student.mobile || student.id,
         })),
     [searchableStudents, activeEnrollmentStudentIds],
   );

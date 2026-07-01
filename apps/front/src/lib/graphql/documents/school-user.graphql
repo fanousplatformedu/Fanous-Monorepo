@@ -6,7 +6,8 @@ mutation SubmitAccessRequest($input: SubmitAccessRequestInput!) {
     requestedRole
     email
     mobile
-    fullName
+    firstName
+    lastName
     createdAt
   }
 }
@@ -35,7 +36,8 @@ query SchoolUserMe {
     schoolId
     email
     mobile
-    fullName
+    firstName
+    lastName
     createdAt
   }
 }
@@ -43,7 +45,8 @@ query SchoolUserMe {
 mutation UpdateMe($input: UpdateMeInput!) {
   updateMe(input: $input) {
     id
-    fullName
+    firstName
+    lastName
     email
     mobile
     updatedAt

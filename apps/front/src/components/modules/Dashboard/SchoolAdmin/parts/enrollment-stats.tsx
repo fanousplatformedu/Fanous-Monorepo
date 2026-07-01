@@ -1,12 +1,10 @@
 "use client";
 
-import { TEnrollmentStatsProps } from "@/types/modules";
 import { useI18n } from "@/hooks/useI18n";
 import * as T from "@/lib/redux/api";
 export const EnrollmentStats = ({}) => {
   const { t } = useI18n();
-  const { data: analyticsData, isLoading } =
-    T.useSchoolStudentsAnalyticsQuery();
+  const { data: analyticsData } = T.useSchoolStudentsAnalyticsQuery();
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <div className="rounded-2xl border border-border/60 bg-card/70 p-4">

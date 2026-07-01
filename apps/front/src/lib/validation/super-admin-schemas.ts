@@ -17,7 +17,8 @@ export type UpdateValues = z.infer<typeof updateSchoolSchema>;
 export const createSchoolAdminSchema = z.object({
   schoolId: z.string().min(1, "School is required"),
   adminEmail: z.string().email("Invalid email"),
-  adminFullName: z.string().optional().or(z.literal("")),
+  adminFirstName: z.string().optional().or(z.literal("")),
+  adminLastName: z.string().optional().or(z.literal("")),
 });
 
 export type Values = z.infer<typeof createSchoolAdminSchema>;
@@ -48,7 +49,8 @@ export const superAdminChangePasswordSchema = z.object({
 });
 
 export const profileSchema = z.object({
-  fullName: z.string().min(2),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
   email: z.string().email(),
 });
 

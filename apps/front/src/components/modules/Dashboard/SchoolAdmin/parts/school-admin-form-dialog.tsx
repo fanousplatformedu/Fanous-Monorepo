@@ -39,7 +39,8 @@ export const SchoolAdminFormDialog = ({
     defaultValues: {
       schoolId: "",
       adminEmail: "",
-      adminFullName: "",
+      adminFirstName: "",
+      adminLastName: "",
     },
   });
 
@@ -48,7 +49,8 @@ export const SchoolAdminFormDialog = ({
       const res = await createSchoolAdmin({
         schoolId: values.schoolId,
         adminEmail: values.adminEmail.trim().toLowerCase(),
-        adminFullName: values.adminFullName?.trim() || undefined,
+        adminFirstName: values.adminFirstName?.trim() || undefined,
+        adminLastName: values.adminLastName?.trim() || undefined,
       }).unwrap();
       toast.success(res.message);
       if (res.tempPassword) toast.info(`Temp password: ${res.tempPassword}`);
@@ -86,9 +88,15 @@ export const SchoolAdminFormDialog = ({
             />
 
             <FloatingInputField
-              name="adminFullName"
+              name="adminFirstName"
               control={form.control}
-              label="Admin full name"
+              label="Admin first name"
+            />
+
+            <FloatingInputField
+              name="adminLastName"
+              control={form.control}
+              label="Admin last name"
             />
 
             <div className="flex justify-end gap-3">

@@ -6,6 +6,7 @@ import { AuditAction, Role, UserStatus } from "@prisma/client";
 import { PrismaService } from "@prisma/prisma.service";
 import { UserErrorCode } from "@user/enums/user-error-code.enum";
 import { AuditService } from "@audit/services/audit.service";
+import { buildUserNameSearch } from "@common/utils/person-name.util";
 
 @Injectable()
 export class UserService {
@@ -35,7 +36,8 @@ export class UserService {
     return this.prismaService.user.update({
       where: { id: args.userId },
       data: {
-        fullName: args.fullName ?? undefined,
+        firstName: args.firstName ?? undefined,
+        lastName: args.lastName ?? undefined,
         avatarUrl: args.avatarUrl ?? undefined,
         email: args.email ? args.email.trim().toLowerCase() : undefined,
         mobile: args.mobile ? args.mobile.trim() : undefined,
@@ -57,7 +59,7 @@ export class UserService {
     if (args.query?.trim()) {
       const q = args.query.trim();
       where.OR = [
-        { fullName: { contains: q, mode: "insensitive" } },
+        ...buildUserNameSearch(q),
         { email: { contains: q, mode: "insensitive" } },
         { mobile: { contains: q, mode: "insensitive" } },
         { username: { contains: q, mode: "insensitive" } },
@@ -93,7 +95,8 @@ export class UserService {
         status: true,
         email: true,
         mobile: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
       },
     });
     if (!target)
@@ -116,7 +119,8 @@ export class UserService {
           hardDelete: true,
           email: target.email,
           mobile: target.mobile,
-          fullName: target.fullName,
+          firstName: target.firstName,
+          lastName: target.lastName,
         },
       });
       await this.prismaService.user.delete({
@@ -152,7 +156,8 @@ export class UserService {
         hardDelete: false,
         email: target.email,
         mobile: target.mobile,
-        fullName: target.fullName,
+        firstName: target.firstName,
+        lastName: target.lastName,
       },
     });
     return { id: target.id };
@@ -169,7 +174,8 @@ export class UserService {
       username: true,
       email: true,
       mobile: true,
-      fullName: true,
+      firstName: true,
+      lastName: true,
       avatarUrl: true,
       createdAt: true,
       updatedAt: true,

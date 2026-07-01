@@ -6,6 +6,7 @@ import { StudentAssignmentStatus } from "@prisma/client";
 import { AssessmentErrorCode } from "@assessment/enums/assessment-error-code";
 import { PrismaService } from "@prisma/prisma.service";
 import { AuditService } from "@audit/services/audit.service";
+import { buildUserNameSearch } from "@common/utils/person-name.util";
 
 import * as T from "../types";
 
@@ -127,6 +128,246 @@ export class AssessmentService {
       },
     });
     return assignment;
+  }
+
+  private async resolveActiveSchoolStudentIds(
+    schoolId: string,
+    studentIds: string[],
+  ) {
+    if (!studentIds.length) {
+      throw new BadRequestException({
+        code: AssessmentErrorCode.STUDENT_IDS_REQUIRED,
+      });
+    }
+    const students = await this.prismaService.user.findMany({
+      where: {
+        id: { in: studentIds },
+        schoolId,
+        role: Role.STUDENT,
+        status: UserStatus.ACTIVE,
+      },
+      select: { id: true },
+    });
+    if (students.length !== studentIds.length) {
+      throw new BadRequestException({
+        code: AssessmentErrorCode.STUDENT_IDS_REQUIRED,
+      });
+    }
+    return students.map((student) => student.id);
+  }
+
+  private async syncDraftTargetStudents(
+    assignmentId: string,
+    studentIds: string[],
+    tx: Prisma.TransactionClient,
+  ) {
+    await tx.studentAssignment.deleteMany({
+      where: {
+        assignmentId,
+        studentId: { notIn: studentIds },
+        status: StudentAssignmentStatus.PENDING,
+      },
+    });
+    await Promise.all(
+      studentIds.map((studentId) =>
+        tx.studentAssignment.upsert({
+          where: {
+            assignmentId_studentId: {
+              assignmentId,
+              studentId,
+            },
+          },
+          update: {},
+          create: {
+            assignmentId,
+            studentId,
+            status: StudentAssignmentStatus.PENDING,
+          },
+        }),
+      ),
+    );
+  }
+
+  async updateAssignment(args: T.TUpdateAssignmentArgs) {
+    this.ensureSchoolAdminScope(args.actor);
+    const schoolId = args.actor.schoolId!;
+    const assignment = await this.prismaService.schoolAssignment.findFirst({
+      where: {
+        id: args.assignmentId,
+        schoolId,
+      },
+    });
+    if (!assignment) {
+      throw new NotFoundException({
+        code: AssessmentErrorCode.ASSIGNMENT_NOT_FOUND,
+      });
+    }
+    if (assignment.status === AssignmentStatus.CLOSED) {
+      throw new BadRequestException({
+        code: AssessmentErrorCode.ASSIGNMENT_NOT_DRAFT,
+      });
+    }
+    if (args.title !== undefined && !args.title?.trim()) {
+      throw new BadRequestException("TITLE_REQUIRED");
+    }
+
+    const targetFieldsTouched =
+      args.targetMode !== undefined ||
+      args.targetGradeId !== undefined ||
+      args.targetClassroomId !== undefined ||
+      args.targetStudentIds !== undefined;
+
+    const nextTargetMode = args.targetMode ?? assignment.targetMode;
+    let nextTargetGradeId = assignment.targetGradeId;
+    let nextTargetClassroomId = assignment.targetClassroomId;
+    let nextTargetStudentIds: string[] | null = null;
+    let shouldSyncTargetStudents = false;
+    const shouldClearTargetStudents =
+      assignment.targetMode === "BY_STUDENT_IDS" &&
+      nextTargetMode !== "BY_STUDENT_IDS" &&
+      targetFieldsTouched;
+
+    if (targetFieldsTouched) {
+      if (args.targetMode !== undefined) {
+        switch (nextTargetMode) {
+          case "BY_GRADE":
+            nextTargetGradeId =
+              args.targetGradeId !== undefined ? args.targetGradeId : null;
+            nextTargetClassroomId = null;
+            break;
+          case "BY_CLASSROOM":
+            nextTargetClassroomId =
+              args.targetClassroomId !== undefined
+                ? args.targetClassroomId
+                : null;
+            nextTargetGradeId = null;
+            break;
+          case "BY_STUDENT_IDS":
+            nextTargetGradeId = null;
+            nextTargetClassroomId = null;
+            break;
+          default:
+            nextTargetGradeId = null;
+            nextTargetClassroomId = null;
+        }
+      } else {
+        if (nextTargetMode === "BY_GRADE") {
+          nextTargetGradeId =
+            args.targetGradeId !== undefined
+              ? args.targetGradeId
+              : assignment.targetGradeId;
+          nextTargetClassroomId = null;
+        } else if (nextTargetMode === "BY_CLASSROOM") {
+          nextTargetClassroomId =
+            args.targetClassroomId !== undefined
+              ? args.targetClassroomId
+              : assignment.targetClassroomId;
+          nextTargetGradeId = null;
+        } else if (nextTargetMode !== "BY_STUDENT_IDS") {
+          nextTargetGradeId = null;
+          nextTargetClassroomId = null;
+        }
+      }
+    }
+
+    if (nextTargetMode === "BY_STUDENT_IDS") {
+      if (args.targetStudentIds !== undefined) {
+        nextTargetStudentIds = await this.resolveActiveSchoolStudentIds(
+          schoolId,
+          args.targetStudentIds ?? [],
+        );
+        shouldSyncTargetStudents = true;
+      } else if (
+        args.targetMode === "BY_STUDENT_IDS" ||
+        assignment.targetMode !== "BY_STUDENT_IDS"
+      ) {
+        throw new BadRequestException({
+          code: AssessmentErrorCode.STUDENT_IDS_REQUIRED,
+        });
+      }
+    }
+
+    if (nextTargetMode === "BY_GRADE" && !nextTargetGradeId) {
+      throw new BadRequestException("TARGET_GRADE_REQUIRED");
+    }
+    if (nextTargetMode === "BY_CLASSROOM" && !nextTargetClassroomId) {
+      throw new BadRequestException("TARGET_CLASSROOM_REQUIRED");
+    }
+
+    const data: Prisma.SchoolAssignmentUpdateInput = {};
+    if (args.title !== undefined) data.title = args.title.trim();
+    if (args.description !== undefined) {
+      data.description = args.description?.trim() ?? null;
+    }
+    if (args.dueAt !== undefined) {
+      data.dueAt = args.dueAt ? new Date(args.dueAt) : null;
+    }
+    if (targetFieldsTouched) {
+      data.targetMode = nextTargetMode;
+      data.targetGrade =
+        nextTargetGradeId === null
+          ? { disconnect: true }
+          : { connect: { id: nextTargetGradeId } };
+      data.targetClassroom =
+        nextTargetClassroomId === null
+          ? { disconnect: true }
+          : { connect: { id: nextTargetClassroomId } };
+    }
+
+    const updated = await this.prismaService.$transaction(async (tx) => {
+      if (shouldClearTargetStudents) {
+        await tx.studentAssignment.deleteMany({
+          where: {
+            assignmentId: assignment.id,
+            status: StudentAssignmentStatus.PENDING,
+          },
+        });
+      }
+
+      const assignmentUpdate = await tx.schoolAssignment.update({
+        where: { id: assignment.id },
+        data,
+      });
+
+      if (shouldSyncTargetStudents && nextTargetStudentIds) {
+        await this.syncDraftTargetStudents(
+          assignment.id,
+          nextTargetStudentIds,
+          tx,
+        );
+      }
+
+      return assignmentUpdate;
+    });
+    await this.auditService.record({
+      action: AuditAction.ASSIGNMENT_UPDATE,
+      actorId: args.actor.id,
+      schoolId,
+      entityType: "SchoolAssignment",
+      entityId: updated.id,
+      metadata: {
+        before: {
+          title: assignment.title,
+          description: assignment.description,
+          dueAt: assignment.dueAt,
+          targetMode: assignment.targetMode,
+          targetGradeId: assignment.targetGradeId,
+          targetClassroomId: assignment.targetClassroomId,
+        },
+        after: {
+          title: updated.title,
+          description: updated.description,
+          dueAt: updated.dueAt,
+          targetMode: updated.targetMode,
+          targetGradeId: updated.targetGradeId,
+          targetClassroomId: updated.targetClassroomId,
+          ...(nextTargetStudentIds
+            ? { targetStudentIds: nextTargetStudentIds }
+            : {}),
+        },
+      },
+    });
+    return updated;
   }
 
   async listAssignments(args: T.TListAssignmentsArgs) {
@@ -634,14 +875,9 @@ export class AssessmentService {
       ...(args.query?.trim()
         ? {
             OR: [
-              {
-                student: {
-                  fullName: {
-                    contains: args.query.trim(),
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-              },
+              ...buildUserNameSearch(args.query.trim()).map((clause) => ({
+                student: clause,
+              })),
               {
                 student: {
                   email: {
@@ -662,7 +898,8 @@ export class AssessmentService {
           student: {
             select: {
               id: true,
-              fullName: true,
+              firstName: true,
+              lastName: true,
               email: true,
             },
           },
@@ -716,7 +953,8 @@ export class AssessmentService {
         student: {
           select: {
             id: true,
-            fullName: true,
+            firstName: true,
+            lastName: true,
             email: true,
           },
         },
@@ -750,7 +988,6 @@ export class AssessmentService {
     //     student: {
     //       select: {
     //         id: true,
-    //         fullName: true,
     //         email: true,
     //       },
     //     },
@@ -904,9 +1141,13 @@ export class AssessmentService {
     this.ensureSchoolAdminScope(args.actor);
     if (!args.actor?.schoolId)
       throw new BadRequestException("Missing school ID");
-    const assignment = await this.prismaService.schoolAssignment.findUnique({
-      where: { id: args.assignmentId, schoolId: args.actor.schoolId },
+    const assignment = await this.prismaService.schoolAssignment.findFirst({
+      where: {
+        id: args.assignmentId,
+        schoolId: args.actor.schoolId,
+      },
       include: {
+        counselorReviews: true,
         studentAssignments: {
           take: args.take,
           skip: args.skip,
@@ -915,7 +1156,8 @@ export class AssessmentService {
             student: {
               select: {
                 id: true,
-                fullName: true,
+                firstName: true,
+              lastName: true,
               },
             },
             result: true,
@@ -924,6 +1166,14 @@ export class AssessmentService {
       },
     });
 
-    return assignment;
+    if (!assignment) return null;
+
+    return {
+      ...assignment,
+      targetStudentIds:
+        assignment.targetMode === "BY_STUDENT_IDS"
+          ? assignment.studentAssignments.map((item) => item.studentId)
+          : null,
+    };
   }
 }

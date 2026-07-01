@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
 import { TResultCompare } from "@/types/modules";
@@ -58,7 +59,7 @@ export const ParentResultCompareDialog = ({
                 {t("dashboard.parent.results.compareDialog.resultCard.child")}
               </p>
               <p className="mt-1 font-medium">
-                {row.student?.fullName || row.studentId}
+                {formatPersonName(row.student?.firstName, row.student?.lastName) || row.studentId}
               </p>
 
               <p className="mt-3 text-xs text-muted-foreground">

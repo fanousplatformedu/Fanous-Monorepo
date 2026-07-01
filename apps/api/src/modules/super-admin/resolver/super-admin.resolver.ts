@@ -63,7 +63,8 @@ export class SuperAdminResolver {
   ) {
     return this.superAdminService.updateAdminProfile({
       actor: { id: user.id, role: user.role, schoolId: user.schoolId },
-      fullName: input.fullName ?? null,
+      firstName: input.firstName ?? null,
+      lastName: input.lastName ?? null,
       email: input.email ?? null,
     });
   }

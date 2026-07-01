@@ -11,7 +11,8 @@ export class UserEntity {
   @Field(() => GraphQLISODateTime) createdAt!: Date;
   @Field(() => String, { nullable: true }) email?: string | null;
   @Field(() => String, { nullable: true }) mobile?: string | null;
-  @Field(() => String, { nullable: true }) fullName?: string | null;
+  @Field(() => String, { nullable: true }) firstName?: string | null;
+  @Field(() => String, { nullable: true }) lastName?: string | null;
   @Field(() => String, { nullable: true }) schoolId?: string | null;
   @Field(() => String, { nullable: true }) username?: string | null;
   @Field(() => String, { nullable: true }) avatarUrl?: string | null;

@@ -385,6 +385,24 @@ export const schoolAdminApi = baseApi.injectEndpoints({
       ],
     }),
 
+    updateAssignment: builder.mutation<
+      TAPI.UpdateAssignmentMutation["updateAssignment"],
+      TAPI.UpdateAssignmentInput
+    >({
+      query: (input) => ({
+        document: API.UpdateAssignmentDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.UpdateAssignmentMutation) =>
+        response.updateAssignment,
+      invalidatesTags: (_result, _error, input) => [
+        { type: "Assignments", id: LIST_ID },
+        { type: "Assignments", id: input.assignmentId },
+        { type: "AssessmentDetail", id: input.assignmentId },
+        { type: "AuditLogs", id: LIST_ID },
+      ],
+    }),
+
     schoolStudentsAnalytics: builder.query<
       TAPI.SchoolStudentAnalyticsQuery["schoolStudentAnalytics"],
       void
@@ -653,6 +671,7 @@ export const {
   useAssessmentQuestionsQuery,
   useRestoreClassroomMutation,
   useCreateAssignmentMutation,
+  useUpdateAssignmentMutation,
   useSchoolAdminAuditLogsQuery,
   usePublishAssignmentMutation,
   useRemoveSchoolMemberMutation,

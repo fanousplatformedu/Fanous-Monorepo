@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { ParentResultsDistributionChart } from "@modules/Dashboard/Parent/parts/results-distribution-chart";
 import { useCompareParentResultsQuery } from "@/lib/redux/api/endpoints/parent.api";
 import { useParentChildResultsQuery } from "@/lib/redux/api/endpoints/parent.api";
@@ -88,7 +89,7 @@ const ParentResultsPage = () => {
     const items = childrenData?.items ?? [];
     return items.map((child) => ({
       value: child.id,
-      label: child.fullName || child.email || child.mobile || child.id,
+      label: formatPersonName(child.firstName, child.lastName) || child.email || child.mobile || child.id,
     }));
   }, [childrenData]);
   const averageScore = useMemo(() => {

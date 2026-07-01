@@ -4,7 +4,8 @@ export type TUpdateMeArgs = {
   userId: string;
   email?: string | null;
   mobile?: string | null;
-  fullName?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   avatarUrl?: string | null;
 };
 

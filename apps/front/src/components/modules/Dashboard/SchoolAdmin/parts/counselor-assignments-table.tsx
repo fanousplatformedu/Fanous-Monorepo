@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { TCounselorAssignmentsTable } from "@/types/modules";
 import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-card";
 import { TableActionButton } from "@elements/table-action-button";
@@ -67,7 +68,7 @@ export const CounselorAssignmentsTable = ({
               <tr key={item.id} className="border-t border-border/40">
                 <td className="px-4 py-3">
                   <div className="font-medium">
-                    {item.counselor?.fullName || "-"}
+                    {formatPersonName(item.counselor?.firstName, item.counselor?.lastName) || "-"}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {item.counselor?.email || item.counselor?.mobile || "-"}
@@ -76,7 +77,7 @@ export const CounselorAssignmentsTable = ({
 
                 <td className="px-4 py-3">
                   <div className="font-medium">
-                    {item.student?.fullName || "-"}
+                    {formatPersonName(item.student?.firstName, item.student?.lastName) || "-"}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {item.student?.email || item.student?.mobile || "-"}

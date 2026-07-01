@@ -29,13 +29,15 @@ const ParentProfilePage = () => {
   const handleSaveProfile = async (values: {
     email?: string;
     mobile?: string;
-    fullName?: string;
+    firstName?: string;
+    lastName?: string;
   }) => {
     try {
       await updateMe({
         email: values.email?.trim() || undefined,
         mobile: values.mobile?.trim() || undefined,
-        fullName: values.fullName?.trim() || undefined,
+        firstName: values.firstName?.trim() || undefined,
+        lastName: values.lastName?.trim() || undefined,
       }).unwrap();
       toast.success(t("dashboard.parent.profile.toasts.updateSuccess"));
     } catch (error: unknown) {

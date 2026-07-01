@@ -200,34 +200,41 @@ export function SearchableMultiSelectField<T extends FieldValues>({
                 role="combobox"
                 aria-expanded={open}
                 className={cn(
-                  "flex h-14 w-full items-center rounded-2xl border border-border/60 bg-card/45 px-4 text-sm backdrop-blur-xl transition",
+                  "flex w-full min-h-14 items-start gap-2 overflow-hidden rounded-2xl border border-border/60 bg-card/45 px-3 py-2 text-sm backdrop-blur-xl transition",
                   "hover:bg-card/65 focus:outline-none focus:border-primary/30",
+                  selectedLabels.length === 0 && "items-center py-0",
                   error && "border-destructive/60",
                 )}
               >
-                {/* scrollable chip row — no height growth */}
-                <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto scrollbar-none">
+                <div
+                  className={cn(
+                    "flex min-w-0 flex-1 flex-wrap content-start gap-1.5",
+                    selectedLabels.length > 0 && "max-h-24 overflow-y-auto pr-1",
+                  )}
+                >
                   {selectedLabels.length === 0 ? (
-                    <span className="text-muted-foreground">{label}</span>
+                    <span className="px-1 text-muted-foreground">{label}</span>
                   ) : (
                     selectedLabels.map((lbl, i) => (
                       <span
                         key={selected[i]}
-                        className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                        className="inline-flex max-w-full items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary"
                       >
-                        {lbl}
+                        <span className="truncate">{lbl}</span>
                         <span
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              e.stopPropagation();
                               field.onChange(
                                 selected.filter((v) => v !== selected[i]),
                               );
                             }
                           }}
                           onClick={(e) => removeOne(selected[i], e)}
-                          className="rounded-full hover:text-destructive"
+                          className="shrink-0 rounded-full hover:text-destructive"
                         >
                           <X className="h-3 w-3" />
                         </span>
@@ -235,7 +242,7 @@ export function SearchableMultiSelectField<T extends FieldValues>({
                     ))
                   )}
                 </div>
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                <ChevronsUpDown className="mt-3 h-4 w-4 shrink-0 opacity-50" />
               </button>
             </PopoverTrigger>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { TStudentProfileSummaryCardProps } from "@/types/modules";
+import { formatPersonName } from "@/utils/function-helper";
 import { useI18n } from "@/hooks/useI18n";
 
 export const StudentProfileSummaryCard = ({
@@ -10,7 +11,7 @@ export const StudentProfileSummaryCard = ({
   const { t } = useI18n();
 
   const completionParts = [
-    Boolean(me.fullName),
+    Boolean(me.firstName || me.lastName),
     Boolean(me.email),
     Boolean(me.mobile),
     Boolean(me.avatarUrl),
@@ -33,7 +34,8 @@ export const StudentProfileSummaryCard = ({
           {t("dashboard.student.profile.summary.fullName")}
         </p>
         <p className="mt-2 text-lg font-semibold">
-          {me.fullName || t("dashboard.student.profile.common.notSet")}
+          {formatPersonName(me.firstName, me.lastName) ||
+            t("dashboard.student.profile.common.notSet")}
         </p>
       </div>
 

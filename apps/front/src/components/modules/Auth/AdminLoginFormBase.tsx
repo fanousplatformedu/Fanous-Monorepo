@@ -64,7 +64,8 @@ const AdminLoginFormBase = <TMutationResult,>({
       let currentUser: {
         id: string;
         role: string;
-        fullName?: string | null;
+        firstName?: string | null;
+        lastName?: string | null;
         avatarUrl?: string | null;
         email?: string | null;
         schoolId?: string | null;

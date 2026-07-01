@@ -21,6 +21,7 @@ import { StudentErrorCode } from "@student/enums/student-error-code.enum";
 import { StudentMessage } from "@student/enums/student-message.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { AuditService } from "@audit/services/audit.service";
+import { splitPersonName } from "@common/utils/person-name.util";
 import * as ExcelJS from "exceljs";
 import * as T from "@student/types/student.types";
 
@@ -1028,11 +1029,14 @@ export class StudentService {
             `Classroom not found for student:name ${user.name} email:${user.email} classroom:${user.classroomName}`,
           );
 
+        const { firstName, lastName } = splitPersonName(user.name);
+
         await this.prismaService.user.create({
           data: {
             schoolId,
             role: $Enums.Role.STUDENT,
-            fullName: user.name,
+            firstName,
+            lastName,
             email: user.email,
             enrollments: {
               create: {

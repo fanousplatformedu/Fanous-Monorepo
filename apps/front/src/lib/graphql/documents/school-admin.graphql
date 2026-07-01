@@ -4,7 +4,8 @@ mutation SchoolAdminLogin($input: AdminLoginInput!) {
     userId
     message
     schoolId
-    fullName
+    firstName
+    lastName
   }
 }
 
@@ -15,7 +16,8 @@ query SchoolAdminMe {
     email
     schoolId
     username
-    fullName
+    firstName
+    lastName
     avatarUrl
     forcePasswordChange
   }
@@ -38,7 +40,8 @@ query SchoolMembers($input: ListSchoolMembersInput!) {
       email
       mobile
       status
-      fullName
+      firstName
+      lastName
       createdAt
     }
   }
@@ -61,7 +64,8 @@ query SchoolAdminAccessRequests($input: ListAccessRequestsInput!) {
       email
       mobile
       status
-      fullName
+      firstName
+      lastName
       createdAt
       reviewedAt
       rejectReason
@@ -285,6 +289,17 @@ query AssignmentDetail($input: AssignmentDetailInput!) {
     status
     targetMode
     userId
+    dueAt
+    targetStudentIds
+    targetGradeId
+    targetClassroomId
+    createdAt
+    updatedAt
+    publishedAt
+    counselorReviews {
+      id
+      status
+    }
     studentAssignments {
       id
       status
@@ -298,10 +313,12 @@ query AssignmentDetail($input: AssignmentDetailInput!) {
       completionRate
       student {
         id
-        fullName
+        firstName
+        lastName
       }
       result {
         id
+
       }
     }
   }
@@ -309,6 +326,24 @@ query AssignmentDetail($input: AssignmentDetailInput!) {
 
 mutation CreateAssignment($input: CreateAssignmentInput!) {
   createAssignment(input: $input) {
+    id
+    title
+    dueAt
+    status
+    schoolId
+    updatedAt
+    createdAt
+    targetMode
+    publishedAt
+    createdById
+    description
+    targetGradeId
+    targetClassroomId
+  }
+}
+
+mutation UpdateAssignment($input: UpdateAssignmentInput!) {
+  updateAssignment(input: $input) {
     id
     title
     dueAt
@@ -386,7 +421,8 @@ query AssessmentResults($input: ListAssessmentResultsInput!) {
       student {
         id
         email
-        fullName
+        firstName
+        lastName
       }
       studentAssignment {
         id
@@ -437,7 +473,8 @@ query SchoolCounselors($input: ListSchoolCounselors!) {
       email
       mobile
       status
-      fullName
+      firstName
+      lastName
       avatarUrl
     }
   }
@@ -455,7 +492,8 @@ query SchoolStudentsForCounselorAssignment(
       email
       mobile
       status
-      fullName
+      firstName
+      lastName
       avatarUrl
     }
   }
@@ -481,7 +519,8 @@ query CounselorStudentAssignments(
         email
         mobile
         status
-        fullName
+        firstName
+        lastName
         avatarUrl
       }
       student {
@@ -489,7 +528,8 @@ query CounselorStudentAssignments(
         email
         mobile
         status
-        fullName
+        firstName
+        lastName
         avatarUrl
       }
     }
@@ -552,7 +592,8 @@ query AssessmentResult($input: AssessmentResultInput!) {
     student {
       id
       email
-      fullName
+      firstName
+      lastName
     }
     studentAssignment {
       id

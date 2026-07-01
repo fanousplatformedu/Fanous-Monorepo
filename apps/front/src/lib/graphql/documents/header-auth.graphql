@@ -3,7 +3,8 @@ query HeaderCurrentUser {
     id
     role
     email
-    fullName
+    firstName
+    lastName
     schoolId
     avatarUrl
     forcePasswordChange

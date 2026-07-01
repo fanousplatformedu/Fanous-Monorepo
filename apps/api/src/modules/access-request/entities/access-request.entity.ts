@@ -11,7 +11,8 @@ export class AccessRequestEntity {
   @Field(() => String) requestedRole!: Role;
   @Field({ nullable: true }) email?: string;
   @Field({ nullable: true }) mobile?: string;
-  @Field({ nullable: true }) fullName?: string;
+  @Field({ nullable: true }) firstName?: string;
+  @Field({ nullable: true }) lastName?: string;
   @Field({ nullable: true }) reviewedAt?: Date;
   @Field({ nullable: true }) reviewedById?: string;
   @Field({ nullable: true }) rejectReason?: string;

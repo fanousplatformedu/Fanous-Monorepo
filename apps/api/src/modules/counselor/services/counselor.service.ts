@@ -6,6 +6,10 @@ import { CounselorMessageEnum } from "@counselor/enums/counselor-message.enum";
 import { ForbiddenException } from "@nestjs/common";
 import { CounselorErrorEnum } from "@counselor/enums/counselor-error.enum";
 import { PrismaService } from "@prisma/prisma.service";
+import {
+  buildUserNameSearch,
+  formatPersonName,
+} from "@common/utils/person-name.util";
 
 import * as T from "@counselor/types/counselor.types";
 
@@ -38,7 +42,7 @@ export class CounselorService {
     if (!search?.trim()) return undefined;
     return {
       OR: [
-        { fullName: { contains: search, mode: "insensitive" } },
+        ...buildUserNameSearch(search.trim()),
         { email: { contains: search, mode: "insensitive" } },
         { mobile: { contains: search, mode: "insensitive" } },
         { username: { contains: search, mode: "insensitive" } },
@@ -255,7 +259,8 @@ export class CounselorService {
           mobile: row.student.mobile,
           assignedAt: row.assignedAt,
           latestResultAt: latestResult?.createdAt ?? null,
-          fullName: row.student.fullName ?? "Unknown Student",
+          firstName: row.student.firstName,
+          lastName: row.student.lastName,
           upcomingSessionAt: upcomingSession?.scheduledAt ?? null,
         };
       }),
@@ -342,7 +347,8 @@ export class CounselorService {
       email: student.email,
       mobile: student.mobile,
       latestResultAt: latestResult?.createdAt ?? null,
-      fullName: student.fullName ?? "Unknown Student",
+      firstName: student.firstName,
+      lastName: student.lastName,
       latestSessionAt: latestSession?.scheduledAt ?? null,
     };
   }
@@ -403,7 +409,11 @@ export class CounselorService {
         reviewedAt: row.reviewedAt,
         assignmentId: row.assignmentId,
         assignmentTitle: row.assignment.title,
-        studentName: row.student.fullName ?? "Unknown Student",
+        studentName: formatPersonName(
+          row.student.firstName,
+          row.student.lastName,
+          "Unknown Student",
+        ),
       })),
       total,
       page,
@@ -439,7 +449,11 @@ export class CounselorService {
       assignmentId: review.assignmentId,
       assignmentTitle: review.assignment.title,
       dominantKey: review.result?.dominantKey ?? null,
-      studentName: review.student.fullName ?? "Unknown Student",
+      studentName: formatPersonName(
+        review.student.firstName,
+        review.student.lastName,
+        "Unknown Student",
+      ),
     };
   }
 
@@ -677,7 +691,11 @@ export class CounselorService {
       studentId: created.studentId,
       meetingUrl: created.meetingUrl,
       scheduledAt: created.scheduledAt,
-      studentName: created.student.fullName ?? "Unknown Student",
+      studentName: formatPersonName(
+        created.student.firstName,
+        created.student.lastName,
+        "Unknown Student",
+      ),
     };
   }
 
@@ -736,7 +754,11 @@ export class CounselorService {
         studentId: row.studentId,
         meetingUrl: row.meetingUrl,
         scheduledAt: row.scheduledAt,
-        studentName: row.student.fullName ?? "Unknown Student",
+        studentName: formatPersonName(
+          row.student.firstName,
+          row.student.lastName,
+          "Unknown Student",
+        ),
       })),
       total,
       page,
@@ -876,7 +898,11 @@ export class CounselorService {
         });
         return {
           studentId: link.studentId,
-          studentName: link.student.fullName ?? "Unknown Student",
+          studentName: formatPersonName(
+            link.student.firstName,
+            link.student.lastName,
+            "Unknown Student",
+          ),
           latestScore: latest ? this.calculateAverageResult(latest) : null,
           dominantKey: latest?.dominantKey ?? null,
           latestDate: latest?.createdAt ?? null,

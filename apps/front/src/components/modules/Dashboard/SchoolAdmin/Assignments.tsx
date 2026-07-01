@@ -2,7 +2,7 @@
 
 import { TDialogMode, TSelectedAssignment } from "@/types/modules";
 import { createAssignmentSchema } from "@/lib/validation/school-admin-schemas";
-import { toIsoFromLocalDateTime } from "@/utils/function-helper";
+import { toIsoFromLocalDateTime, formatPersonName } from "@/utils/function-helper";
 import { AssignmentSummaryCards } from "@modules/Dashboard/SchoolAdmin/parts/assignment-card";
 import { AssignmentResultsTable } from "@modules/Dashboard/SchoolAdmin/parts/assignment-table";
 import { AssignmentActionDialog } from "@modules/Dashboard/SchoolAdmin/parts/assignment-dialog";
@@ -137,7 +137,7 @@ const SchoolAdminAssignmentsPage = () => {
     () =>
       (membersData?.items ?? []).map((m) => ({
         value: m.id,
-        label: m.fullName || m.email || m.id,
+        label: formatPersonName(m.firstName, m.lastName) || m.email || m.id,
       })),
     [membersData],
   );

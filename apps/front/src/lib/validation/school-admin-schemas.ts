@@ -44,6 +44,10 @@ export const createAssignmentSchema = z
 
 export type TCreateAssignmentForm = z.infer<typeof createAssignmentSchema>;
 
+export const updateAssignmentSchema = createAssignmentSchema;
+
+export type TUpdateAssignmentForm = TCreateAssignmentForm;
+
 export const classroomSchema = z.object({
   gradeId: z.string().min(1, "Grade is required"),
   name: z.string().min(1, "Classroom name is required"),

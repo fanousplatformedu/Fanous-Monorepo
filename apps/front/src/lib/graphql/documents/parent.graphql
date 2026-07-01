@@ -16,7 +16,8 @@ query MyChildren($input: ListMyChildrenInput!) {
       id
       email
       mobile
-      fullName
+      firstName
+      lastName
       relation
       isPrimary
       avatarUrl
@@ -44,7 +45,8 @@ query ParentChildDetail($input: ParentChildDetailInput!) {
     email
     mobile
     relation
-    fullName
+    firstName
+    lastName
     isPrimary
     avatarUrl
     currentEnrollment {
@@ -93,7 +95,8 @@ query ParentChildResults($input: ListParentChildResultsInput!) {
         id
         email
         mobile
-        fullName
+        firstName
+        lastName
         avatarUrl
       }
       musical
@@ -121,7 +124,8 @@ query ParentResultDetail($resultId: String!) {
       id
       email
       mobile
-      fullName
+      firstName
+      lastName
       avatarUrl
     }
     musical
@@ -186,7 +190,8 @@ query ParentChildActivities($input: ListParentChildActivitiesInput!) {
         id
         email
         mobile
-        fullName
+        firstName
+        lastName
         avatarUrl
       }
       type
@@ -216,7 +221,8 @@ query ParentCounselingSessions($input: ListParentCounselingSessionsInput!) {
       studentId
       student {
         id
-        fullName
+        firstName
+        lastName
         email
         mobile
         avatarUrl

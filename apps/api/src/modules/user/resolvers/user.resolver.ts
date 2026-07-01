@@ -32,7 +32,8 @@ export class UserResolver {
   updateMe(@CurrentUser() user: any, @Args("input") input: UpdateMeInput) {
     return this.usersService.updateMe({
       userId: user.id,
-      fullName: input.fullName ?? null,
+      firstName: input.firstName ?? null,
+      lastName: input.lastName ?? null,
       avatarUrl: input.avatarUrl ?? null,
       email: input.email ?? null,
       mobile: input.mobile ?? null,

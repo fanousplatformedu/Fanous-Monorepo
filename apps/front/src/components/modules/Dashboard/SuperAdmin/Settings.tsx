@@ -42,7 +42,8 @@ const Settings = () => {
   const profileForm = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
     },
   });
@@ -50,7 +51,8 @@ const Settings = () => {
   useEffect(() => {
     if (me) {
       profileForm.reset({
-        fullName: me.fullName || "",
+        firstName: me.firstName || "",
+        lastName: me.lastName || "",
         email: me.email || "",
       });
     }
@@ -115,9 +117,15 @@ const Settings = () => {
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <FloatingInputField
-                  name="fullName"
+                  name="firstName"
                   control={profileForm.control}
-                  label={t("dashboard.superAdmin.settings.fields.fullName")}
+                  label={t("dashboard.superAdmin.settings.fields.firstName")}
+                />
+
+                <FloatingInputField
+                  name="lastName"
+                  control={profileForm.control}
+                  label={t("dashboard.superAdmin.settings.fields.lastName")}
                 />
 
                 <FloatingInputField

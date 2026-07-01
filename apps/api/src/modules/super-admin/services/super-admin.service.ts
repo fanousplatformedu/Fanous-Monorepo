@@ -77,7 +77,8 @@ export class SuperAdminService {
 
   async updateAdminProfile(args: {
     actor: { id: string; role: Role; schoolId?: string | null };
-    fullName?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
     email?: string | null;
   }) {
     if (
@@ -91,7 +92,8 @@ export class SuperAdminService {
         id: true,
         role: true,
         email: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         schoolId: true,
       },
     });
@@ -101,7 +103,10 @@ export class SuperAdminService {
         code: SuperAdminErrorCode.ADMIN_NOT_FOUND,
       });
     const nextEmail = args.email?.trim().toLowerCase() || null;
-    const nextFullName = args.fullName?.trim() || null;
+    const nextFirstName =
+      args.firstName !== undefined ? args.firstName?.trim() || null : undefined;
+    const nextLastName =
+      args.lastName !== undefined ? args.lastName?.trim() || null : undefined;
     if (nextEmail && nextEmail !== user.email) {
       const existing = await this.prismaService.user.findFirst({
         where: {
@@ -119,12 +124,14 @@ export class SuperAdminService {
     const updated = await this.prismaService.user.update({
       where: { id: user.id },
       data: {
-        fullName: args.fullName !== undefined ? nextFullName : undefined,
+        firstName: nextFirstName,
+        lastName: nextLastName,
         email: args.email !== undefined ? nextEmail : undefined,
       },
       select: {
         id: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         email: true,
         schoolId: true,
       },
@@ -140,7 +147,8 @@ export class SuperAdminService {
         entityId: user.id,
         metadata: {
           kind: "admin_profile_update",
-          fullName: updated.fullName,
+          firstName: updated.firstName,
+          lastName: updated.lastName,
           email: updated.email,
         },
       });
@@ -148,7 +156,8 @@ export class SuperAdminService {
     return {
       message: "Profile updated successfully.",
       id: updated.id,
-      fullName: updated.fullName ?? undefined,
+      firstName: updated.firstName ?? undefined,
+      lastName: updated.lastName ?? undefined,
       email: updated.email ?? undefined,
     };
   }

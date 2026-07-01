@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { TActivityItem, TParentActivitiesFilterValues } from "@/types/modules";
 import { useParentChildActivitiesQuery } from "@/lib/redux/api/endpoints/parent.api";
 import { ParentActivitiesSummaryCards } from "@modules/Dashboard/Parent/parts/activities-summary-card";
@@ -57,7 +58,7 @@ const ParentActivitiesPage = () => {
     const list = childrenData?.items ?? [];
     return list.map((child) => ({
       value: child.id,
-      label: child.fullName || child.email || child.mobile || child.id,
+      label: formatPersonName(child.firstName, child.lastName) || child.email || child.mobile || child.id,
     }));
   }, [childrenData]);
   const totalActivities = total;

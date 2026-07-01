@@ -12,7 +12,8 @@ export class SchoolAdminEntity {
   @Field() forcePasswordChange!: boolean;
   @Field(() => String) status!: UserStatus;
   @Field({ nullable: true }) email?: string;
-  @Field({ nullable: true }) fullName?: string;
+  @Field({ nullable: true }) firstName?: string;
+  @Field({ nullable: true }) lastName?: string;
   @Field({ nullable: true }) username?: string;
   @Field({ nullable: true }) schoolName?: string;
 }

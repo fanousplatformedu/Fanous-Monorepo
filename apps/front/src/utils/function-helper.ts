@@ -1,6 +1,6 @@
 import { TStatusChartItem, TStudentRow, TTimelinePoint } from "@/types/modules";
 import { TAuthIdentityPayload } from "@/types/constant";
-import { useI18n } from "@/hooks/useI18n";
+import { I18nContextValue } from "@/types/providers";
 
 import en from "@i18n/en.json";
 import fa from "@i18n/fa.json";
@@ -17,16 +17,28 @@ export const mapEmailOrMobile = (value: string): TAuthIdentityPayload => {
 };
 
 // ============ Header ================
+export const formatPersonName = (
+  firstName?: string | null,
+  lastName?: string | null,
+  fallback = "",
+): string => {
+  const parts = [firstName?.trim(), lastName?.trim()].filter(Boolean);
+  const name = parts.join(" ");
+  return name || fallback;
+};
+
 export const getUserInitials = (
-  fullName?: string | null,
+  firstName?: string | null,
+  lastName?: string | null,
   email?: string | null,
 ) => {
-  const safeName = fullName?.trim();
-  if (safeName) {
-    const parts = safeName.split(/\s+/).filter(Boolean);
-    if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
-    return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
+  const first = firstName?.trim();
+  const last = lastName?.trim();
+  if (first && last) {
+    return `${first[0] ?? ""}${last[0] ?? ""}`.toUpperCase();
   }
+  if (first) return first.slice(0, 1).toUpperCase();
+  if (last) return last.slice(0, 1).toUpperCase();
   if (email) return email.slice(0, 1).toUpperCase();
   return "U";
 };
@@ -56,15 +68,27 @@ export const toIsoFromLocalDateTime = (value?: string): string | undefined => {
   return date.toISOString();
 };
 
+export const toLocalDateTimeInputValue = (value?: string | null): string => {
+  if (!value?.trim()) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (part: number) => String(part).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
 export const formatShortDate = (value: string) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return `${date.getMonth() + 1}/${date.getDate()}`;
 };
 
-export const getInitials = (fullName?: string | null) => {
-  if (!fullName?.trim()) return "P";
-  const parts = fullName.trim().split(/\s+/).slice(0, 2);
+export const getInitials = (
+  firstName?: string | null,
+  lastName?: string | null,
+) => {
+  const name = formatPersonName(firstName, lastName);
+  if (!name) return "P";
+  const parts = name.split(/\s+/).slice(0, 2);
   return parts.map((part) => part[0]?.toUpperCase() ?? "").join("") || "P";
 };
 
@@ -103,9 +127,12 @@ export const getRecordValue = (obj: unknown, key: string): unknown => {
 
 // ============== Counselor helpers ===============
 export const getRow = (item: unknown): TStudentRow => {
+  const firstName = getString(getValue(item, "firstName"));
+  const lastName = getString(getValue(item, "lastName"));
   return {
     id: getString(getValue(item, "id")) ?? "",
-    fullName: getString(getValue(item, "fullName")) ?? "-",
+    firstName,
+    lastName,
     assignedAt:
       getString(getValue(item, "assignedAt")) ??
       getString(getValue(item, "createdAt")) ??
@@ -135,7 +162,7 @@ export const getStatusDistribution = (
   items: unknown[],
   fieldName: string,
   labelPrefix: string,
-  t: ReturnType<typeof useI18n>["t"],
+  t: I18nContextValue["t"],
 ): TStatusChartItem[] => {
   const map = new Map<string, number>();
   for (const item of items) {

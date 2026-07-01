@@ -27,23 +27,21 @@ const StudentProfilePage = () => {
   const [logout, { isLoading: isLoggingOut }] = useSchoolUserLogoutMutation();
 
   const handleSaveProfile = async (values: {
-    fullName?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
     mobile?: string;
     avatarUrl?: string;
   }) => {
     try {
-      const response = await updateMe({
-        fullName: values.fullName?.trim() || undefined,
+      await updateMe({
+        firstName: values.firstName?.trim() || undefined,
+        lastName: values.lastName?.trim() || undefined,
         email: values.email?.trim() || undefined,
         mobile: values.mobile?.trim() || undefined,
         avatarUrl: values.avatarUrl?.trim() || undefined,
       }).unwrap();
-      toast.success(
-        response?.fullName
-          ? t("dashboard.student.profile.toasts.updateSuccess")
-          : t("dashboard.student.profile.toasts.updateSuccess"),
-      );
+      toast.success(t("dashboard.student.profile.toasts.updateSuccess"));
     } catch (error: unknown) {
       toast.error(
         getApiErrorMessage(

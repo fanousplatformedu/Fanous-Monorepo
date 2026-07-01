@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { TEnrollmentTableProps } from "@/types/modules";
 import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-card";
 import { TablePagination } from "@elements/table-pagination";
@@ -110,7 +111,7 @@ export const EnrollmentTable = ({
               const isClosed = Boolean(item.endedAt);
 
               const studentLabel =
-                student?.fullName ||
+                formatPersonName(student?.firstName, student?.lastName) ||
                 student?.email ||
                 student?.mobile ||
                 item.studentId;

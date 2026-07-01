@@ -7,7 +7,8 @@ export type TCurrentCounselorUser = {
   role: Role;
   email?: string;
   mobile?: string;
-  fullName?: string;
+  firstName?: string;
+  lastName?: string;
   schoolId?: string;
 };
 

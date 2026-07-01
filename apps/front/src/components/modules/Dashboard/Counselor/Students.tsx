@@ -82,7 +82,8 @@ const CounselorStudentPage = () => {
     () =>
       (data?.items ?? []).map((item) => ({
         id: item.id,
-        fullName: item.fullName || "-",
+        firstName: item.firstName ?? null,
+        lastName: item.lastName ?? null,
         email: item.email ?? null,
         mobile: item.mobile ?? null,
         linkStatus: item.linkStatus,
@@ -100,7 +101,8 @@ const CounselorStudentPage = () => {
       id: detailData.id,
       email: detailData.email ?? null,
       mobile: detailData.mobile ?? null,
-      fullName: detailData.fullName || "-",
+      firstName: detailData.firstName ?? null,
+      lastName: detailData.lastName ?? null,
       totalResults: detailData.totalResults,
       totalSessions: detailData.totalSessions,
       pendingReviews: detailData.pendingReviews,

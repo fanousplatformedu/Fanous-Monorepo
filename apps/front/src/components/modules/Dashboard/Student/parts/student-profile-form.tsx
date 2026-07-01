@@ -19,7 +19,8 @@ export const StudentProfileForm = ({
 
   const form = useForm<TStudentProfileFormValues>({
     defaultValues: {
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       mobile: "",
       avatarUrl: "",
@@ -28,7 +29,8 @@ export const StudentProfileForm = ({
 
   useEffect(() => {
     form.reset({
-      fullName: me.fullName || "",
+      firstName: me.firstName || "",
+      lastName: me.lastName || "",
       email: me.email || "",
       mobile: me.mobile || "",
       avatarUrl: me.avatarUrl || "",
@@ -44,9 +46,15 @@ export const StudentProfileForm = ({
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
           <FloatingInputField
-            name="fullName"
+            name="firstName"
             control={form.control}
-            label={t("dashboard.student.profile.form.fields.fullName")}
+            label={t("dashboard.student.profile.form.fields.firstName")}
+          />
+
+          <FloatingInputField
+            name="lastName"
+            control={form.control}
+            label={t("dashboard.student.profile.form.fields.lastName")}
           />
 
           <FloatingInputField
@@ -77,7 +85,8 @@ export const StudentProfileForm = ({
             loadingText={t("dashboard.student.profile.actions.saving")}
             onCancel={() =>
               form.reset({
-                fullName: me.fullName || "",
+                firstName: me.firstName || "",
+                lastName: me.lastName || "",
                 email: me.email || "",
                 mobile: me.mobile || "",
                 avatarUrl: me.avatarUrl || "",

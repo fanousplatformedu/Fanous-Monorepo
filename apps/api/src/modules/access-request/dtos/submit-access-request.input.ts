@@ -12,7 +12,8 @@ export class SubmitAccessRequestInput {
   @Field() @IsString() schoolId!: string;
   @Field({ nullable: true }) @IsOptional() @IsEmail() email?: string;
   @Field({ nullable: true }) @IsOptional() @IsString() mobile?: string;
-  @Field({ nullable: true }) @IsOptional() @IsString() fullName?: string;
+  @Field({ nullable: true }) @IsOptional() @IsString() firstName?: string;
+  @Field({ nullable: true }) @IsOptional() @IsString() lastName?: string;
   @Field(() => AccessRequestRole)
   @IsEnum(AccessRequestRole)
   requestedRole!: AccessRequestRole;

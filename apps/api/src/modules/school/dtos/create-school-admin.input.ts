@@ -6,5 +6,6 @@ import { Field, InputType } from "@nestjs/graphql";
 export class CreateSchoolAdminInput {
   @Field() @IsEmail() adminEmail!: string;
   @Field() @IsString() @IsNotEmpty() schoolId!: string;
-  @Field({ nullable: true }) @IsOptional() @IsString() adminFullName?: string;
+  @Field({ nullable: true }) @IsOptional() @IsString() adminFirstName?: string;
+  @Field({ nullable: true }) @IsOptional() @IsString() adminLastName?: string;
 }

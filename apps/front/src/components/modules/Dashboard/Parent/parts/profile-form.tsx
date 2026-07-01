@@ -24,7 +24,8 @@ export const ParentProfileForm = ({
     defaultValues: {
       email: me.email || "",
       mobile: me.mobile || "",
-      fullName: me.fullName || "",
+      firstName: me.firstName || "",
+      lastName: me.lastName || "",
     },
   });
 
@@ -32,7 +33,8 @@ export const ParentProfileForm = ({
     form.reset({
       email: me.email || "",
       mobile: me.mobile || "",
-      fullName: me.fullName || "",
+      firstName: me.firstName || "",
+      lastName: me.lastName || "",
     });
   }, [form, me]);
 
@@ -41,9 +43,15 @@ export const ParentProfileForm = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
           <FloatingInputField
-            name="fullName"
+            name="firstName"
             control={form.control}
-            label={t("dashboard.parent.profile.form.fields.fullName")}
+            label={t("dashboard.parent.profile.form.fields.firstName")}
+          />
+
+          <FloatingInputField
+            name="lastName"
+            control={form.control}
+            label={t("dashboard.parent.profile.form.fields.lastName")}
           />
 
           <FloatingInputField

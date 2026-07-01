@@ -209,7 +209,8 @@ model User {
   email  String?
   mobile String?
 
-  fullName  String?
+  firstName String?
+  lastName  String?
   avatarUrl String?
 
   forcePasswordChange Boolean   @default(false)
@@ -290,7 +291,8 @@ model AccessRequest {
   email  String?
   mobile String?
 
-  fullName String?
+  firstName String?
+  lastName  String?
 
   approvedUserId String?
   approvedUser   User?   @relation(fields: [approvedUserId], references: [id], onDelete: SetNull)

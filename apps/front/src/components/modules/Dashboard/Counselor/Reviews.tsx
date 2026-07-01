@@ -14,7 +14,7 @@ import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading
 import { TReviewFilterValues } from "@/types/modules";
 import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
 import { useMyStudentsQuery } from "@/lib/redux/api/endpoints/counselor.api";
-import { getApiErrorMessage } from "@/utils/function-helper";
+import { getApiErrorMessage, formatPersonName } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
 import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
 import { PAGE_SIZE } from "@/utils/constant";
@@ -132,7 +132,7 @@ const CounselorReviewsPage = () => {
     () =>
       (studentsData?.items ?? []).map((item) => ({
         value: item.id,
-        label: item.fullName || item.email || item.mobile || item.id,
+        label: formatPersonName(item.firstName, item.lastName) || item.email || item.mobile || item.id,
       })),
     [studentsData],
   );

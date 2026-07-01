@@ -6,8 +6,9 @@ type AccessRequest {
   approvedUserId: String
   createdAt: DateTime!
   email: String
-  fullName: String
+  firstName: String
   id: String!
+  lastName: String
   mobile: String
   rejectReason: String
   requestedRole: String!
@@ -45,8 +46,9 @@ input AdminLoginInput {
 
 type AdminProfileResult {
   email: String
-  fullName: String
+  firstName: String
   id: String!
+  lastName: String
   message: String!
 }
 
@@ -115,8 +117,9 @@ type AssessmentResultList {
 
 type AssessmentStudent {
   email: String
-  fullName: String
+  firstName: String
   id: String!
+  lastName: String
 }
 
 type AssessmentStudentResult {
@@ -166,15 +169,21 @@ input AssignmentDraftAnswerInput {
 }
 
 type AssignmentEntity {
+  counselorReviews: [CounselorReviewEntity!]!
+  createdAt: DateTime
   description: String
   dueAt: DateTime
-  hasResult: Boolean!
   id: ID!
+  publishedAt: DateTime
   schoolId: String!
   status: AssignmentStatus!
   studentAssignments: [StudentAssignmentEntity!]!
+  targetClassroomId: String
+  targetGradeId: String
   targetMode: AssignmentTargetMode!
+  targetStudentIds: [String!]
   title: String!
+  updatedAt: DateTime
   userId: String
 }
 
@@ -222,7 +231,8 @@ type AuditLogList {
 }
 
 type AuthPayload {
-  fullName: String
+  firstName: String
+  lastName: String
   message: String!
   role: String!
   schoolId: String
@@ -428,6 +438,20 @@ type CounselorReviewDetail {
   studentName: String!
 }
 
+type CounselorReviewEntity {
+  assignmentId: String!
+  counselorId: String!
+  createdAt: DateTime!
+  feedback: String
+  id: ID!
+  resultId: String
+  reviewedAt: DateTime
+  schoolId: String!
+  status: CounselorReviewStatus!
+  studentId: String!
+  updatedAt: DateTime!
+}
+
 type CounselorReviewResult {
   message: String!
   success: Boolean!
@@ -488,8 +512,9 @@ type CounselorStudentAssignmentResult {
 type CounselorStudentCard {
   assignedAt: DateTime!
   email: String
-  fullName: String!
+  firstName: String
   id: String!
+  lastName: String
   latestResultAt: DateTime
   linkStatus: CounselorStudentLinkStatus!
   mobile: String
@@ -499,8 +524,9 @@ type CounselorStudentCard {
 
 type CounselorStudentDetail {
   email: String
-  fullName: String!
+  firstName: String
   id: String!
+  lastName: String
   latestResultAt: DateTime
   latestSessionAt: DateTime
   mobile: String
@@ -555,7 +581,8 @@ input CreateGradeInput {
 
 input CreateSchoolAdminInput {
   adminEmail: String!
-  adminFullName: String
+  adminFirstName: String
+  adminLastName: String
   schoolId: String!
 }
 
@@ -888,6 +915,7 @@ type Mutation {
   submitAssignmentAnswers(input: SubmitAssignmentAnswersInput!): NotificationStudentResult!
   submitStudentAnswers(input: SubmitStudentAnswersInput!): String!
   updateAdminProfile(input: UpdateAdminProfileInput!): AdminProfileResult!
+  updateAssignment(input: UpdateAssignmentInput!): SchoolAssignment!
   updateClassroom(input: UpdateClassroomInput!): Classroom!
   updateGrade(input: UpdateGradeInput!): Grade!
   updateMe(input: UpdateMeInput!): User!
@@ -968,8 +996,9 @@ type ParentAssessmentResultList {
 type ParentAssessmentStudent {
   avatarUrl: String
   email: String
-  fullName: String
+  firstName: String
   id: String!
+  lastName: String
   mobile: String
 }
 
@@ -985,9 +1014,10 @@ type ParentChild {
   createdAt: DateTime
   currentEnrollment: ParentChildCurrentEnrollment
   email: String
-  fullName: String
+  firstName: String
   id: String!
   isPrimary: Boolean!
+  lastName: String
   mobile: String
   relation: ParentRelationType!
   status: UserStatus
@@ -1005,9 +1035,10 @@ type ParentChildDetail {
   createdAt: DateTime
   currentEnrollment: ParentChildCurrentEnrollment
   email: String
-  fullName: String
+  firstName: String
   id: String!
   isPrimary: Boolean!
+  lastName: String
   mobile: String
   relation: ParentRelationType!
   status: UserStatus
@@ -1074,8 +1105,9 @@ enum ParentCounselingSessionStatus {
 type ParentCounselingSessionStudent {
   avatarUrl: String
   email: String
-  fullName: String
+  firstName: String
   id: String!
+  lastName: String
   mobile: String
 }
 
@@ -1302,9 +1334,10 @@ type School {
 type SchoolAdmin {
   createdAt: DateTime!
   email: String
+  firstName: String
   forcePasswordChange: Boolean!
-  fullName: String
   id: String!
+  lastName: String
   role: String!
   schoolId: String!
   schoolName: String
@@ -1367,8 +1400,9 @@ type SchoolAssignmentList {
 type SchoolCounselor {
   avatarUrl: String
   email: String
-  fullName: String
+  firstName: String
   id: String!
+  lastName: String
   mobile: String
   status: UserStatus!
 }
@@ -1396,8 +1430,9 @@ type SchoolStudentAnalyticsEntity {
 type SchoolStudentAssignmentCandidate {
   avatarUrl: String
   email: String
-  fullName: String
+  firstName: String
   id: String!
+  lastName: String
   mobile: String
   status: UserStatus!
 }
@@ -1433,8 +1468,9 @@ input SetSchoolStatusInput {
 }
 
 type Student {
-  fullName: String
+  firstName: String
   id: ID!
+  lastName: String
 }
 
 type StudentActivity {
@@ -1458,8 +1494,9 @@ type StudentActivityList {
 type StudentActivityStudent {
   avatarUrl: String
   email: String
-  fullName: String
+  firstName: String
   id: String!
+  lastName: String
   mobile: String
 }
 
@@ -1609,7 +1646,8 @@ input StudentProgressTimelineInput {
 
 input SubmitAccessRequestInput {
   email: String
-  fullName: String
+  firstName: String
+  lastName: String
   mobile: String
   requestedRole: AccessRequestRole!
   schoolId: String!
@@ -1627,7 +1665,19 @@ input SubmitStudentAnswersInput {
 
 input UpdateAdminProfileInput {
   email: String
-  fullName: String
+  firstName: String
+  lastName: String
+}
+
+input UpdateAssignmentInput {
+  assignmentId: String!
+  description: String
+  dueAt: String
+  targetClassroomId: String
+  targetGradeId: String
+  targetMode: String
+  targetStudentIds: [String!]
+  title: String
 }
 
 input UpdateClassroomInput {
@@ -1647,7 +1697,8 @@ input UpdateGradeInput {
 input UpdateMeInput {
   avatarUrl: String
   email: String
-  fullName: String
+  firstName: String
+  lastName: String
   mobile: String
 }
 
@@ -1662,9 +1713,10 @@ type User {
   avatarUrl: String
   createdAt: DateTime!
   email: String
+  firstName: String
   forcePasswordChange: Boolean
-  fullName: String
   id: String!
+  lastName: String
   mobile: String
   role: String!
   schoolId: String

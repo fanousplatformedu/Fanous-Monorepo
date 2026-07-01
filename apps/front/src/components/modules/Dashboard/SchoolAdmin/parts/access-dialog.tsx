@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { TAccessRequestRole, TDialogFormValues } from "@/types/modules";
 import { TAccessRequestReviewDialogProps } from "@/types/modules";
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
@@ -104,7 +105,7 @@ export const AccessRequestDialog = ({
           <span className="font-medium">
             {t("dashboard.schoolAdmin.accessRequests.dialog.common.fullName")}:
           </span>{" "}
-          {request?.fullName || "-"}
+          {formatPersonName(request?.firstName, request?.lastName) || "-"}
         </p>
 
         <p className="mt-2">

@@ -9,7 +9,7 @@ import { AccessRequestFilters } from "@modules/Dashboard/SchoolAdmin/parts/acces
 import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
 import { AccessRequestDialog } from "@modules/Dashboard/SchoolAdmin/parts/access-dialog";
 import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-card";
-import { getApiErrorMessage } from "@/utils/function-helper";
+import { getApiErrorMessage, formatPersonName } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
 import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
 import { TablePagination } from "@elements/table-pagination";
@@ -34,7 +34,8 @@ const castAccessRequestRow = (item: {
   email: string | null;
   mobile: string | null;
   requestedRole: string;
-  fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
   reviewedAt: string | null;
   rejectReason: string | null;
   reviewedById: string | null;
@@ -44,7 +45,8 @@ const castAccessRequestRow = (item: {
     id: item.id,
     email: item.email,
     mobile: item.mobile,
-    fullName: item.fullName,
+    firstName: item.firstName,
+    lastName: item.lastName,
     createdAt: item.createdAt,
     reviewedAt: item.reviewedAt,
     rejectReason: item.rejectReason,
@@ -283,7 +285,7 @@ const SchoolAdminAccessRequestsPage = () => {
                 <tbody>
                   {items.map((request) => (
                     <tr key={request.id} className="border-t border-border/40">
-                      <td className="px-4 py-3">{request.fullName || "-"}</td>
+                      <td className="px-4 py-3">{formatPersonName(request.firstName, request.lastName) || "-"}</td>
 
                       <td className="px-4 py-3">
                         {t(

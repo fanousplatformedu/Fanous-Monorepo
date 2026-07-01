@@ -227,6 +227,10 @@
     "password": "رمز عبور",
     "fullName": "نام و نام خانوادگی",
     "fullNamePlaceholder": "نام و نام خانوادگی را وارد کنید",
+    "firstName": "نام",
+    "lastName": "نام خانوادگی",
+    "firstNamePlaceholder": "نام را وارد کنید",
+    "lastNamePlaceholder": "نام خانوادگی را وارد کنید",
     "mobile": "موبایل",
     "mobilePlaceholder": "شماره موبایل را وارد کنید",
     "email": "ایمیل",
@@ -535,6 +539,8 @@
         },
         "fields": {
           "fullName": "نام و نام خانوادگی",
+          "firstName": "نام",
+          "lastName": "نام خانوادگی",
           "email": "ایمیل",
           "currentPassword": "رمز عبور فعلی",
           "newPassword": "رمز عبور جدید"
@@ -856,14 +862,73 @@
           "notSelected": "انتخاب نشده"
         }
       },
-      "assignmentDetail":{
-   
-        "assignedStudent":{
-          "columns":{
+      "assignmentDetail": {
+        "page": {
+          "title": "جزئیات تکلیف",
+          "description": "مشاهده اطلاعات تکلیف و پیشرفت دانش‌آموزان اختصاص‌یافته."
+        },
+        "backToAssignments": "بازگشت به تکالیف",
+        "readOnlyHint": "فقط تکالیف بسته‌شده قابل ویرایش نیستند.",
+        "empty": {
+          "title": "تکلیف یافت نشد",
+          "description": "این تکلیف وجود ندارد یا دسترسی به آن ندارید."
+        },
+        "error": {
+          "title": "بارگذاری تکلیف ناموفق بود",
+          "description": "مشکلی در بارگذاری این تکلیف پیش آمد. لطفاً صفحه را رفرش کنید و دوباره تلاش کنید."
+        },
+        "meta": {
+          "dueAt": "مهلت تحویل",
+          "publishedAt": "تاریخ انتشار",
+          "createdAt": "تاریخ ایجاد",
+          "updatedAt": "آخرین به‌روزرسانی"
+        },
+        "stats": {
+          "totalStudents": "کل دانش‌آموزان",
+          "notStarted": "شروع نشده",
+          "inProgress": "در حال انجام",
+          "evaluated": "ارزیابی‌شده"
+        },
+        "students": {
+          "title": "دانش‌آموزان اختصاص‌یافته",
+          "description": "پیشرفت و وضعیت هر دانش‌آموز در این تکلیف.",
+          "empty": {
+            "title": "دانش‌آموزی اختصاص نیافته",
+            "description": "پس از انتشار و ارسال تکلیف، دانش‌آموزان در اینجا نمایش داده می‌شوند."
+          }
+        },
+        "updateDialog": {
+          "title": "ویرایش تکلیف",
+          "description": "اطلاعات این تکلیف را به‌روزرسانی کنید."
+        },
+        "actions": {
+          "edit": "ویرایش تکلیف",
+          "save": "ذخیره تغییرات",
+          "saving": "در حال ذخیره..."
+        },
+        "toasts": {
+          "updateSuccess": "تکلیف با موفقیت به‌روزرسانی شد.",
+          "updateFailed": "به‌روزرسانی تکلیف انجام نشد."
+        },
+        "studentStatus": {
+          "NOT_STARTED": "شروع نشده",
+          "PENDING": "در انتظار",
+          "IN_PROGRESS": "در حال انجام",
+          "SUBMITTED": "ارسال‌شده",
+          "EVALUATED": "ارزیابی‌شده"
+        },
+        "assignedStudent": {
+          "columns": {
             "startedAt": "تاریخ شروع",
+            "submittedAt": "تاریخ ارسال",
             "completionRate": "درصد تکمیل",
             "name": "نام",
-            "familyName": "نام خانوادگی"
+            "familyName": "نام خانوادگی",
+            "status": "وضعیت",
+            "actions": "عملیات"
+          },
+          "actions": {
+            "viewResult": "مشاهده نتیجه"
           }
         }
       },
@@ -1918,6 +1983,8 @@
         "form": {
           "fields": {
             "fullName": "نام و نام خانوادگی",
+            "firstName": "نام",
+            "lastName": "نام خانوادگی",
             "email": "ایمیل",
             "mobile": "موبایل",
             "avatarUrl": "لینک آواتار"
@@ -1996,6 +2063,8 @@
           "description": "اطلاعات پروفایل و راه‌های ارتباطی خود را به‌روزرسانی کنید",
           "fields": {
             "fullName": "نام و نام خانوادگی",
+            "firstName": "نام",
+            "lastName": "نام خانوادگی",
             "email": "ایمیل",
             "mobile": "شماره موبایل",
             "avatarUrl": "آدرس تصویر پروفایل"
@@ -2179,6 +2248,8 @@
           "description": "اطلاعات کامل فرزند انتخاب‌شده",
           "fields": {
             "fullName": "نام و نام خانوادگی",
+            "firstName": "نام",
+            "lastName": "نام خانوادگی",
             "email": "ایمیل",
             "mobile": "موبایل",
             "grade": "پایه",

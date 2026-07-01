@@ -19,7 +19,8 @@ query MyStudents($input: MyStudentsInput!) {
       id
       email
       mobile
-      fullName
+      firstName
+      lastName
       linkStatus
       assignedAt
       pendingReviews
@@ -34,7 +35,8 @@ query CounselorStudentDetail($studentId: String!) {
     id
     email
     mobile
-    fullName
+    firstName
+    lastName
     totalResults
     totalSessions
     pendingReviews

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { TParentChildrenFilterValues } from "@/types/modules";
 import { ParentChildrenSummaryCards } from "@modules/Dashboard/Parent/parts/children-summary-card";
 import { useParentChildDetailQuery } from "@/lib/redux/api/endpoints/parent.api";
@@ -59,7 +60,7 @@ const ParentChildrenPage = () => {
     () =>
       items.map((child) => ({
         value: child.id,
-        label: child.fullName || child.email || child.mobile || child.id,
+        label: formatPersonName(child.firstName, child.lastName) || child.email || child.mobile || child.id,
       })),
     [items],
   );

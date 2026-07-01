@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { TCounselorStudentTable } from "@/types/modules";
 import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-card";
 import { TableActionButton } from "@elements/table-action-button";
@@ -59,7 +60,7 @@ export const CounselorStudentsTable = ({
             {items.map((item) => (
               <tr key={item.id} className="border-t border-border/40">
                 <td className="px-4 py-3">
-                  <div className="font-medium">{item.fullName || "-"}</div>
+                  <div className="font-medium">{formatPersonName(item.firstName, item.lastName) || "-"}</div>
                   <div className="text-xs text-muted-foreground">
                     {item.email || item.mobile || "-"}
                   </div>

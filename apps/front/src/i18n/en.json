@@ -227,6 +227,10 @@
     "password": "Password",
     "fullName": "Full name",
     "fullNamePlaceholder": "Enter full name",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "firstNamePlaceholder": "Enter first name",
+    "lastNamePlaceholder": "Enter last name",
     "mobile": "Mobile",
     "mobilePlaceholder": "Enter mobile number",
     "email": "Email",
@@ -535,6 +539,8 @@
         },
         "fields": {
           "fullName": "Full Name",
+          "firstName": "First Name",
+          "lastName": "Last Name",
           "email": "Email",
           "currentPassword": "Current Password",
           "newPassword": "New Password"
@@ -1192,6 +1198,76 @@
           "publishFailed": "Failed to publish assignment.",
           "assignSuccess": "Assignment assigned successfully.",
           "assignFailed": "Failed to assign assessment to students."
+        }
+      },
+      "assignmentDetail": {
+        "page": {
+          "title": "Assignment Detail",
+          "description": "Review assignment information and assigned student progress."
+        },
+        "backToAssignments": "Back to assignments",
+        "readOnlyHint": "Only closed assignments cannot be edited.",
+        "empty": {
+          "title": "Assignment not found",
+          "description": "This assignment does not exist or you do not have access."
+        },
+        "error": {
+          "title": "Failed to load assignment",
+          "description": "Something went wrong while loading this assignment. Please refresh and try again."
+        },
+        "meta": {
+          "dueAt": "Due date",
+          "publishedAt": "Published at",
+          "createdAt": "Created at",
+          "updatedAt": "Last updated"
+        },
+        "stats": {
+          "totalStudents": "Assigned students",
+          "notStarted": "Not started",
+          "inProgress": "In progress",
+          "evaluated": "Evaluated"
+        },
+        "students": {
+          "title": "Assigned Students",
+          "description": "Track each student's status and completion for this assignment.",
+          "empty": {
+            "title": "No students assigned",
+            "description": "Students will appear here after the assignment is published and dispatched."
+          }
+        },
+        "updateDialog": {
+          "title": "Edit Assignment",
+          "description": "Update the details of this assignment."
+        },
+        "actions": {
+          "edit": "Edit assignment",
+          "save": "Save changes",
+          "saving": "Saving..."
+        },
+        "toasts": {
+          "updateSuccess": "Assignment updated successfully.",
+          "updateFailed": "Failed to update assignment."
+        },
+        "studentStatus": {
+          "NOT_STARTED": "Not started",
+          "PENDING": "Pending",
+          "IN_PROGRESS": "In progress",
+          "SUBMITTED": "Submitted",
+          "EVALUATED": "Evaluated"
+        },
+        "assignedStudent": {
+          "columns": {
+            "startedAt": "Started",
+            "submittedAt": "Submitted",
+            "completionRate": "Completion",
+            "name": "Student",
+            "familyName": "Family name",
+            "status": "Status",
+            "actions": "Actions"
+          },
+          "actions": {
+            "viewResult": "View result"
+          }
         }
       },
       "assessment": {
@@ -1921,6 +1997,8 @@
         "form": {
           "fields": {
             "fullName": "Full Name",
+            "firstName": "First Name",
+            "lastName": "Last Name",
             "email": "Email",
             "mobile": "Mobile",
             "avatarUrl": "Avatar URL"
@@ -2182,6 +2260,8 @@
           "description": "Detailed information about your selected child",
           "fields": {
             "fullName": "Full Name",
+            "firstName": "First Name",
+            "lastName": "Last Name",
             "email": "Email",
             "mobile": "Mobile",
             "grade": "Grade",
@@ -2615,6 +2695,8 @@
           "exportAction": "Export Report",
           "fields": {
             "fullName": "Full Name",
+            "firstName": "First Name",
+            "lastName": "Last Name",
             "email": "Email",
             "mobile": "Mobile",
             "pendingReviews": "Pending Reviews",

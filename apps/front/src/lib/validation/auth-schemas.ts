@@ -10,7 +10,8 @@ export type TFormValues = z.infer<typeof adminLoginSchema>;
 export const accessRequestSchema = z
   .object({
     schoolId: z.string().min(1, "School is required"),
-    fullName: z.string().min(2, "Full name is required"),
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Invalid email").or(z.literal("")),
     mobile: z.string().or(z.literal("")),
     requestedRole: z.enum(["STUDENT", "PARENT", "COUNSELOR"]),

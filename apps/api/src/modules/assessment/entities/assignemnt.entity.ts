@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID, Float } from "@nestjs/graphql";
-import { $Enums } from "@prisma/client";
+import { $Enums, CounselorReviewStatus } from "@prisma/client";
 import { AssessmentResultEntity } from "./assessment-result.entity";
 
 @ObjectType()
@@ -8,7 +8,10 @@ export class Student {
   id!: string;
 
   @Field(() => String, { nullable: true })
-  fullName!: string | null;
+  firstName!: string | null;
+
+  @Field(() => String, { nullable: true })
+  lastName!: string | null;
 }
 
 @ObjectType()
@@ -51,6 +54,43 @@ export class StudentAssignmentEntity {
 }
 
 @ObjectType()
+export class CounselorReviewEntity {
+  @Field(() => ID)
+  id!: string;
+
+  @Field(() => String)
+  schoolId!: string;
+
+  @Field(() => String)
+  counselorId!: string;
+
+  @Field(() => String)
+  studentId!: string;
+
+  @Field(() => String)
+  assignmentId!: string;
+
+  @Field(() => String, { nullable: true })
+  resultId?: string | null;
+
+  @Field(() => $Enums.CounselorReviewStatus)
+  status!: $Enums.CounselorReviewStatus;
+
+  @Field(() => String, { nullable: true })
+  feedback?: string | null;
+
+  
+  @Field(() => Date, { nullable: true })
+  reviewedAt?: Date | null;
+
+  @Field(() => Date)
+  createdAt!: Date;
+
+  @Field(() => Date)
+  updatedAt!: Date;
+}
+
+@ObjectType()
 export class AssignmentEntity {
   @Field(() => ID)
   id!: string;
@@ -79,6 +119,25 @@ export class AssignmentEntity {
   @Field(() => Date, { nullable: true })
   dueAt!: Date | null;
 
-  @Field()
-  hasResult: boolean;
+  @Field(() => [String], { nullable: true })
+  targetStudentIds!: string[] | null;
+
+  @Field(() => String, { nullable: true })
+  targetGradeId!: string | null;
+
+  @Field(() => String, { nullable: true })
+  targetClassroomId!: string | null;
+
+  @Field(() => Date, { nullable: true })
+  createdAt!: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  updatedAt!: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  publishedAt!: Date | null;
+
+  @Field(() => [CounselorReviewEntity])
+  counselorReviews!: CounselorReviewEntity[];
+
 }

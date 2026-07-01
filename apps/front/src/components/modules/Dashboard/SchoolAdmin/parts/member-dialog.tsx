@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { useI18n } from "@/hooks/useI18n";
 import { Button } from "@ui/button";
 
@@ -31,7 +32,7 @@ export const MemberDisableDialog = ({
             <span className="font-medium">
               {t("dashboard.schoolAdmin.members.disableDialog.fullName")}:
             </span>{" "}
-            {member?.fullName || "-"}
+            {formatPersonName(member?.firstName, member?.lastName) || "-"}
           </p>
 
           <p className="mt-2">

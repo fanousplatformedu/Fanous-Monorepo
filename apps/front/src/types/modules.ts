@@ -196,7 +196,8 @@ export type TStudentMeta = {
   status: string;
   email: string | null | undefined;
   mobile: string | null | undefined;
-  fullName: string | null | undefined;
+  firstName: string | null | undefined;
+  lastName: string | null | undefined;
 };
 
 export type TCloseTarget = {
@@ -375,7 +376,8 @@ export type TAccessRequestRow = {
   createdAt: string;
   email: string | null;
   mobile: string | null;
-  fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
   reviewedAt: string | null;
   rejectReason: string | null;
   reviewedById: string | null;
@@ -511,7 +513,8 @@ export type TSchoolMemberRow = {
   email: string | null;
   mobile: string | null;
   role: TSchoolMemberRole;
-  fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
   status: TSchoolMemberStatus;
 };
 
@@ -601,6 +604,20 @@ export type TAssignmentCreateFormProps = {
   studentOptions: TOption[];
   form: UseFormReturn<TCreateAssignmentForm>;
   onSubmit: (values: TCreateAssignmentForm) => Promise<void>;
+  submitLabel?: string;
+  submitLoadingLabel?: string;
+  hideSubmit?: boolean;
+};
+
+export type TAssignmentUpdateDialogProps = {
+  open: boolean;
+  isSubmitting: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (values: TCreateAssignmentForm) => Promise<void>;
+  initialValues: TCreateAssignmentForm | null;
+  gradeOptions: TOption[];
+  classroomOptions: TOption[];
+  studentOptions: TOption[];
 };
 
 export type TTrendPoint = {
@@ -911,7 +928,8 @@ export type TRequestCounselingDialogProps = {
 export type TStudentProfileFormValues = {
   email: string;
   mobile: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   avatarUrl: string;
 };
 
@@ -935,7 +953,8 @@ export type TStudentProfileFormProps = {
   me: {
     email?: string | null;
     mobile?: string | null;
-    fullName?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
     avatarUrl?: string | null;
   };
   onSubmit: (values: TStudentProfileFormValues) => Promise<void>;
@@ -950,7 +969,8 @@ export type TStudentProfileSummaryCardProps = {
     status?: string | null;
     mobile?: string | null;
     schoolId?: string | null;
-    fullName?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
     avatarUrl?: string | null;
     createdAt?: string | null;
   };
@@ -1409,7 +1429,8 @@ export type TCounselorStudentFilter = {
 
 export type TStudentRow = {
   id: string;
-  fullName: string;
+  firstName: string | null;
+  lastName: string | null;
   assignedAt: string;
   email: string | null;
   mobile: string | null;
@@ -1432,7 +1453,8 @@ export type TCounselorStudentTable = {
 
 export type TStudentDetail = {
   id: string;
-  fullName: string;
+  firstName: string | null;
+  lastName: string | null;
   email: string | null;
   mobile: string | null;
   totalResults: number;
@@ -1493,7 +1515,8 @@ export type TStudentDetailView = {
   email: string | null;
   status: string | null;
   mobile: string | null;
-  fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
   gradeName: string | null;
   avatarUrl: string | null;
   createdAt: string | null;

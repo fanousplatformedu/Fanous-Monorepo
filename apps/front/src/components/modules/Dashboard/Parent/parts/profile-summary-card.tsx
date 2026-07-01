@@ -1,6 +1,6 @@
 "use client";
 
-import { getInitials } from "@/utils/function-helper";
+import { getInitials, formatPersonName } from "@/utils/function-helper";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 
@@ -23,11 +23,11 @@ export const ParentProfileSummaryCard = ({
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4">
           <div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-border/60 bg-secondary/30 text-xl font-bold text-foreground">
-            {getInitials(me.fullName)}
+            {getInitials(me.firstName, me.lastName)}
           </div>
           <div className="space-y-1">
             <h3 className="text-xl font-bold text-foreground">
-              {me.fullName || t("dashboard.parent.profile.common.notSet")}
+              {formatPersonName(me.firstName, me.lastName) || t("dashboard.parent.profile.common.notSet")}
             </h3>
             <p className="text-sm text-muted-foreground">
               {t("dashboard.parent.profile.summaryCard.role")}

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ResponsiveContainer, AreaChart } from "recharts";
 import { TCounselorStudentDetailDialog } from "@/types/modules";
@@ -60,7 +61,7 @@ export const CounselorStudentDetailDialog = ({
               <p className="text-xs text-muted-foreground">
                 {t("dashboard.counselor.student.detailDialog.fields.fullName")}
               </p>
-              <p className="mt-2 font-semibold">{student.fullName}</p>
+              <p className="mt-2 font-semibold">{formatPersonName(student.firstName, student.lastName)}</p>
             </div>
 
             <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4">

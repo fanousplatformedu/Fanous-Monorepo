@@ -11,11 +11,10 @@ import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-car
 import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
 import { MembersFilters } from "@modules/Dashboard/SchoolAdmin/parts/member-filter";
 import { TablePagination } from "@elements/table-pagination";
-import { getApiErrorMessage } from "@/utils/function-helper";
-import { BACKEND_URL, PAGE_SIZE } from "@/utils/constant";
-import { useCallback, useRef, useMemo, useState } from "react";
+import { getApiErrorMessage, formatPersonName } from "@/utils/function-helper";
+import { PAGE_SIZE } from "@/utils/constant";
+import { useMemo, useState } from "react";
 import { useI18n } from "@/hooks/useI18n";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@ui/button";
 import { toast } from "sonner";
 
@@ -205,7 +204,7 @@ const SchoolAdminMembersPage = () => {
                       <tr key={member.id} className="border-t border-border/40">
                         <td className="px-4 py-3">
                           <div className="font-medium">
-                            {member.fullName || "-"}
+                            {formatPersonName(member.firstName, member.lastName) || "-"}
                           </div>
                         </td>
                         <td className="px-4 py-3">

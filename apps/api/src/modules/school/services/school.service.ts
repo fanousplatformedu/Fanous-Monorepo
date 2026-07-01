@@ -10,6 +10,7 @@ import { SchoolErrorCode } from "@school/enums/school-error-code.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { SchoolMessage } from "@school/enums/school-message.enum";
 import { AuditService } from "@audit/services/audit.service";
+import { buildUserNameSearch } from "@common/utils/person-name.util";
 import { randomBytes } from "crypto";
 
 import * as argon2 from "argon2";
@@ -208,7 +209,8 @@ export class SchoolService {
           username,
           passwordHash,
           email,
-          fullName: args.adminFullName?.trim() || null,
+          firstName: args.adminFirstName?.trim() || null,
+          lastName: args.adminLastName?.trim() || null,
           forcePasswordChange: true,
         },
         select: {
@@ -218,7 +220,8 @@ export class SchoolService {
           schoolId: true,
           username: true,
           email: true,
-          fullName: true,
+          firstName: true,
+          lastName: true,
           forcePasswordChange: true,
           createdAt: true,
           school: { select: { name: true } },
@@ -274,7 +277,8 @@ export class SchoolService {
         schoolName: admin.school?.name,
         username: admin.username ?? undefined,
         email: admin.email ?? undefined,
-        fullName: admin.fullName ?? undefined,
+        firstName: admin.firstName ?? undefined,
+        lastName: admin.lastName ?? undefined,
         forcePasswordChange: admin.forcePasswordChange,
         createdAt: admin.createdAt,
       },
@@ -342,7 +346,8 @@ export class SchoolService {
           schoolId: true,
           username: true,
           email: true,
-          fullName: true,
+          firstName: true,
+          lastName: true,
           forcePasswordChange: true,
           createdAt: true,
           school: { select: { name: true } },
@@ -362,7 +367,8 @@ export class SchoolService {
         schoolName: a.school?.name,
         username: a.username ?? undefined,
         email: a.email ?? undefined,
-        fullName: a.fullName ?? undefined,
+        firstName: a.firstName ?? undefined,
+        lastName: a.lastName ?? undefined,
         forcePasswordChange: a.forcePasswordChange,
         createdAt: a.createdAt,
       })),
@@ -944,9 +950,7 @@ export class SchoolService {
       ...(args.query?.trim()
         ? {
             OR: [
-              {
-                fullName: { contains: args.query.trim(), mode: "insensitive" },
-              },
+              ...buildUserNameSearch(args.query.trim()),
               { email: { contains: args.query.trim(), mode: "insensitive" } },
               { mobile: { contains: args.query.trim(), mode: "insensitive" } },
               {
@@ -961,7 +965,8 @@ export class SchoolService {
         where,
         select: {
           id: true,
-          fullName: true,
+          firstName: true,
+          lastName: true,
           email: true,
           mobile: true,
           avatarUrl: true,
@@ -994,9 +999,7 @@ export class SchoolService {
       ...(args.query?.trim()
         ? {
             OR: [
-              {
-                fullName: { contains: args.query.trim(), mode: "insensitive" },
-              },
+              ...buildUserNameSearch(args.query.trim()),
               { email: { contains: args.query.trim(), mode: "insensitive" } },
               { mobile: { contains: args.query.trim(), mode: "insensitive" } },
               {
@@ -1011,7 +1014,8 @@ export class SchoolService {
         where,
         select: {
           id: true,
-          fullName: true,
+          firstName: true,
+          lastName: true,
           email: true,
           mobile: true,
           avatarUrl: true,
@@ -1045,7 +1049,8 @@ export class SchoolService {
       },
       select: {
         id: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
       },
     });
 
@@ -1062,7 +1067,8 @@ export class SchoolService {
       },
       select: {
         id: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
       },
     });
 
@@ -1292,14 +1298,9 @@ export class SchoolService {
       ...(args.query?.trim()
         ? {
             OR: [
-              {
-                counselor: {
-                  fullName: {
-                    contains: args.query.trim(),
-                    mode: "insensitive",
-                  },
-                },
-              },
+              ...buildUserNameSearch(args.query.trim()).map((clause) => ({
+                counselor: clause,
+              })),
               {
                 counselor: {
                   email: {
@@ -1308,14 +1309,9 @@ export class SchoolService {
                   },
                 },
               },
-              {
-                student: {
-                  fullName: {
-                    contains: args.query.trim(),
-                    mode: "insensitive",
-                  },
-                },
-              },
+              ...buildUserNameSearch(args.query.trim()).map((clause) => ({
+                student: clause,
+              })),
               {
                 student: {
                   email: {
@@ -1335,7 +1331,8 @@ export class SchoolService {
           counselor: {
             select: {
               id: true,
-              fullName: true,
+              firstName: true,
+          lastName: true,
               email: true,
               mobile: true,
               avatarUrl: true,
@@ -1345,7 +1342,8 @@ export class SchoolService {
           student: {
             select: {
               id: true,
-              fullName: true,
+              firstName: true,
+          lastName: true,
               email: true,
               mobile: true,
               avatarUrl: true,

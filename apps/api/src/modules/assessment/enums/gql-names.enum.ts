@@ -8,6 +8,7 @@ export enum AssessmentGqlInputNames {
   SchoolAssessmentSummaryInput = "SchoolAssessmentSummaryInput",
   AssessmentResultInput = "AssessmentResultInput",
   AssignmentDetailInput = "AssignmentDetailInput",
+  UpdateAssignmentInput = "UpdateAssignmentInput",
 }
 
 export enum AssessmentGqlObjectNames {
@@ -37,4 +38,5 @@ export enum AssessmentGqlMutationNames {
   PublishAssignment = "publishAssignment",
   SubmitStudentAnswers = "submitStudentAnswers",
   AssignAssignmentToStudents = "assignAssignmentToStudents",
+  UpdateAssignment = "updateAssignment",
 }

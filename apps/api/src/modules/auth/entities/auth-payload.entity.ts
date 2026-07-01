@@ -8,5 +8,6 @@ export class AuthPayloadEntity {
   @Field() message!: string;
   @Field(() => String) role!: Role;
   @Field({ nullable: true }) schoolId?: string;
-  @Field({ nullable: true }) fullName?: string;
+  @Field({ nullable: true }) firstName?: string;
+  @Field({ nullable: true }) lastName?: string;
 }

@@ -4,6 +4,7 @@ import { Field, InputType } from "@nestjs/graphql";
 
 @InputType(SuperAdminGqlInputNames.UpdateAdminProfileInput)
 export class UpdateAdminProfileInput {
-  @Field({ nullable: true }) @IsOptional() @IsString() fullName?: string;
+  @Field({ nullable: true }) @IsOptional() @IsString() firstName?: string;
+  @Field({ nullable: true }) @IsOptional() @IsString() lastName?: string;
   @Field({ nullable: true }) @IsOptional() @IsEmail() email?: string;
 }

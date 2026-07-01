@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-card";
 import { TableActionButton } from "@elements/table-action-button";
 import { TablePagination } from "@elements/table-pagination";
@@ -53,7 +54,7 @@ export const ParentChildrenTable = ({
             {items.map((item) => (
               <tr key={item.id} className="border-t border-border/40">
                 <td className="px-4 py-3 font-medium">
-                  {item.fullName || "-"}
+                  {formatPersonName(item.firstName, item.lastName) || "-"}
                 </td>
                 <td className="px-4 py-3">{item.email || "-"}</td>
                 <td className="px-4 py-3">{item.mobile || "-"}</td>

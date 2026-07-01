@@ -6,7 +6,7 @@ import { SuperAdminRequestBarChart } from "@modules/Dashboard/SuperAdmin/parts/s
 import { SuperAdminSectionCard } from "@modules/Dashboard/SuperAdmin/parts/super-section-card";
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
 import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
-import { getApiErrorMessage } from "@/utils/function-helper";
+import { getApiErrorMessage, formatPersonName } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
 import { TableActionButton } from "@elements/table-action-button";
 import { TablePagination } from "@elements/table-pagination";
@@ -38,7 +38,8 @@ const SuperAdminAccessRequestsPage = () => {
     requestedRole: string;
     email?: string | null;
     mobile?: string | null;
-    fullName?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
     reviewedAt?: string | null;
     reviewedById?: string | null;
     rejectReason?: string | null;
@@ -60,7 +61,9 @@ const SuperAdminAccessRequestsPage = () => {
       let value = 0;
       switch (sortKey) {
         case "fullName":
-          value = (a.fullName || "").localeCompare(b.fullName || "");
+          value = formatPersonName(a.firstName, a.lastName).localeCompare(
+            formatPersonName(b.firstName, b.lastName),
+          );
           break;
         case "requestedRole":
           value = a.requestedRole.localeCompare(b.requestedRole);
@@ -267,7 +270,7 @@ const SuperAdminAccessRequestsPage = () => {
                 <tbody>
                   {paginated.map((request) => (
                     <tr key={request.id} className="border-t border-border/40">
-                      <td className="px-4 py-3">{request.fullName || "-"}</td>
+                      <td className="px-4 py-3">{formatPersonName(request.firstName, request.lastName) || "-"}</td>
                       <td className="px-4 py-3">{request.requestedRole}</td>
                       <td className="px-4 py-3">
                         <StatusBadge value={request.status} />
@@ -343,7 +346,7 @@ const SuperAdminAccessRequestsPage = () => {
               <p className="text-xs text-muted-foreground">
                 {t("dashboard.superAdmin.accessRequests.drawer.fullName")}
               </p>
-              <p className="mt-1 font-medium">{selected.fullName || "-"}</p>
+              <p className="mt-1 font-medium">{formatPersonName(selected.firstName, selected.lastName) || "-"}</p>
             </div>
 
             <div className="rounded-2xl bg-secondary/25 p-4">

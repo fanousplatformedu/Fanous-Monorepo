@@ -243,11 +243,13 @@ export type TAppDialogActionsProps = {
 };
 
 export type AsyncPageProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: Promise<any>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export type PageProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: any;
   searchParams: { [key: string]: string | string[] | undefined };
 };

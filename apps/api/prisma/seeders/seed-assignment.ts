@@ -62,7 +62,8 @@ export const seedAssignments = async (
       },
       select: {
         id: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         email: true,
       },
     });

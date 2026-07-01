@@ -41,7 +41,8 @@ export type TCreateSchoolAdminArgs = TRequestMeta & {
   actor: TActor;
   schoolId: string;
   adminEmail: string;
-  adminFullName?: string | null;
+  adminFirstName?: string | null;
+  adminLastName?: string | null;
 };
 
 export type TListSchoolAdminsArgs = {

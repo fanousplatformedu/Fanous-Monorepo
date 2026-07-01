@@ -31,7 +31,8 @@ export class AccessRequestResolver {
       requestedRole: input.requestedRole,
       email: input.email ?? null,
       mobile: input.mobile ?? null,
-      fullName: input.fullName ?? null,
+      firstName: input.firstName ?? null,
+      lastName: input.lastName ?? null,
     });
     return res.request;
   }

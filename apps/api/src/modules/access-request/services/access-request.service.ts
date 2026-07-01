@@ -81,7 +81,8 @@ export class AccessRequestService {
         requestedRole: args.requestedRole,
         email,
         mobile,
-        fullName: args.fullName?.trim() ?? null,
+        firstName: args.firstName?.trim() ?? null,
+        lastName: args.lastName?.trim() ?? null,
       },
       select: this.selectAccessRequest(),
     });
@@ -109,7 +110,8 @@ export class AccessRequestService {
       ...(query?.trim()
         ? {
             OR: [
-              { fullName: { contains: query.trim(), mode: "insensitive" } },
+              { firstName: { contains: query.trim(), mode: "insensitive" } },
+              { lastName: { contains: query.trim(), mode: "insensitive" } },
               { email: { contains: query.trim(), mode: "insensitive" } },
               { mobile: { contains: query.trim(), mode: "insensitive" } },
             ],
@@ -238,7 +240,8 @@ export class AccessRequestService {
             status: UserStatus.ACTIVE,
             email: req.email,
             mobile: req.mobile,
-            fullName: req.fullName,
+            firstName: req.firstName,
+            lastName: req.lastName,
           },
           select: { id: true },
         });
@@ -267,7 +270,8 @@ export class AccessRequestService {
           approvedUserId: createdUserId,
           email: req.email,
           mobile: req.mobile,
-          fullName: req.fullName,
+          firstName: req.firstName,
+          lastName: req.lastName,
           reviewedByRole: args.actor.role,
         },
       });
@@ -317,7 +321,8 @@ export class AccessRequestService {
         rejectReason: reason,
         email: req.email,
         mobile: req.mobile,
-        fullName: req.fullName,
+        firstName: req.firstName,
+        lastName: req.lastName,
         reviewedByRole: args.actor.role,
       },
     });
@@ -352,7 +357,8 @@ export class AccessRequestService {
       requestedRole: true,
       email: true,
       mobile: true,
-      fullName: true,
+      firstName: true,
+      lastName: true,
       reviewedById: true,
       reviewedAt: true,
       rejectReason: true,

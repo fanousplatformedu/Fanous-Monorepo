@@ -17,6 +17,9 @@ export const AssignmentCreateForm = ({
   gradeOptions,
   classroomOptions,
   studentOptions,
+  submitLabel,
+  submitLoadingLabel,
+  hideSubmit = false,
 }: TAssignmentCreateFormProps) => {
   const { t } = useI18n();
 
@@ -111,18 +114,22 @@ export const AssignmentCreateForm = ({
         ) : null}
       </div>
 
-      <div className="flex justify-end pt-1">
-        <Button
-          type="submit"
-          variant="brand"
-          disabled={isLoading}
-          className="rounded-2xl"
-        >
-          {isLoading
-            ? t("dashboard.schoolAdmin.assignments.actions.creating")
-            : t("dashboard.schoolAdmin.assignments.actions.create")}
-        </Button>
-      </div>
+      {!hideSubmit ? (
+        <div className="flex justify-end pt-1">
+          <Button
+            type="submit"
+            variant="brand"
+            disabled={isLoading}
+            className="rounded-2xl"
+          >
+            {isLoading
+              ? (submitLoadingLabel ??
+                t("dashboard.schoolAdmin.assignments.actions.creating"))
+              : (submitLabel ??
+                t("dashboard.schoolAdmin.assignments.actions.create"))}
+          </Button>
+        </div>
+      ) : null}
     </form>
   );
 };

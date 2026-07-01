@@ -11,7 +11,7 @@ import { ParentCancelSessionDialog } from "@modules/Dashboard/Parent/parts/paren
 import { ParentCounselingFilters } from "@modules/Dashboard/Parent/parts/parent-counseling-filter";
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
 import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
-import { getApiErrorMessage } from "@/utils/function-helper";
+import { getApiErrorMessage, formatPersonName } from "@/utils/function-helper";
 import { useMyChildrenQuery } from "@/lib/redux/api/endpoints/parent.api";
 import { useMemo, useState } from "react";
 import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
@@ -70,7 +70,7 @@ const ParentCounselingPage = () => {
     const items = childrenData?.items ?? [];
     return items.map((child) => ({
       value: child.id,
-      label: child.fullName || child.email || child.mobile || child.id,
+      label: formatPersonName(child.firstName, child.lastName) || child.email || child.mobile || child.id,
     }));
   }, [childrenData]);
   const sessions = useMemo(() => sessionsData?.items ?? [], [sessionsData]);

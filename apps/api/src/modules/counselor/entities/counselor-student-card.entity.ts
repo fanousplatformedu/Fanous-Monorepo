@@ -5,7 +5,8 @@ import { Field, Int, ObjectType } from "@nestjs/graphql";
 @ObjectType(CounselorGqlObjectNames.COUNSELOR_STUDENT_CARD)
 export class CounselorStudentCardEntity {
   @Field() id!: string;
-  @Field() fullName!: string;
+  @Field({ nullable: true }) firstName!: string;
+  @Field({ nullable: true }) lastName!: string;
   @Field() assignedAt!: Date;
   @Field(() => Int) pendingReviews!: number;
   @Field({ nullable: true }) email!: string;

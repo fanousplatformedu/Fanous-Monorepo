@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { TResultItem } from "@/types/modules";
 import { useI18n } from "@/hooks/useI18n";
 
@@ -26,7 +27,7 @@ export const ParentOverviewLatestResults = ({
         >
           <div className="mb-2 flex items-center justify-between gap-3">
             <p className="text-sm font-semibold text-foreground">
-              {item.student?.fullName || item.studentId}
+              {formatPersonName(item.student?.firstName, item.student?.lastName) || item.studentId}
             </p>
             <span className="text-xs text-muted-foreground">
               {new Date(item.createdAt).toLocaleDateString()}

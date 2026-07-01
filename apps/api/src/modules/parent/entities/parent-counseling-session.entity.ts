@@ -8,7 +8,8 @@ export class ParentCounselingSessionStudentEntity {
   @Field() id!: string;
   @Field({ nullable: true }) email!: string;
   @Field({ nullable: true }) mobile!: string;
-  @Field({ nullable: true }) fullName!: string;
+  @Field({ nullable: true }) firstName!: string;
+  @Field({ nullable: true }) lastName!: string;
   @Field({ nullable: true }) avatarUrl!: string;
 }
 

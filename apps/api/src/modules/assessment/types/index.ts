@@ -17,6 +17,18 @@ export type TCreateAssignmentArgs = {
   targetMode?: AssignmentTargetMode | null;
 };
 
+export type TUpdateAssignmentArgs = {
+  actor: TAssessmentActor;
+  assignmentId: string;
+  title?: string | null;
+  dueAt?: string | null;
+  description?: string | null;
+  targetGradeId?: string | null;
+  targetClassroomId?: string | null;
+  targetMode?: AssignmentTargetMode | null;
+  targetStudentIds?: string[] | null;
+};
+
 export type TListAssignmentsArgs = {
   take: number;
   skip: number;

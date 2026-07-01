@@ -2,7 +2,7 @@
 
 import { FloatingPasswordField } from "@elements/floating-password-field";
 import { TPasswordFormValues } from "@/types/modules";
-import { getApiErrorMessage } from "@/utils/function-helper";
+import { getApiErrorMessage, formatPersonName } from "@/utils/function-helper";
 import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -68,7 +68,7 @@ const SchoolAdminSettingsPage = () => {
             <p className="text-xs text-muted-foreground">
               {t("dashboard.schoolAdmin.settings.fields.fullName")}
             </p>
-            <p className="mt-1 font-medium">{me?.fullName || "-"}</p>
+            <p className="mt-1 font-medium">{formatPersonName(me?.firstName, me?.lastName) || "-"}</p>
           </div>
 
           <div className="rounded-2xl bg-secondary/25 p-4">

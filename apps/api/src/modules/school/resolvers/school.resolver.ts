@@ -137,7 +137,8 @@ export class SchoolResolver {
       actor: { id: user.id, role: user.role, schoolId: user.schoolId },
       schoolId: input.schoolId,
       adminEmail: input.adminEmail,
-      adminFullName: input.adminFullName ?? null,
+      adminFirstName: input.adminFirstName ?? null,
+      adminLastName: input.adminLastName ?? null,
     });
   }
 

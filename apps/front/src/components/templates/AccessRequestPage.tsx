@@ -39,7 +39,8 @@ const AccessRequestPage = () => {
     resolver: zodResolver(accessRequestSchema),
     defaultValues: {
       schoolId: "",
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       mobile: "",
       requestedRole: undefined,
@@ -50,7 +51,8 @@ const AccessRequestPage = () => {
     try {
       await submitRequest({
         schoolId: values.schoolId,
-        fullName: values.fullName.trim(),
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
         requestedRole: values.requestedRole,
         email: values.email.trim() || undefined,
         mobile: values.mobile.trim() || undefined,
@@ -58,7 +60,8 @@ const AccessRequestPage = () => {
       toast.success(t("auth.accessRequest.success"));
       form.reset({
         schoolId: "",
-        fullName: "",
+        firstName: "",
+        lastName: "",
         email: "",
         mobile: "",
         requestedRole: undefined,
@@ -118,13 +121,17 @@ const AccessRequestPage = () => {
                 />
               </div>
 
-              <div className="md:col-span-2">
-                <FloatingInputField
-                  name="fullName"
-                  control={form.control}
-                  label={t("form.fullName")}
-                />
-              </div>
+              <FloatingInputField
+                name="firstName"
+                control={form.control}
+                label={t("form.firstName")}
+              />
+
+              <FloatingInputField
+                name="lastName"
+                control={form.control}
+                label={t("form.lastName")}
+              />
 
               <FloatingInputField
                 name="mobile"

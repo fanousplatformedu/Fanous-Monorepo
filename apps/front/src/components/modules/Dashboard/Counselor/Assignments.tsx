@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { CounselorAssignmentsSummaryCards } from "@modules/Dashboard/Counselor/parts/assignment-summary-cards";
 import { useCounselorAssignmentsQuery } from "@/lib/redux/api/endpoints/counselor.api";
 import { CounselorAssignmentsFilter } from "@modules/Dashboard/Counselor/parts/assignments-filters";
@@ -51,7 +52,7 @@ const CounselorAssignmentsPage = () => {
     () =>
       (studentsData?.items ?? []).map((item) => ({
         value: item.id,
-        label: item.fullName || item.email || item.mobile || item.id,
+        label: formatPersonName(item.firstName, item.lastName) || item.email || item.mobile || item.id,
       })),
     [studentsData],
   );

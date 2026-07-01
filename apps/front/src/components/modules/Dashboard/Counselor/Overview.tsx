@@ -1,6 +1,6 @@
 "use client";
 
-import { getBoolean, getDateValue, getString } from "@/utils/function-helper";
+import { getBoolean, getDateValue, getString, formatPersonName } from "@/utils/function-helper";
 import { useCounselorDashboardSummaryQuery } from "@/lib/redux/api/endpoints/counselor.api";
 import { getNullableString, getRecordValue } from "@/utils/function-helper";
 import { useMyCounselorNotificationsQuery } from "@/lib/redux/api/endpoints/counselor.api";
@@ -130,7 +130,7 @@ const CounselorOverviewPage = () => {
       .map((item) => ({
         id: getString(getRecordValue(item, "id")) || crypto.randomUUID(),
         title:
-          getString(getRecordValue(item, "fullName")) ||
+          formatPersonName(getString(getRecordValue(item, "firstName")), getString(getRecordValue(item, "lastName"))) ||
           getString(getRecordValue(item, "email")) ||
           getString(getRecordValue(item, "mobile")) ||
           t("dashboard.counselor.overview.common.unknownStudent"),

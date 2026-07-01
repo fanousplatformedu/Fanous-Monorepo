@@ -59,7 +59,8 @@ export class AuthService {
         role: true,
         status: true,
         passwordHash: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         schoolId: true,
         school: { select: { status: true } },
       },
@@ -112,7 +113,8 @@ export class AuthService {
       userId: user.id,
       role: user.role,
       schoolId: user.schoolId ?? undefined,
-      fullName: user.fullName ?? undefined,
+      firstName: user.firstName ?? undefined,
+      lastName: user.lastName ?? undefined,
     };
   }
 
@@ -235,7 +237,8 @@ export class AuthService {
       userId: user.id,
       role: user.role,
       schoolId: user.schoolId ?? undefined,
-      fullName: user.fullName ?? undefined,
+      firstName: user.firstName ?? undefined,
+      lastName: user.lastName ?? undefined,
     };
   }
 
@@ -431,7 +434,8 @@ export class AuthService {
       role: true,
       schoolId: true,
       status: true,
-      fullName: true,
+      firstName: true,
+      lastName: true,
     };
     if (schoolId) {
       const user = await this.prismaService.user.findFirst({

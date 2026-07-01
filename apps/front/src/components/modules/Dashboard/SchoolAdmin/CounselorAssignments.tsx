@@ -8,7 +8,7 @@ import { CounselorAssignmentsTable } from "@modules/Dashboard/SchoolAdmin/parts/
 import { useSchoolAdminMeQuery } from "@/lib/redux/api/endpoints/school-admin.api";
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
 import { DashboardEmptyState } from "@modules/Dashboard/parts/dashboard-empty-state";
-import { getApiErrorMessage } from "@/utils/function-helper";
+import { getApiErrorMessage, formatPersonName } from "@/utils/function-helper";
 import { useMemo, useState } from "react";
 import { DashboardSection } from "@modules/Dashboard/parts/dashboard-section";
 import { PAGE_SIZE } from "@/utils/constant";
@@ -93,14 +93,14 @@ const SchoolAdminCounselorAssignmentsPage = () => {
     const items = counselorsData?.items ?? [];
     return items.map((item) => ({
       value: item.id,
-      label: item.fullName || item.email || item.mobile || item.id,
+      label: formatPersonName(item.firstName, item.lastName) || item.email || item.mobile || item.id,
     }));
   }, [counselorsData]);
   const studentOptions = useMemo(() => {
     const items = studentsData?.items ?? [];
     return items.map((item) => ({
       value: item.id,
-      label: item.fullName || item.email || item.mobile || item.id,
+      label: formatPersonName(item.firstName, item.lastName) || item.email || item.mobile || item.id,
     }));
   }, [studentsData]);
 

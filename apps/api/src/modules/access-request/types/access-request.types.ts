@@ -6,7 +6,8 @@ export type TSubmitAccessRequestArgs = {
   schoolId: string;
   email?: string | null;
   mobile?: string | null;
-  fullName?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   requestedRole: AccessRequestRole;
 };
 
@@ -47,6 +48,7 @@ export type TCurrentUser = {
   role: Role;
   sid: string | null;
   schoolId: string | null;
-  fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
   forcePasswordChange: boolean;
 };

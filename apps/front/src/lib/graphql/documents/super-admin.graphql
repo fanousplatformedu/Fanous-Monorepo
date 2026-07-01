@@ -4,7 +4,8 @@ mutation SuperAdminLogin($input: AdminLoginInput!) {
     userId
     role
     schoolId
-    fullName
+    firstName
+    lastName
   }
 }
 
@@ -16,7 +17,8 @@ query SuperAdminMe {
     schoolId
     email
     mobile
-    fullName
+    firstName
+    lastName
     createdAt
   }
 }
@@ -121,7 +123,8 @@ query SuperAdminAccessRequests($input: ListAccessRequestsInput!) {
       requestedRole
       email
       mobile
-      fullName
+      firstName
+    lastName
       reviewedById
       reviewedAt
       rejectReason
@@ -194,6 +197,7 @@ mutation UpdateAdminProfile($input: UpdateAdminProfileInput!) {
     id
     email
     message
-    fullName
+    firstName
+    lastName
   }
 }

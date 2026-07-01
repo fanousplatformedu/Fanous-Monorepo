@@ -28,7 +28,8 @@ export const seedSchoolAdmins = async (
             email: faker.internet
               .email({ provider: "example.com" })
               .toLowerCase(),
-            fullName: faker.person.fullName(),
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
             forcePasswordChange: true,
           },
           select: {
@@ -73,7 +74,8 @@ export const seedSchoolUsers = async (
             status,
             email,
             mobile,
-            fullName: faker.person.fullName(),
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
             avatarUrl: faker.image.avatar(),
           },
           select: {

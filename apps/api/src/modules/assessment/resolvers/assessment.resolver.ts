@@ -10,6 +10,7 @@ import { AssessmentQuestionEntity } from "@assessment/entities/assessment-questi
 import { AssessmentGqlQueryNames } from "@assessment/enums/gql-names.enum";
 import { SchoolAssignmentEntity } from "@assessment/entities/school-assignment.entity";
 import { CreateAssignmentInput } from "@assessment/dtos/create-assignment.input";
+import { UpdateAssignmentInput } from "@assessment/dtos/update-assignment.input";
 import { AssignAssignmentInput } from "@assessment/dtos/assign-assignment.input";
 import { ListAssignmentsInput } from "@assessment/dtos/list-assignment.input";
 import { AssessmentService } from "@assessment/services/assessment.service";
@@ -54,6 +55,28 @@ export class AssessmentResolver {
       targetMode: input.targetMode ?? null,
       targetGradeId: input.targetGradeId ?? null,
       targetClassroomId: input.targetClassroomId ?? null,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SCHOOL_ADMIN)
+  @Mutation(() => SchoolAssignmentEntity, {
+    name: AssessmentGqlMutationNames.UpdateAssignment,
+  })
+  updateAssignment(
+    @CurrentUser() user: any,
+    @Args("input") input: UpdateAssignmentInput,
+  ) {
+    return this.assessmentService.updateAssignment({
+      actor: { id: user.id, role: user.role, schoolId: user.schoolId },
+      assignmentId: input.assignmentId,
+      title: input.title,
+      description: input.description,
+      dueAt: input.dueAt,
+      targetMode: input.targetMode,
+      targetGradeId: input.targetGradeId,
+      targetClassroomId: input.targetClassroomId,
+      targetStudentIds: input.targetStudentIds,
     });
   }
 

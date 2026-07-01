@@ -7,6 +7,7 @@ import { ParentMessage } from "@parent/enums/parent-message.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { AuditService } from "@audit/services/audit.service";
 import { AuditAction } from "@prisma/client";
+import { buildUserNameSearch } from "@common/utils/person-name.util";
 
 import * as T from "@parent/types/parent.types";
 
@@ -152,12 +153,7 @@ export class ParentService {
         ? {
             student: {
               OR: [
-                {
-                  fullName: {
-                    contains: query,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
+                ...buildUserNameSearch(query),
                 {
                   email: {
                     contains: query,
@@ -183,7 +179,8 @@ export class ParentService {
           student: {
             select: {
               id: true,
-              fullName: true,
+              firstName: true,
+              lastName: true,
               email: true,
               mobile: true,
               avatarUrl: true,
@@ -228,7 +225,8 @@ export class ParentService {
     return {
       items: items.map((item) => ({
         id: item.student.id,
-        fullName: item.student.fullName,
+        firstName: item.student.firstName,
+        lastName: item.student.lastName,
         email: item.student.email,
         mobile: item.student.mobile,
         avatarUrl: item.student.avatarUrl,
@@ -259,7 +257,8 @@ export class ParentService {
         student: {
           select: {
             id: true,
-            fullName: true,
+            firstName: true,
+            lastName: true,
             email: true,
             mobile: true,
             avatarUrl: true,
@@ -303,7 +302,8 @@ export class ParentService {
       });
     return {
       id: child.student.id,
-      fullName: child.student.fullName,
+      firstName: child.student.firstName,
+      lastName: child.student.lastName,
       email: child.student.email,
       mobile: child.student.mobile,
       avatarUrl: child.student.avatarUrl,
@@ -398,10 +398,7 @@ export class ParentService {
               },
               {
                 student: {
-                  fullName: {
-                    contains: query,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
+                  OR: buildUserNameSearch(query),
                 },
               },
               {
@@ -431,7 +428,8 @@ export class ParentService {
           student: {
             select: {
               id: true,
-              fullName: true,
+              firstName: true,
+              lastName: true,
               email: true,
               mobile: true,
               avatarUrl: true,
@@ -458,7 +456,8 @@ export class ParentService {
         student: item.student
           ? {
               id: item.student.id,
-              fullName: item.student.fullName,
+              firstName: item.student.firstName,
+        lastName: item.student.lastName,
               email: item.student.email,
               mobile: item.student.mobile,
               avatarUrl: item.student.avatarUrl,
@@ -509,7 +508,8 @@ export class ParentService {
         student: {
           select: {
             id: true,
-            fullName: true,
+            firstName: true,
+            lastName: true,
             email: true,
             mobile: true,
             avatarUrl: true,
@@ -559,7 +559,8 @@ export class ParentService {
       student: result.student
         ? {
             id: result.student.id,
-            fullName: result.student.fullName,
+            firstName: result.student.firstName,
+            lastName: result.student.lastName,
             email: result.student.email,
             mobile: result.student.mobile,
             avatarUrl: result.student.avatarUrl,
@@ -739,10 +740,7 @@ export class ParentService {
               },
               {
                 student: {
-                  fullName: {
-                    contains: query,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
+                  OR: buildUserNameSearch(query),
                 },
               },
               {
@@ -775,7 +773,8 @@ export class ParentService {
           student: {
             select: {
               id: true,
-              fullName: true,
+              firstName: true,
+              lastName: true,
               email: true,
               mobile: true,
               avatarUrl: true,
@@ -792,7 +791,8 @@ export class ParentService {
         student: item.student
           ? {
               id: item.student.id,
-              fullName: item.student.fullName,
+              firstName: item.student.firstName,
+        lastName: item.student.lastName,
               email: item.student.email,
               mobile: item.student.mobile,
               avatarUrl: item.student.avatarUrl,
@@ -850,10 +850,7 @@ export class ParentService {
               },
               {
                 student: {
-                  fullName: {
-                    contains: query,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
+                  OR: buildUserNameSearch(query),
                 },
               },
               {
@@ -900,7 +897,8 @@ export class ParentService {
           student: {
             select: {
               id: true,
-              fullName: true,
+              firstName: true,
+              lastName: true,
               email: true,
               mobile: true,
               avatarUrl: true,

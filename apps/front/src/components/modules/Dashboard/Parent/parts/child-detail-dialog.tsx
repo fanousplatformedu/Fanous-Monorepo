@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
 import { TChildDetailDialog } from "@/types/modules";
@@ -56,7 +57,7 @@ export const ParentChildDetailDialog = ({
                 {t("dashboard.parent.children.detailDialog.fields.fullName")}
               </div>
               <p className="text-sm font-semibold text-foreground">
-                {child.fullName || "-"}
+                {formatPersonName(child.firstName, child.lastName) || "-"}
               </p>
             </div>
 

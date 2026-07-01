@@ -1,5 +1,6 @@
 "use client";
 
+import { formatPersonName } from "@/utils/function-helper";
 import { ParentActivityTypeBadge } from "@modules/Dashboard/Parent/parts/activity-type-badge";
 import { DashboardTableCard } from "@modules/Dashboard/parts/dashboard-table-card";
 import { TActivitiesTable } from "@/types/modules";
@@ -48,7 +49,7 @@ export const ParentActivitiesTable = ({
               <tr key={item.id} className="border-t border-border/40 align-top">
                 <td className="px-4 py-3">
                   <div className="font-medium">
-                    {item.student?.fullName || item.studentId || "-"}
+                    {formatPersonName(item.student?.firstName, item.student?.lastName) || item.studentId || "-"}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {item.student?.email || item.student?.mobile || "-"}
