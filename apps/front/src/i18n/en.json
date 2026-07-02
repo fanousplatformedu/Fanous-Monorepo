@@ -657,16 +657,13 @@
         },
         "kpis": {
           "total": {
-            "title": "Total members",
-            "description": "All members in this school"
+            "title": "Total members"
           },
           "active": {
-            "title": "Active members",
-            "description": "Currently active users"
+            "title": "Active members"
           },
           "disabled": {
-            "title": "Disabled members",
-            "description": "Users disabled from access"
+            "title": "Disabled members"
           }
         },
         "filters": {

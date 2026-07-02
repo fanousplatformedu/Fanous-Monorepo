@@ -553,9 +553,10 @@ model SchoolAssignment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  
   studentAssignments  StudentAssignment[]
   assignmentQuestions AssignmentQuestion[]
+  
   user                User?                @relation(fields: [userId], references: [id])
   userId              String?
   counselorReviews    CounselorReview[]
@@ -587,7 +588,7 @@ model StudentAssignment {
 
   answers StudentAnswer[]
   result  AssessmentResult?
-
+  
   @@unique([assignmentId, studentId])
   @@index([studentId, status])
   @@index([assignmentId, status])
