@@ -35,7 +35,6 @@ export enum AssessmentGqlQueryNames {
 
 export enum AssessmentGqlMutationNames {
   CreateAssignment = "createAssignment",
-  PublishAssignment = "publishAssignment",
   SubmitStudentAnswers = "submitStudentAnswers",
   AssignAssignmentToStudents = "assignAssignmentToStudents",
   UpdateAssignment = "updateAssignment",

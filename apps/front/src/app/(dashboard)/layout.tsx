@@ -6,9 +6,9 @@ import { Toaster } from "@ui/sonner";
 
 import ForcePasswordChangeEnforcer from "@modules/Auth/ForceChangePsswordEnforce";
 import Header from "@layouts/Header";
+import Footer from "@layouts/Footer";
 
-
-import "./globals.css";
+import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: "Fanous",
@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Toaster />
             <Header />
             {children}
-
+            {/* <Footer /> */}
           </AppProviders>
         </StoreProvider>
       </body>

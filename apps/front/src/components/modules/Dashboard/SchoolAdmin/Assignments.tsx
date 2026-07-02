@@ -84,9 +84,6 @@ const SchoolAdminAssignmentsPage = () => {
   const [createAssignment, { isLoading: isCreating }] =
     API.useCreateAssignmentMutation();
 
-  const [publishAssignment, { isLoading: isPublishing }] =
-    API.usePublishAssignmentMutation();
-
   const [assignAssignment, { isLoading: isAssigning }] =
     API.useAssignAssignmentToStudentsMutation();
 
@@ -175,11 +172,6 @@ const SchoolAdminAssignmentsPage = () => {
     }
   };
 
-  const openPublishDialog = (assignment: TSelectedAssignment) => {
-    setSelectedAssignment(assignment);
-    setDialogMode("publish");
-  };
-
   const openAssignDialog = (assignment: TSelectedAssignment) => {
     setSelectedAssignment(assignment);
     setDialogMode("assign");
@@ -193,32 +185,23 @@ const SchoolAdminAssignmentsPage = () => {
   };
 
   const handleConfirmAction = async () => {
-    if (!selectedAssignment || !dialogMode) return;
+    if (!selectedAssignment) return;
     try {
-      if (dialogMode === "publish") {
-        await publishAssignment(selectedAssignment.id).unwrap();
-        toast.success(
-          t("dashboard.schoolAdmin.assignments.toasts.publishSuccess"),
-        );
-      } else {
-        const response = await assignAssignment({
-          assignmentId: selectedAssignment.id,
-        }).unwrap();
-        toast.success(
-          typeof response === "string"
-            ? response
-            : t("dashboard.schoolAdmin.assignments.toasts.assignSuccess"),
-        );
-      }
+      const response = await assignAssignment({
+        assignmentId: selectedAssignment.id,
+      }).unwrap();
+      toast.success(
+        typeof response === "string"
+          ? response
+          : t("dashboard.schoolAdmin.assignments.toasts.assignSuccess"),
+      );
       setDialogMode(null);
       setSelectedAssignment(null);
     } catch (error: unknown) {
       toast.error(
         getApiErrorMessage(
           error,
-          dialogMode === "publish"
-            ? t("dashboard.schoolAdmin.assignments.toasts.publishFailed")
-            : t("dashboard.schoolAdmin.assignments.toasts.assignFailed"),
+          t("dashboard.schoolAdmin.assignments.toasts.assignFailed"),
         ),
       );
     }
@@ -361,47 +344,7 @@ const SchoolAdminAssignmentsPage = () => {
                           : "-"}
                       </td>
 
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-2">
-                          {item.status === "DRAFT" ? (
-                            <Button
-                              variant="brandChip"
-                              className="rounded-2xl"
-                              disabled={isPublishing}
-                              onClick={() =>
-                                openPublishDialog({
-                                  id: item.id,
-                                  title: item.title,
-                                  status: item.status,
-                                })
-                              }
-                            >
-                              {t(
-                                "dashboard.schoolAdmin.assignments.actions.publish",
-                              )}
-                            </Button>
-                          ) : null}
-
-                          {item.status === "PUBLISHED" ? (
-                            <Button
-                              variant="brand"
-                              disabled={isAssigning}
-                              className="rounded-2xl"
-                              onClick={() =>
-                                openAssignDialog({
-                                  id: item.id,
-                                  title: item.title,
-                                  status: item.status,
-                                })
-                              }
-                            >
-                              {t(
-                                "dashboard.schoolAdmin.assignments.actions.assign",
-                              )}
-                            </Button>
-                          ) : null}
-                        </div>
-                      </td>
+                
                     </tr>
                   ))}
                 </tbody>
@@ -423,23 +366,22 @@ const SchoolAdminAssignmentsPage = () => {
           </DashboardTableCard>
         )}
 
-        <AssignmentResultsTable
+        {/* <AssignmentResultsTable
           page={resultsPage}
           items={resultItems}
           total={resultsTotal}
           onPageChange={setResultsPage}
           isLoading={isResultsLoading}
           isFetching={isResultsFetching}
-        />
+        /> */}
       </div>
 
       <AssignmentActionDialog
-        mode={dialogMode}
         onOpenChange={closeDialog}
         assignment={selectedAssignment}
         onConfirm={handleConfirmAction}
-        isLoading={isPublishing || isAssigning}
-        open={Boolean(dialogMode && selectedAssignment)}
+        isLoading={isAssigning}
+        open={Boolean(dialogMode === "assign" && selectedAssignment)}
       />
     </>
   );

@@ -4,30 +4,50 @@ import {
   SearchableMultiSelectField,
   SearchableSingleSelectField,
 } from "@elements/searchable-select-field";
-import { TAssignmentCreateFormProps } from "@/types/modules";
+import { TAssignmentUpdateFormProps } from "@/types/modules";
 import { FloatingSelectField } from "@elements/floating-select-field";
 import { FloatingInputField } from "@elements/floating-input-field";
 import { useI18n } from "@/hooks/useI18n";
-import { Button } from "@ui/button";
 
-export const AssignmentCreateForm = ({
+const STATUS_OPTIONS = [
+  { value: "DRAFT", labelKey: "DRAFT" },
+  { value: "PUBLISHED", labelKey: "PUBLISHED" },
+  { value: "CLOSED", labelKey: "CLOSED" },
+] as const;
+
+export const AssignmentUpdateForm = ({
   form,
-  isLoading,
   onSubmit,
   gradeOptions,
   classroomOptions,
   studentOptions,
-  submitLabel,
-  submitLoadingLabel,
-  hideSubmit = false,
-}: TAssignmentCreateFormProps) => {
+  statusOnly = false,
+}: TAssignmentUpdateFormProps) => {
   const { t } = useI18n();
-
   const targetMode = form.watch("targetMode");
+
+  const statusField = (
+    <FloatingSelectField
+      name="status"
+      control={form.control}
+      label={t("dashboard.schoolAdmin.assignments.form.fields.status")}
+      options={STATUS_OPTIONS.map((option) => ({
+        value: option.value,
+        label: t(`dashboard.schoolAdmin.assignments.status.${option.labelKey}`),
+      }))}
+    />
+  );
+
+  if (statusOnly) {
+    return (
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {statusField}
+      </form>
+    );
+  }
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      {/* Row 1: title + description */}
       <div className="grid gap-4 md:grid-cols-2">
         <FloatingInputField
           name="title"
@@ -41,7 +61,6 @@ export const AssignmentCreateForm = ({
         />
       </div>
 
-      {/* Row 2: due date */}
       <div className="grid gap-4 md:grid-cols-2">
         <FloatingInputField
           name="dueAt"
@@ -49,9 +68,9 @@ export const AssignmentCreateForm = ({
           control={form.control}
           label={t("dashboard.schoolAdmin.assignments.form.fields.dueAt")}
         />
+        {statusField}
       </div>
 
-      {/* Row 3: target mode + conditional picker — always on the same line */}
       <div className="grid gap-4 md:grid-cols-2">
         <FloatingSelectField
           name="targetMode"
@@ -112,23 +131,6 @@ export const AssignmentCreateForm = ({
           />
         ) : null}
       </div>
-
-      {!hideSubmit ? (
-        <div className="flex justify-end pt-1">
-          <Button
-            type="submit"
-            variant="brand"
-            disabled={isLoading}
-            className="rounded-2xl"
-          >
-            {isLoading
-              ? (submitLoadingLabel ??
-                t("dashboard.schoolAdmin.assignments.actions.creating"))
-              : (submitLabel ??
-                t("dashboard.schoolAdmin.assignments.actions.create"))}
-          </Button>
-        </div>
-      ) : null}
     </form>
   );
 };

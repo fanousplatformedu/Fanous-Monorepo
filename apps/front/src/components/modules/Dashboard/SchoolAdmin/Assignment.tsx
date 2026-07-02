@@ -16,7 +16,7 @@ import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@ui/button";
 import { getApiErrorMessage, toIsoFromLocalDateTime, toLocalDateTimeInputValue, formatPersonName } from "@/utils/function-helper";
-import { TCreateAssignmentForm } from "@/lib/validation/school-admin-schemas";
+import { TUpdateAssignmentForm } from "@/lib/validation/school-admin-schemas";
 import { convertToPersianDate } from "@/utils/jalali-date-conversion";
 import { PAGE_SIZE } from "@/utils/constant";
 import { toast } from "sonner";
@@ -116,14 +116,15 @@ export default function AssignmentDetail() {
     [membersData],
   );
 
-  const updateInitialValues = useMemo<TCreateAssignmentForm | null>(() => {
+  const updateInitialValues = useMemo<TUpdateAssignmentForm | null>(() => {
     if (!assignmentData) return null;
 
     return {
       title: assignmentData.title,
       description: assignmentData.description ?? "",
       dueAt: toLocalDateTimeInputValue(assignmentData.dueAt),
-      targetMode: assignmentData.targetMode as TCreateAssignmentForm["targetMode"],
+      status: assignmentData.status as TUpdateAssignmentForm["status"],
+      targetMode: assignmentData.targetMode as TUpdateAssignmentForm["targetMode"],
       targetGradeId: assignmentData.targetGradeId ?? "",
       targetClassroomId: assignmentData.targetClassroomId ?? "",
       targetStudentIds: assignmentData.targetStudentIds ?? [],
@@ -177,19 +178,26 @@ export default function AssignmentDetail() {
   const getTargetModeLabel = (targetMode: string) =>
     t(`dashboard.schoolAdmin.assignments.targetMode.${targetMode}`);
 
-  const handleUpdate = async (values: TCreateAssignmentForm) => {
+  const handleUpdate = async (values: TUpdateAssignmentForm) => {
     try {
+      const isClosed = assignmentData?.status === "CLOSED";
+
       await updateAssignment({
         assignmentId,
-        title: values.title.trim(),
-        description: values.description?.trim() || undefined,
-        dueAt: toIsoFromLocalDateTime(values.dueAt),
-        targetMode: values.targetMode,
-        targetGradeId: values.targetGradeId || undefined,
-        targetClassroomId: values.targetClassroomId || undefined,
-        targetStudentIds: values.targetStudentIds?.length
-          ? values.targetStudentIds
-          : undefined,
+        ...(isClosed
+          ? { status: values.status }
+          : {
+              title: values.title.trim(),
+              description: values.description?.trim() || undefined,
+              dueAt: toIsoFromLocalDateTime(values.dueAt),
+              status: values.status,
+              targetMode: values.targetMode,
+              targetGradeId: values.targetGradeId || undefined,
+              targetClassroomId: values.targetClassroomId || undefined,
+              targetStudentIds: values.targetStudentIds?.length
+                ? values.targetStudentIds
+                : undefined,
+            }),
       }).unwrap();
 
       toast.success(
@@ -207,7 +215,7 @@ export default function AssignmentDetail() {
     }
   };
 
-  const canEdit = assignmentData?.status !== "CLOSED";
+  const isClosedAssignment = assignmentData?.status === "CLOSED";
 
   return (
     <DashboardShell
@@ -256,21 +264,22 @@ export default function AssignmentDetail() {
             </Button>
 
             <div className="flex flex-wrap items-center gap-2">
-              {canEdit ? (
-                <Button
-                  size="sm"
-                  variant="brand"
-                  className="rounded-2xl"
-                  onClick={() => setIsUpdateOpen(true)}
-                >
-                  <L.Pencil className="h-4 w-4" />
-                  {t("dashboard.schoolAdmin.assignmentDetail.actions.edit")}
-                </Button>
-              ) : (
+              <Button
+                size="sm"
+                variant="brand"
+                className="rounded-2xl"
+                onClick={() => setIsUpdateOpen(true)}
+              >
+                <L.Pencil className="h-4 w-4" />
+                {isClosedAssignment
+                  ? t("dashboard.schoolAdmin.assignmentDetail.actions.reopen")
+                  : t("dashboard.schoolAdmin.assignmentDetail.actions.edit")}
+              </Button>
+              {isClosedAssignment ? (
                 <p className="text-xs text-muted-foreground">
-                  {t("dashboard.schoolAdmin.assignmentDetail.readOnlyHint")}
+                  {t("dashboard.schoolAdmin.assignmentDetail.reopenHint")}
                 </p>
-              )}
+              ) : null}
             </div>
           </div>
 

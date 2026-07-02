@@ -1,4 +1,9 @@
-import { AssignmentStatus, AuditAction, UserStatus } from "@prisma/client";
+import {
+  AssignmentStatus,
+  AssignmentTargetMode,
+  AuditAction,
+  UserStatus,
+} from "@prisma/client";
 import { BadRequestException, ForbiddenException } from "@nestjs/common";
 import { IntelligenceKey, Prisma, Role } from "@prisma/client";
 import { Injectable, NotFoundException } from "@nestjs/common";
@@ -24,6 +29,28 @@ export class AssessmentService {
       throw new ForbiddenException({
         code: AssessmentErrorCode.SCHOOL_SCOPE_REQUIRED,
       });
+  }
+
+  private ensureAssignmentDueAtIsNotInPast(
+    dueAt: string | null | undefined,
+    currentDueAt?: Date | null,
+  ) {
+    if (!dueAt) return;
+
+    const parsedDueAt = new Date(dueAt);
+    if (Number.isNaN(parsedDueAt.getTime())) {
+      throw new BadRequestException({
+        code: AssessmentErrorCode.ASSIGNMENT_DUE_IN_PAST,
+      });
+    }
+
+    const parsedDueAtTime = parsedDueAt.getTime();
+    const currentDueAtTime = currentDueAt?.getTime();
+    if (parsedDueAtTime < Date.now() && parsedDueAtTime !== currentDueAtTime) {
+      throw new BadRequestException({
+        code: AssessmentErrorCode.ASSIGNMENT_DUE_IN_PAST,
+      });
+    }
   }
 
   private getBand(value: number) {
@@ -98,20 +125,34 @@ export class AssessmentService {
       throw new BadRequestException("TARGET_GRADE_REQUIRED");
     if (args.targetMode === "BY_CLASSROOM" && !args.targetClassroomId)
       throw new BadRequestException("TARGET_CLASSROOM_REQUIRED");
+    this.ensureAssignmentDueAtIsNotInPast(args.dueAt);
+    const publishedAt = new Date();
+    let assignedCount = 0;
     const assignment = await this.prismaService.$transaction(async (tx) => {
       const created = await tx.schoolAssignment.create({
         data: {
           schoolId,
           title: args.title.trim(),
           description: args.description?.trim() ?? null,
+          status: AssignmentStatus.PUBLISHED,
           targetMode: args.targetMode ?? "ALL_STUDENTS",
           targetGradeId: args.targetGradeId ?? null,
           targetClassroomId: args.targetClassroomId ?? null,
           dueAt: args.dueAt ? new Date(args.dueAt) : null,
+          publishedAt,
           createdById: args.actor.id,
         },
       });
       await this.ensureAssignmentQuestions(created.id, tx);
+      const studentIds = await this.resolveAssignmentTargetStudentIds(schoolId, {
+        targetMode: created.targetMode,
+        targetGradeId: created.targetGradeId,
+        targetClassroomId: created.targetClassroomId,
+      });
+      if (studentIds.length) {
+        await this.syncDraftTargetStudents(created.id, studentIds, tx);
+        assignedCount = studentIds.length;
+      }
       return created;
     });
     await this.auditService.record({
@@ -125,9 +166,118 @@ export class AssessmentService {
         targetMode: assignment.targetMode,
         targetGradeId: assignment.targetGradeId,
         targetClassroomId: assignment.targetClassroomId,
+        status: assignment.status,
+        publishedAt: assignment.publishedAt,
       },
     });
+    await this.auditService.record({
+      action: AuditAction.ASSIGNMENT_PUBLISH,
+      actorId: args.actor.id,
+      schoolId,
+      entityType: "SchoolAssignment",
+      entityId: assignment.id,
+      metadata: {
+        status: assignment.status,
+      },
+    });
+    if (assignedCount > 0) {
+      await this.auditService.record({
+        action: AuditAction.ASSIGNMENT_ASSIGN,
+        actorId: args.actor.id,
+        schoolId,
+        entityType: "SchoolAssignment",
+        entityId: assignment.id,
+        metadata: {
+          assignedCount,
+          targetMode: assignment.targetMode,
+        },
+      });
+    }
     return assignment;
+  }
+
+  private async resolveAssignmentTargetStudentIds(
+    schoolId: string,
+    target: {
+      targetMode: AssignmentTargetMode;
+      targetGradeId: string | null;
+      targetClassroomId: string | null;
+    },
+    explicitStudentIds?: string[],
+  ): Promise<string[]> {
+    switch (target.targetMode) {
+      case "ALL_STUDENTS": {
+        const students = await this.prismaService.user.findMany({
+          where: {
+            schoolId,
+            role: Role.STUDENT,
+            status: UserStatus.ACTIVE,
+          },
+          select: { id: true },
+        });
+        return students.map((student) => student.id);
+      }
+      case "BY_STUDENT_IDS": {
+        if (!explicitStudentIds?.length) {
+          throw new BadRequestException({
+            code: AssessmentErrorCode.STUDENT_IDS_REQUIRED,
+          });
+        }
+        return this.resolveActiveSchoolStudentIds(schoolId, explicitStudentIds);
+      }
+      case "BY_GRADE": {
+        if (!target.targetGradeId) {
+          throw new BadRequestException({
+            code: AssessmentErrorCode.INVALID_TARGET_MODE,
+          });
+        }
+        const enrollments = await this.prismaService.enrollment.findMany({
+          where: {
+            classroom: {
+              schoolId,
+              gradeId: target.targetGradeId,
+              deletedAt: null,
+            },
+            student: {
+              role: Role.STUDENT,
+              status: UserStatus.ACTIVE,
+            },
+            endedAt: null,
+          },
+          select: { studentId: true },
+          distinct: ["studentId"],
+        });
+        return enrollments.map((item) => item.studentId);
+      }
+      case "BY_CLASSROOM": {
+        if (!target.targetClassroomId) {
+          throw new BadRequestException({
+            code: AssessmentErrorCode.INVALID_TARGET_MODE,
+          });
+        }
+        const enrollments = await this.prismaService.enrollment.findMany({
+          where: {
+            classroomId: target.targetClassroomId,
+            classroom: {
+              schoolId,
+              deletedAt: null,
+            },
+            student: {
+              role: Role.STUDENT,
+              status: UserStatus.ACTIVE,
+            },
+            endedAt: null,
+          },
+          select: { studentId: true },
+          distinct: ["studentId"],
+        });
+        return enrollments.map((item) => item.studentId);
+      }
+      default:
+        throw new BadRequestException({
+          code: AssessmentErrorCode.INVALID_TARGET_MODE,
+        });
+    }
   }
 
   private async resolveActiveSchoolStudentIds(
@@ -202,7 +352,21 @@ export class AssessmentService {
         code: AssessmentErrorCode.ASSIGNMENT_NOT_FOUND,
       });
     }
-    if (assignment.status === AssignmentStatus.CLOSED) {
+    const targetFieldsTouchedForStatusCheck =
+      args.title !== undefined ||
+      args.description !== undefined ||
+      args.dueAt !== undefined ||
+      args.targetMode !== undefined ||
+      args.targetGradeId !== undefined ||
+      args.targetClassroomId !== undefined ||
+      args.targetStudentIds !== undefined;
+
+    if (
+      assignment.status === AssignmentStatus.CLOSED &&
+      (targetFieldsTouchedForStatusCheck ||
+        args.status === undefined ||
+        args.status === AssignmentStatus.CLOSED)
+    ) {
       throw new BadRequestException({
         code: AssessmentErrorCode.ASSIGNMENT_NOT_DRAFT,
       });
@@ -285,6 +449,16 @@ export class AssessmentService {
           code: AssessmentErrorCode.STUDENT_IDS_REQUIRED,
         });
       }
+    } else if (targetFieldsTouched) {
+      nextTargetStudentIds = await this.resolveAssignmentTargetStudentIds(
+        schoolId,
+        {
+          targetMode: nextTargetMode,
+          targetGradeId: nextTargetGradeId,
+          targetClassroomId: nextTargetClassroomId,
+        },
+      );
+      shouldSyncTargetStudents = true;
     }
 
     if (nextTargetMode === "BY_GRADE" && !nextTargetGradeId) {
@@ -300,7 +474,17 @@ export class AssessmentService {
       data.description = args.description?.trim() ?? null;
     }
     if (args.dueAt !== undefined) {
+      this.ensureAssignmentDueAtIsNotInPast(args.dueAt, assignment.dueAt);
       data.dueAt = args.dueAt ? new Date(args.dueAt) : null;
+    }
+    if (args.status !== undefined && args.status !== null) {
+      data.status = args.status;
+      if (
+        args.status === AssignmentStatus.PUBLISHED &&
+        !assignment.publishedAt
+      ) {
+        data.publishedAt = new Date();
+      }
     }
     if (targetFieldsTouched) {
       data.targetMode = nextTargetMode;
@@ -350,6 +534,7 @@ export class AssessmentService {
           title: assignment.title,
           description: assignment.description,
           dueAt: assignment.dueAt,
+          status: assignment.status,
           targetMode: assignment.targetMode,
           targetGradeId: assignment.targetGradeId,
           targetClassroomId: assignment.targetClassroomId,
@@ -358,6 +543,7 @@ export class AssessmentService {
           title: updated.title,
           description: updated.description,
           dueAt: updated.dueAt,
+          status: updated.status,
           targetMode: updated.targetMode,
           targetGradeId: updated.targetGradeId,
           targetClassroomId: updated.targetClassroomId,
@@ -367,6 +553,34 @@ export class AssessmentService {
         },
       },
     });
+    if (
+      args.status === AssignmentStatus.PUBLISHED &&
+      assignment.status !== AssignmentStatus.PUBLISHED
+    ) {
+      await this.auditService.record({
+        action: AuditAction.ASSIGNMENT_PUBLISH,
+        actorId: args.actor.id,
+        schoolId,
+        entityType: "SchoolAssignment",
+        entityId: updated.id,
+        metadata: {
+          status: updated.status,
+        },
+      });
+    }
+    if (shouldSyncTargetStudents && nextTargetStudentIds?.length) {
+      await this.auditService.record({
+        action: AuditAction.ASSIGNMENT_ASSIGN,
+        actorId: args.actor.id,
+        schoolId,
+        entityType: "SchoolAssignment",
+        entityId: updated.id,
+        metadata: {
+          assignedCount: nextTargetStudentIds.length,
+          targetMode: updated.targetMode,
+        },
+      });
+    }
     return updated;
   }
 
@@ -412,49 +626,6 @@ export class AssessmentService {
     };
   }
 
-  async publishAssignment(args: {
-    actor: T.TAssessmentActor;
-    assignmentId: string;
-  }) {
-    this.ensureSchoolAdminScope(args.actor);
-    const schoolId = args.actor.schoolId!;
-    const updated = await this.prismaService.$transaction(async (tx) => {
-      const assignment = await tx.schoolAssignment.findFirst({
-        where: {
-          id: args.assignmentId,
-          schoolId,
-        },
-      });
-      if (!assignment)
-        throw new NotFoundException({
-          code: AssessmentErrorCode.ASSIGNMENT_NOT_FOUND,
-        });
-      if (assignment.status !== AssignmentStatus.DRAFT)
-        throw new BadRequestException({
-          code: AssessmentErrorCode.ASSIGNMENT_NOT_DRAFT,
-        });
-      await this.ensureAssignmentQuestions(assignment.id, tx);
-      return tx.schoolAssignment.update({
-        where: { id: assignment.id },
-        data: {
-          status: AssignmentStatus.PUBLISHED,
-          publishedAt: new Date(),
-        },
-      });
-    });
-    await this.auditService.record({
-      action: AuditAction.ASSIGNMENT_PUBLISH,
-      actorId: args.actor.id,
-      schoolId,
-      entityType: "SchoolAssignment",
-      entityId: updated.id,
-      metadata: {
-        status: updated.status,
-      },
-    });
-    return updated;
-  }
-
   async assignAssignmentToStudents(
     args: T.TAssignAssignmentArgs,
   ): Promise<{ success: boolean; assignedCount: number }> {
@@ -471,84 +642,15 @@ export class AssessmentService {
         code: AssessmentErrorCode.ASSIGNMENT_NOT_FOUND,
       });
     }
-    let studentIds: string[] = [];
-    if (assignment.targetMode === "ALL_STUDENTS") {
-      const students = await this.prismaService.user.findMany({
-        where: {
-          schoolId,
-          role: Role.STUDENT,
-          status: UserStatus.ACTIVE,
-        },
-        select: { id: true },
-      });
-      studentIds = students.map((student) => student.id);
-    } else if (assignment.targetMode === "BY_STUDENT_IDS") {
-      if (!args.studentIds?.length) {
-        throw new BadRequestException({
-          code: AssessmentErrorCode.STUDENT_IDS_REQUIRED,
-        });
-      }
-      const students = await this.prismaService.user.findMany({
-        where: {
-          id: { in: args.studentIds },
-          schoolId,
-          role: Role.STUDENT,
-          status: UserStatus.ACTIVE,
-        },
-        select: { id: true },
-      });
-      studentIds = students.map((student) => student.id);
-    } else if (assignment.targetMode === "BY_GRADE") {
-      if (!assignment.targetGradeId) {
-        throw new BadRequestException({
-          code: AssessmentErrorCode.INVALID_TARGET_MODE,
-        });
-      }
-      const enrollments = await this.prismaService.enrollment.findMany({
-        where: {
-          classroom: {
-            schoolId,
-            gradeId: assignment.targetGradeId,
-            deletedAt: null,
-          },
-          student: {
-            role: Role.STUDENT,
-            status: UserStatus.ACTIVE,
-          },
-          endedAt: null,
-        },
-        select: { studentId: true },
-        distinct: ["studentId"],
-      });
-      studentIds = enrollments.map((item) => item.studentId);
-    } else if (assignment.targetMode === "BY_CLASSROOM") {
-      if (!assignment.targetClassroomId) {
-        throw new BadRequestException({
-          code: AssessmentErrorCode.INVALID_TARGET_MODE,
-        });
-      }
-      const enrollments = await this.prismaService.enrollment.findMany({
-        where: {
-          classroomId: assignment.targetClassroomId,
-          classroom: {
-            schoolId,
-            deletedAt: null,
-          },
-          student: {
-            role: Role.STUDENT,
-            status: UserStatus.ACTIVE,
-          },
-          endedAt: null,
-        },
-        select: { studentId: true },
-        distinct: ["studentId"],
-      });
-      studentIds = enrollments.map((item) => item.studentId);
-    } else {
-      throw new BadRequestException({
-        code: AssessmentErrorCode.INVALID_TARGET_MODE,
-      });
-    }
+    const studentIds = await this.resolveAssignmentTargetStudentIds(
+      schoolId,
+      {
+        targetMode: assignment.targetMode,
+        targetGradeId: assignment.targetGradeId,
+        targetClassroomId: assignment.targetClassroomId,
+      },
+      args.studentIds ?? undefined,
+    );
     await this.prismaService.$transaction(
       studentIds.map((studentId) =>
         this.prismaService.studentAssignment.upsert({

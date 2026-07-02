@@ -614,7 +614,7 @@
         "overview": "Overview",
         "auditLogs": "Audit Logs",
         "classrooms": "Classrooms",
-        "assignments": "Assignments",
+        "assignments": "Tests & Exercises",
         "enrollments": "Enrollments",
         "accessRequests": "Access Requests",
         "counselorAssignments": "Counselor Assignments"
@@ -1085,7 +1085,7 @@
       },
       "assignments": {
         "page": {
-          "title": "Assignments",
+          "title": "Tests & Exercises",
           "description": "Create, publish and distribute school assessments."
         },
         "summary": {
@@ -1108,6 +1108,7 @@
             "description": "Description",
             "targetMode": "Target mode",
             "dueAt": "Due date",
+            "status": "Status",
             "targetGrade": "Select grade",
             "targetClassroom": "Select classroom",
             "targetStudents": "Select students",
@@ -1207,6 +1208,7 @@
         },
         "backToAssignments": "Back to assignments",
         "readOnlyHint": "Only closed assignments cannot be edited.",
+        "reopenHint": "Only the assignment status can be changed while it is closed.",
         "empty": {
           "title": "Assignment not found",
           "description": "This assignment does not exist or you do not have access."
@@ -1241,6 +1243,7 @@
         },
         "actions": {
           "edit": "Edit assignment",
+          "reopen": "Change status",
           "save": "Save changes",
           "saving": "Saving..."
         },
@@ -1284,6 +1287,7 @@
             "description": "Description",
             "targetMode": "Target mode",
             "dueAt": "Due date",
+            "status": "Status",
             "targetGrade": "Select grade",
             "targetClassroom": "Select classroom",
             "targetStudents": "Select students",

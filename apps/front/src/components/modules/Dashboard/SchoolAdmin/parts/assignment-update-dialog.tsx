@@ -1,7 +1,7 @@
 "use client";
 
 import { AppDialog, AppDialogActions } from "@elements/app-dialog";
-import { AssignmentCreateForm } from "@modules/Dashboard/SchoolAdmin/parts/assignment-form";
+import { AssignmentUpdateForm } from "@modules/Dashboard/SchoolAdmin/parts/assignment-update-form";
 import { TAssignmentUpdateDialogProps } from "@/types/modules";
 import { TUpdateAssignmentForm } from "@/lib/validation/school-admin-schemas";
 import { updateAssignmentSchema } from "@/lib/validation/school-admin-schemas";
@@ -32,6 +32,7 @@ export const AssignmentUpdateDialog = ({
       title: "",
       dueAt: "",
       description: "",
+      status: "PUBLISHED",
       targetMode: "ALL_STUDENTS",
       targetGradeId: "",
       targetClassroomId: "",
@@ -73,8 +74,8 @@ export const AssignmentUpdateDialog = ({
     >
       <F.Form {...form}>
         <form id={FORM_ID} onSubmit={form.handleSubmit(handleSubmit)}>
-          <AssignmentCreateForm
-            hideSubmit
+          <AssignmentUpdateForm
+            statusOnly={initialValues?.status === "CLOSED"}
             form={form}
             onSubmit={handleSubmit}
             isLoading={isSubmitting}

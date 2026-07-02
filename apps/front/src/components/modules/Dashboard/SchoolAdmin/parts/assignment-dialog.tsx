@@ -8,7 +8,6 @@ import * as D from "@ui/dialog";
 
 export const AssignmentActionDialog = ({
   open,
-  mode,
   assignment,
   isLoading,
   onConfirm,
@@ -16,26 +15,16 @@ export const AssignmentActionDialog = ({
 }: TAssignmentActionDialogProps) => {
   const { t } = useI18n();
 
-  const isPublish = mode === "publish";
-
   return (
     <D.Dialog open={open} onOpenChange={onOpenChange}>
       <D.DialogContent className="rounded-[1.75rem] sm:max-w-md">
         <D.DialogHeader>
           <D.DialogTitle>
-            {isPublish
-              ? t("dashboard.schoolAdmin.assignments.dialog.publish.title")
-              : t("dashboard.schoolAdmin.assignments.dialog.assign.title")}
+            {t("dashboard.schoolAdmin.assignments.dialog.assign.title")}
           </D.DialogTitle>
 
           <D.DialogDescription>
-            {isPublish
-              ? t(
-                  "dashboard.schoolAdmin.assignments.dialog.publish.description",
-                )
-              : t(
-                  "dashboard.schoolAdmin.assignments.dialog.assign.description",
-                )}
+            {t("dashboard.schoolAdmin.assignments.dialog.assign.description")}
           </D.DialogDescription>
         </D.DialogHeader>
 
@@ -74,9 +63,7 @@ export const AssignmentActionDialog = ({
           >
             {isLoading
               ? t("common.loading")
-              : isPublish
-                ? t("dashboard.schoolAdmin.assignments.actions.publish")
-                : t("dashboard.schoolAdmin.assignments.actions.assign")}
+              : t("dashboard.schoolAdmin.assignments.actions.assign")}
           </Button>
         </div>
       </D.DialogContent>

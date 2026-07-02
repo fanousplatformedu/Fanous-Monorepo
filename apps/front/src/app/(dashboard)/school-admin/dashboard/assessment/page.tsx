@@ -20,7 +20,6 @@ const AssignmentsSchoolAdminDashboard = () => {
           description={t("dashboard.schoolAdmin.assignments.page.description")}
         />
       }
-      
       sidebar={
         <DashboardSidebar
           title={t("dashboard.schoolAdmin.shell.title")}

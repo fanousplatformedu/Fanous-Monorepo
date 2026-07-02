@@ -895,7 +895,6 @@ type Mutation {
   markNotificationRead(input: MarkNotificationReadInput!): NotificationStudentResult!
   parentCancelCounselingSession(input: CancelParentSessionInput!): ParentSessionRequestResult!
   parentRequestCounselingSession(input: ParentRequestSessionInput!): ParentSessionRequestResult!
-  publishAssignment(id: String!): SchoolAssignment!
   refreshAuth: AuthPayload!
   removeSchoolMember(input: RemoveSchoolMemberInput!): User!
   requestCounselingSession(input: RequestCounselingSessionInput!): CounselingSession!
@@ -1673,6 +1672,7 @@ input UpdateAssignmentInput {
   assignmentId: String!
   description: String
   dueAt: String
+  status: String
   targetClassroomId: String
   targetGradeId: String
   targetMode: String

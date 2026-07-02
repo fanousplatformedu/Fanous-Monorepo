@@ -2,6 +2,7 @@ import { ComponentType, ElementType, ReactNode } from "react";
 import { TParentProfileFormValues } from "@/lib/validation/parent-schemas";
 import { TClassroomFiltersValues } from "@/lib/validation/school-admin-schemas";
 import { TCreateAssignmentForm } from "@/lib/validation/school-admin-schemas";
+import { TUpdateAssignmentForm } from "@/lib/validation/school-admin-schemas";
 import { TEnrollmentFilterForm } from "@/lib/validation/school-admin-schemas";
 import { TGradeFormValues } from "@/lib/validation/school-admin-schemas";
 import { TEnrollmentForm } from "@/lib/validation/school-admin-schemas";
@@ -563,10 +564,9 @@ export type TSelectedAssignment = {
 
 export type TAssignmentActionDialogProps = {
   open: boolean;
-  mode: TDialogMode;
   isLoading: boolean;
   onConfirm: () => Promise<void>;
-  assignment: TSelectedAssignment;
+  assignment: TSelectedAssignment | null;
   onOpenChange: (open: boolean) => void;
 };
 
@@ -609,12 +609,23 @@ export type TAssignmentCreateFormProps = {
   hideSubmit?: boolean;
 };
 
+export type TAssignmentUpdateFormProps = {
+  isLoading: boolean;
+  gradeOptions: TOption[];
+  classroomOptions: TOption[];
+  studentOptions: TOption[];
+  form: UseFormReturn<TUpdateAssignmentForm>;
+  onSubmit: (values: TUpdateAssignmentForm) => Promise<void>;
+  hideSubmit?: boolean;
+  statusOnly?: boolean;
+};
+
 export type TAssignmentUpdateDialogProps = {
   open: boolean;
   isSubmitting: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: TCreateAssignmentForm) => Promise<void>;
-  initialValues: TCreateAssignmentForm | null;
+  onSubmit: (values: TUpdateAssignmentForm) => Promise<void>;
+  initialValues: TUpdateAssignmentForm | null;
   gradeOptions: TOption[];
   classroomOptions: TOption[];
   studentOptions: TOption[];

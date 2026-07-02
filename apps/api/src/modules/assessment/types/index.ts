@@ -27,6 +27,7 @@ export type TUpdateAssignmentArgs = {
   targetClassroomId?: string | null;
   targetMode?: AssignmentTargetMode | null;
   targetStudentIds?: string[] | null;
+  status?: AssignmentStatus | null;
 };
 
 export type TListAssignmentsArgs = {

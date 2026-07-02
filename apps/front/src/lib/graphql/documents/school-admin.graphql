@@ -383,15 +383,6 @@ query Assignments($input: ListAssignmentsInput!) {
   }
 }
 
-mutation PublishAssignment($id: String!) {
-  publishAssignment(id: $id) {
-    id
-    status
-    updatedAt
-    publishedAt
-  }
-}
-
 mutation AssignAssignmentToStudents($input: AssignAssignmentInput!) {
   assignAssignmentToStudents(input: $input)
 }

@@ -8,7 +8,7 @@ import {
   MaxLength,
 } from "class-validator";
 import { AssessmentGqlInputNames } from "@assessment/enums/gql-names.enum";
-import { AssignmentTargetMode } from "@prisma/client";
+import { AssignmentStatus, AssignmentTargetMode } from "@prisma/client";
 import { Field, InputType } from "@nestjs/graphql";
 
 @InputType(AssessmentGqlInputNames.UpdateAssignmentInput)
@@ -34,4 +34,8 @@ export class UpdateAssignmentInput {
   @IsOptional()
   @IsArray()
   targetStudentIds?: string[];
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsEnum(AssignmentStatus)
+  status?: AssignmentStatus;
 }

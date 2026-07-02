@@ -77,6 +77,7 @@ export class AssessmentResolver {
       targetGradeId: input.targetGradeId,
       targetClassroomId: input.targetClassroomId,
       targetStudentIds: input.targetStudentIds,
+      status: input.status,
     });
   }
 
@@ -95,18 +96,6 @@ export class AssessmentResolver {
       skip: input.skip,
       query: input.query ?? null,
       status: input.status ?? null,
-    });
-  }
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SCHOOL_ADMIN)
-  @Mutation(() => SchoolAssignmentEntity, {
-    name: AssessmentGqlMutationNames.PublishAssignment,
-  })
-  publishAssignment(@CurrentUser() user: any, @Args("id") id: string) {
-    return this.assessmentService.publishAssignment({
-      actor: { id: user.id, role: user.role, schoolId: user.schoolId },
-      assignmentId: id,
     });
   }
 

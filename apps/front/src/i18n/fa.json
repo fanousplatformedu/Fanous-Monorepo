@@ -770,7 +770,7 @@
         "reports": "گزارش ها",
         "overview": "نمای کلی",
         "enrollments": "ثبت‌نام‌ها",
-        "assignments": "واگزاری ها",
+        "assignments": "آزمون‌ها و تمرین‌ها",
         "accessRequests": "درخواست‌های دسترسی",
         "counselorAssignments": "اختصاص مشاور"
       },
@@ -869,6 +869,7 @@
         },
         "backToAssignments": "بازگشت به تکالیف",
         "readOnlyHint": "فقط تکالیف بسته‌شده قابل ویرایش نیستند.",
+        "reopenHint": "در حالت بسته فقط وضعیت تکلیف قابل تغییر است.",
         "empty": {
           "title": "تکلیف یافت نشد",
           "description": "این تکلیف وجود ندارد یا دسترسی به آن ندارید."
@@ -903,6 +904,7 @@
         },
         "actions": {
           "edit": "ویرایش تکلیف",
+          "reopen": "تغییر وضعیت",
           "save": "ذخیره تغییرات",
           "saving": "در حال ذخیره..."
         },
@@ -1164,7 +1166,7 @@
       },
       "assignments": {
         "page": {
-          "title": "تکالیف",
+          "title": "آزمون‌ها و تمرین‌ها",
           "description": "ایجاد، انتشار و توزیع ارزیابی‌های مدرسه."
         },
         "summary": {
@@ -1187,6 +1189,7 @@
             "description": "توضیحات",
             "targetMode": "نوع هدف‌گذاری",
             "dueAt": "مهلت تحویل",
+            "status": "وضعیت",
             "targetGrade": "انتخاب پایه",
             "targetClassroom": "انتخاب کلاس",
             "targetStudents": "انتخاب دانش‌آموزان",
@@ -1281,6 +1284,7 @@
             "description": "توضیحات",
             "targetMode": "نوع هدف‌گذاری",
             "dueAt": "مهلت تحویل",
+            "status": "وضعیت",
             "targetGrade": "انتخاب پایه",
             "targetClassroom": "انتخاب کلاس",
             "targetStudents": "انتخاب دانش‌آموزان",
