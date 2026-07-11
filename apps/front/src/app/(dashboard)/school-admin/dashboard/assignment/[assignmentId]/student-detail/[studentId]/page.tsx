@@ -16,7 +16,7 @@ export default async function UserAssessmentResult({ params }: AsyncPageProps) {
   >(
     GQL.AssessmentResultDocument,
     { input: { assignmentId, studentId } },
-    { revalidate: 3600, tags: [`assignment-${assignmentId}-${studentId}`] },
+    { revalidate: false, tags: [`assignment-${assignmentId}-${studentId}`] },
   );
 
   return   <SchoolAdminAssessmentPage assessmentResult={data} />;

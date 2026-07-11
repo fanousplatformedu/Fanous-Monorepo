@@ -32,6 +32,7 @@ export async function serverGraphqlFetch<TData, TVariables>(
       ...(revalidate !== undefined ? { revalidate } : {}),
       ...(tags?.length ? { tags } : {}),
     },
+    cache: "no-store",
   });
 
   if (!res.ok) {

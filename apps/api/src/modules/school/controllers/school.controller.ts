@@ -20,7 +20,6 @@ export class SchoolController {
     @CurrentUser() user: any,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(user)
     return this.studentService.createBulkStudents(
       user.schoolId,
       user.id,

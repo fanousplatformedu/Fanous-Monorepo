@@ -6,7 +6,7 @@ import { Toaster } from "@ui/sonner";
 
 import ForcePasswordChangeEnforcer from "@modules/Auth/ForceChangePsswordEnforce";
 import Header from "@layouts/Header";
-import Footer from "@layouts/Footer";
+
 
 import "@/app/globals.css";
 

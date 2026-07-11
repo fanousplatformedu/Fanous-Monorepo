@@ -22,6 +22,7 @@ import { StudentMessage } from "@student/enums/student-message.enum";
 import { PrismaService } from "@prisma/prisma.service";
 import { AuditService } from "@audit/services/audit.service";
 import { splitPersonName } from "@common/utils/person-name.util";
+import { bulkStudentRowSchema } from "@student/schemas/bulk-student-row.schema";
 import * as ExcelJS from "exceljs";
 import * as T from "@student/types/student.types";
 
@@ -1000,23 +1001,46 @@ export class StudentService {
     await workbook.xlsx.load(file.buffer as any);
 
     const worksheet = workbook.getWorksheet(1); // Get first sheet
-    const users: { name: string; email: string; classroomName: string }[] = [];
+    const users: {
+      firstName: string;
+      lastName: string;
+      mobile: string;
+      email: string;
+      classroomName: string;
+      role: string;
+    }[] = [];
     if (!worksheet)
       throw new HttpException("File is empty", HttpStatus.NOT_ACCEPTABLE);
     // 2. Iterate (repeat) through rows
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return; // Skip header row
-
+      if (row.values[1] === undefined) return;
       const rowValues = row.values as any[];
-      users.push({
-        name: rowValues[1], // Column A
-        email: rowValues[2].text, // Column B
-        classroomName: rowValues[3],
-      });
+      const emailCell = rowValues[4];
+      const rawRow = {
+        firstName: rowValues[1], // Column A
+        lastName: rowValues[2], // Column B
+        mobile: rowValues[3], // Column C
+        email: typeof emailCell === "object" ? emailCell?.text : emailCell, // Column D
+        classroomName: rowValues[5], // Column E
+        role: rowValues[6], // Column F
+      };
+
+      const parsed = bulkStudentRowSchema.safeParse(rawRow);
+      if (!parsed.success) {
+        const message = parsed.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join("; ");
+        throw new BadRequestException(
+          `Row ${rowNumber} is invalid - ${message}`,
+        );
+      }
+
+      users.push(parsed.data);
     });
 
-    try {
-      for (const user of users) {
+    for (const user of users) {
+      try {
         const classroom = await this.prismaService.classroom.findFirst({
           where: {
             name: { equals: user.classroomName.trim() },
@@ -1026,17 +1050,16 @@ export class StudentService {
 
         if (!classroom)
           throw new NotFoundException(
-            `Classroom not found for student:name ${user.name} email:${user.email} classroom:${user.classroomName}`,
+            `Classroom not found for student:name ${user.firstName} ${user.lastName} email:${user.email} classroom:${user.classroomName}`,
           );
 
-        const { firstName, lastName } = splitPersonName(user.name);
-
-        await this.prismaService.user.create({
-          data: {
-            schoolId,
-            role: $Enums.Role.STUDENT,
-            firstName,
-            lastName,
+        await this.prismaService.user.upsert({
+          where: {
+            mobile: user.mobile,
+          },
+          update: {
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             enrollments: {
               create: {
@@ -1044,11 +1067,29 @@ export class StudentService {
                 classroomId: classroom.id,
               },
             },
+            mobile: user.mobile,
+            role: T.TBulkStudentRoles[user.role],
+            schoolId,
+          },
+
+          create: {
+            schoolId,
+            role: T.TBulkStudentRoles[user.role],
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            enrollments: {
+              create: {
+                schoolId,
+                classroomId: classroom.id,
+              },
+            },
+            mobile: user.mobile,
           },
         });
+      } catch (error) {
+        throw new InternalServerErrorException(error);
       }
-    } catch (error) {
-      throw new InternalServerErrorException(error);
     }
     return {
       message: "File processed successfully",

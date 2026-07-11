@@ -199,7 +199,7 @@ export class SchoolService {
       school.code ?? school.name,
     );
     const tempPassword = this.generatePassword(12);
-    const passwordHash = await argon2.hash(tempPassword);
+    // const passwordHash = await argon2.hash(tempPassword);
     const admin = await this.prismaService.$transaction(async (tx) => {
       const created = await tx.user.create({
         data: {
@@ -207,7 +207,7 @@ export class SchoolService {
           status: UserStatus.ACTIVE,
           schoolId: school.id,
           username,
-          passwordHash,
+          // passwordHash,
           email,
           firstName: args.adminFirstName?.trim() || null,
           lastName: args.adminLastName?.trim() || null,

@@ -2,9 +2,11 @@
 
 import { TDialogMode, TSelectedAssignment } from "@/types/modules";
 import { createAssignmentSchema } from "@/lib/validation/school-admin-schemas";
-import { toIsoFromLocalDateTime, formatPersonName } from "@/utils/function-helper";
+import {
+  toIsoFromLocalDateTime,
+  formatPersonName,
+} from "@/utils/function-helper";
 import { AssignmentSummaryCards } from "@modules/Dashboard/SchoolAdmin/parts/assignment-card";
-import { AssignmentResultsTable } from "@modules/Dashboard/SchoolAdmin/parts/assignment-table";
 import { AssignmentActionDialog } from "@modules/Dashboard/SchoolAdmin/parts/assignment-dialog";
 import { TCreateAssignmentForm } from "@/lib/validation/school-admin-schemas";
 import { DashboardLoadingCard } from "@modules/Dashboard/parts/dashboard-loading-card";
@@ -19,7 +21,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PAGE_SIZE } from "@/utils/constant";
 import { useForm } from "react-hook-form";
 import { useI18n } from "@/hooks/useI18n";
-import { Button } from "@ui/button";
 import { toast } from "sonner";
 
 import * as API from "@/lib/redux/api";
@@ -31,7 +32,6 @@ const SchoolAdminAssignmentsPage = () => {
   const { t } = useI18n();
 
   const [page, setPage] = useState(1);
-  const [resultsPage, setResultsPage] = useState(1);
 
   const [dialogMode, setDialogMode] = useState<TDialogMode>(null);
   const [selectedAssignment, setSelectedAssignment] =
@@ -56,15 +56,6 @@ const SchoolAdminAssignmentsPage = () => {
   } = API.useAssignmentsQuery({
     take: PAGE_SIZE,
     skip: (page - 1) * PAGE_SIZE,
-  });
-
-  const {
-    data: resultsData,
-    isLoading: isResultsLoading,
-    isFetching: isResultsFetching,
-  } = API.useAssessmentResultsQuery({
-    take: PAGE_SIZE,
-    skip: (resultsPage - 1) * PAGE_SIZE,
   });
 
   // Fetch data for the assign dialog dropdowns
@@ -107,9 +98,6 @@ const SchoolAdminAssignmentsPage = () => {
 
   const assignmentsTotal = assignmentsData?.total ?? 0;
   const questionCount = questions?.length ?? 0;
-
-  const resultItems = useMemo(() => resultsData?.items ?? [], [resultsData]);
-  const resultsTotal = resultsData?.total ?? 0;
 
   // Build options for the assign dialog
   const gradeOptions = useMemo(
@@ -170,11 +158,6 @@ const SchoolAdminAssignmentsPage = () => {
         ),
       );
     }
-  };
-
-  const openAssignDialog = (assignment: TSelectedAssignment) => {
-    setSelectedAssignment(assignment);
-    setDialogMode("assign");
   };
 
   const closeDialog = (open: boolean) => {
@@ -343,8 +326,6 @@ const SchoolAdminAssignmentsPage = () => {
                           ? new Date(item.publishedAt).toLocaleString()
                           : "-"}
                       </td>
-
-                
                     </tr>
                   ))}
                 </tbody>
@@ -365,15 +346,6 @@ const SchoolAdminAssignmentsPage = () => {
             ) : null}
           </DashboardTableCard>
         )}
-
-        {/* <AssignmentResultsTable
-          page={resultsPage}
-          items={resultItems}
-          total={resultsTotal}
-          onPageChange={setResultsPage}
-          isLoading={isResultsLoading}
-          isFetching={isResultsFetching}
-        /> */}
       </div>
 
       <AssignmentActionDialog

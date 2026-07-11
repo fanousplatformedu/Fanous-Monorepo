@@ -1,4 +1,4 @@
-import { IntelligenceKey, StudentAssignmentStatus } from "@prisma/client";
+import { $Enums, IntelligenceKey, StudentAssignmentStatus } from "@prisma/client";
 import { CounselingSessionStatus, Role } from "@prisma/client";
 import { AssignmentDraftAnswerInput } from "@student/dtos/assignments-draft.input";
 import { InAppNotificationType } from "@prisma/client";
@@ -107,5 +107,12 @@ export type TListMyCounselingSessionsArgs = {
 };
 
 export type BulkStudent = {
-  name: string
-}
+  name: string;
+};
+
+export const TBulkStudentRoles: Record<string, $Enums.Role> = {
+  parent: $Enums.Role.PARENT,
+  student: $Enums.Role.STUDENT,
+  counselor: $Enums.Role.COUNSELOR,
+  schoolAdmin: $Enums.Role.SCHOOL_ADMIN,
+};

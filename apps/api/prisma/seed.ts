@@ -11,11 +11,22 @@ import { seedAuditLogs } from "./seeders/seed-audit";
 import { seedSessions } from "./seeders/seed-session";
 import { seedOtps } from "./seeders/seed-otp";
 import { faker } from "@faker-js/faker";
+import { config as loadEnv } from "dotenv";
+import { resolve } from "path";
+
+// Nest ConfigModule is not used here — load apps/api/.env explicitly.
+loadEnv({ path: resolve(__dirname, "../.env") });
 
 async function main() {
   if ((process.env.SEED_ENABLED ?? "true") !== "true") {
     console.log("Seed disabled (SEED_ENABLED!=true).");
     return;
+  }
+
+  if (!process.env.DATABASE_URL) {
+    throw new Error(
+      "DATABASE_URL is not set. Add it to apps/api/.env or the process environment before running db:seed.",
+    );
   }
 
   const prisma = new PrismaClient();

@@ -206,8 +206,8 @@ model User {
   username     String? @unique
   passwordHash String?
 
-  email  String?
-  mobile String?
+  email  String? @unique
+  mobile String? @unique
 
   firstName String?
   lastName  String?
