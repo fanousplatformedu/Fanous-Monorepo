@@ -14,6 +14,8 @@ import { UserEntity } from "@user/entities/user.entity";
 import { UseGuards } from "@nestjs/common";
 import { Roles } from "@auth/decorators/roles.decorator";
 import { Role } from "@prisma/client";
+import { AddSchoolUserInput } from "../dtos/create-school-user.input";
+import { EditSchoolUserInput } from "../dtos/edit-school-user.input";
 
 @Resolver(() => UserEntity)
 export class UserResolver {
@@ -79,5 +81,32 @@ export class UserResolver {
     }));
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SCHOOL_ADMIN)
+  @Mutation(() => UserEntity, { name: UserGqlMutationNames.AddSchoolUser })
+  addSchoolUser(@CurrentUser() user: any, @Args("input") input: AddSchoolUserInput) {
+    return this.usersService.addSchoolUser({
+      actor: { id: user.id, role: user.role, schoolId: user.schoolId },
+      ...input
+    });
+  }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SCHOOL_ADMIN)
+  @Mutation(() => UserEntity, { name: UserGqlMutationNames.EditSchoolUser })
+  editSchoolUser(@CurrentUser() user: any, @Args("input") input: EditSchoolUserInput) {
+    return this.usersService.editSchoolUser({
+      actor: { id: user.id, role: user.role, schoolId: user.schoolId },
+      targetUserId: input.userId,
+      email: input.email ?? null,
+      mobile: input.mobile ?? null,
+      firstName: input.firstName ?? null,
+      lastName: input.lastName ?? null,
+      role: input.role ?? null,
+      isActive: input.isActive ?? null,
+      username: input.username ?? null,
+      forcePasswordChange: input.forcePasswordChange ?? null,
+      password: input.password ?? null,
+    });
+  }
 }

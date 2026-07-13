@@ -85,6 +85,39 @@ export const schoolAdminApi = baseApi.injectEndpoints({
       ],
     }),
 
+    addSchoolUser: builder.mutation<
+      TAPI.AddSchoolUserMutation["addSchoolUser"],
+      TAPI.AddSchoolUserInput
+    >({
+      query: (input) => ({
+        document: API.AddSchoolUserDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.AddSchoolUserMutation) =>
+        response.addSchoolUser,
+      invalidatesTags: [
+        { type: "SchoolMembers", id: LIST_ID },
+        { type: "AuditLogs", id: LIST_ID },
+      ],
+    }),
+
+    editSchoolUser: builder.mutation<
+      TAPI.EditSchoolUserMutation["editSchoolUser"],
+      TAPI.EditSchoolUserInput
+    >({
+      query: (input) => ({
+        document: API.EditSchoolUserDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.EditSchoolUserMutation) =>
+        response.editSchoolUser,
+      invalidatesTags: (_result, _error, input) => [
+        { type: "SchoolMembers", id: LIST_ID },
+        { type: "SchoolMembers", id: input.userId },
+        { type: "AuditLogs", id: LIST_ID },
+      ],
+    }),
+
     schoolAdminAccessRequests: builder.query<
       TAPI.SchoolAdminAccessRequestsQuery["accessRequests"],
       TAPI.ListAccessRequestsInput
@@ -656,6 +689,8 @@ export const {
   useUpdateAssignmentMutation,
   useSchoolAdminAuditLogsQuery,
   useRemoveSchoolMemberMutation,
+  useAddSchoolUserMutation,
+  useEditSchoolUserMutation,
   useEnrollmentsByClassroomQuery,
   useReviewAccessRequestMutation,
   useSchoolAssessmentSummaryQuery,

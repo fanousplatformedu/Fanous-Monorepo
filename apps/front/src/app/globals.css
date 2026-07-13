@@ -507,9 +507,11 @@
   --popover: #ffffff;
   --popover-foreground: #0f172a;
 
-  --primary: #030213;
+  --primary: #021308;
   --primary-foreground: #ffffff;
 
+  --text-selection-background: #004f77;
+  --text-selection-foreground: #ffffff;
   --secondary: #eaf1ff;
   --secondary-foreground: #030213;
 

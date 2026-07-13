@@ -1,4 +1,4 @@
-import { TRemoveSchoolMemberArgs, TUpdateMeArgs } from "@user/types/user.types";
+import { TAddSchoolUserArgs, TEditSchoolUserArgs, TRemoveSchoolMemberArgs, TUpdateMeArgs } from "@user/types/user.types";
 import { NotFoundException, BadRequestException } from "@nestjs/common";
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { TListSchoolMembersArgs } from "@user/types/user.types";
@@ -7,6 +7,7 @@ import { PrismaService } from "@prisma/prisma.service";
 import { UserErrorCode } from "@user/enums/user-error-code.enum";
 import { AuditService } from "@audit/services/audit.service";
 import { buildUserNameSearch } from "@common/utils/person-name.util";
+import * as argon2 from "argon2";
 
 @Injectable()
 export class UserService {
@@ -163,8 +164,6 @@ export class UserService {
     return { id: target.id };
   }
 
-
-
   private userSelect() {
     return {
       id: true,
@@ -181,5 +180,66 @@ export class UserService {
       updatedAt: true,
       forcePasswordChange: true,
     };
+  }
+
+  
+
+  async addSchoolUser(args: TAddSchoolUserArgs) {
+    if (args.actor.role !== Role.SCHOOL_ADMIN)
+      throw new ForbiddenException({ code: UserErrorCode.FORBIDDEN });
+    if (!args.actor.schoolId)
+      throw new BadRequestException({ code: UserErrorCode.INVALID_OPERATION });
+    const passwordHash = await argon2.hash(args.password);
+    const user = await this.prismaService.user.create({
+      data: {
+        email: args.email.trim().toLowerCase(),
+        mobile: args.mobile.trim(),
+        firstName: args.firstName,
+        lastName: args.lastName,
+        role: args.role,
+        schoolId: args.actor.schoolId,
+        passwordHash,
+        forcePasswordChange: args.forcePasswordChange,
+        isActive: args.isActive,
+        username: args.username,
+      },
+    });
+    return user;
+  }
+
+  async editSchoolUser(args: TEditSchoolUserArgs) {
+    if (args.actor.role !== Role.SCHOOL_ADMIN)
+      throw new ForbiddenException({ code: UserErrorCode.FORBIDDEN });
+    if (!args.actor.schoolId)
+      throw new BadRequestException({ code: UserErrorCode.INVALID_OPERATION });
+
+    const target = await this.prismaService.user.findUnique({
+      where: { id: args.targetUserId },
+      select: { id: true, schoolId: true, role: true },
+    });
+    if (!target)
+      throw new NotFoundException({ code: UserErrorCode.USER_NOT_FOUND });
+    if (target.schoolId !== args.actor.schoolId)
+      throw new ForbiddenException({ code: UserErrorCode.CROSS_TENANT_ACCESS });
+    if (target.role === Role.SUPER_ADMIN)
+      throw new ForbiddenException({ code: UserErrorCode.FORBIDDEN });
+
+    const passwordHash = args.password ? await argon2.hash(args.password) : undefined;
+    const user = await this.prismaService.user.update({
+      where: { id: target.id },
+      data: {
+        email: args.email ? args.email.trim().toLowerCase() : undefined,
+        mobile: args.mobile ? args.mobile.trim() : undefined,
+        firstName: args.firstName ?? undefined,
+        lastName: args.lastName ?? undefined,
+        role: args.role ?? undefined,
+        isActive: args.isActive ?? undefined,
+        username: args.username ?? undefined,
+        forcePasswordChange: args.forcePasswordChange ?? undefined,
+        passwordHash,
+      },
+      select: this.userSelect(),
+    });
+    return user;
   }
 }

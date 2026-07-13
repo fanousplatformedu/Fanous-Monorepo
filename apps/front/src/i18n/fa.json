@@ -634,7 +634,8 @@
           "actions": "عملیات"
         },
         "actions": {
-          "disable": "غیرفعال کردن"
+          "disable": "غیرفعال کردن",
+          "edit": "ویرایش"
         },
         "empty": {
           "title": "عضوی پیدا نشد",
@@ -687,6 +688,86 @@
           "fullName": "نام کامل",
           "email": "ایمیل",
           "role": "نقش"
+        },
+        "addMember": {
+          "button": "افزودن عضو",
+          "dialog": {
+            "title": "افزودن عضو مدرسه",
+            "description": "یک کاربر جدید ایجاد و به مدرسه اختصاص دهید."
+          },
+          "fields": {
+            "firstName": "نام",
+            "lastName": "نام خانوادگی",
+            "email": "ایمیل",
+            "mobile": "شماره موبایل",
+            "username": "نام کاربری",
+            "password": "رمز عبور",
+            "role": "نقش",
+            "isActive": "فعال",
+            "forcePasswordChange": "الزام تغییر رمز عبور در اولین ورود"
+          },
+          "actions": {
+            "submit": "افزودن عضو",
+            "submitting": "در حال افزودن…",
+            "cancel": "انصراف",
+            "generatePassword": "تولید رمز عبور",
+            "generateUsername": "تولید نام کاربری"
+          },
+          "toasts": {
+            "success": "عضو با موفقیت افزوده شد.",
+            "failed": "افزودن عضو ناموفق بود."
+          },
+          "validation": {
+            "firstNameRequired": "نام الزامی است.",
+            "lastNameRequired": "نام خانوادگی الزامی است.",
+            "emailRequired": "ایمیل الزامی است.",
+            "emailInvalid": "لطفاً یک ایمیل معتبر وارد کنید.",
+            "mobileRequired": "شماره موبایل الزامی است.",
+            "usernameMin": "نام کاربری باید حداقل {{min}} کاراکتر باشد.",
+            "passwordMin": "رمز عبور باید حداقل {{min}} کاراکتر باشد.",
+            "roleRequired": "لطفاً نقش را انتخاب کنید."
+          }
+        },
+        "editMember": {
+          "dialog": {
+            "title": "ویرایش عضو",
+            "description": "جزئیات این عضو مدرسه را به‌روزرسانی کنید."
+          },
+          "fields": {
+            "firstName": "نام",
+            "lastName": "نام خانوادگی",
+            "email": "ایمیل",
+            "mobile": "شماره موبایل",
+            "username": "نام کاربری",
+            "usernameKeepHint": "خالی بگذارید تا نام کاربری فعلی حفظ شود",
+            "password": "رمز عبور",
+            "passwordKeepHint": "خالی بگذارید تا رمز عبور فعلی حفظ شود",
+            "role": "نقش",
+            "isActive": "فعال",
+            "forcePasswordChange": "الزام تغییر رمز عبور در ورود بعدی"
+          },
+          "actions": {
+            "submit": "ذخیره تغییرات",
+            "submitting": "در حال ذخیره…",
+            "cancel": "انصراف",
+            "generatePassword": "تولید رمز عبور",
+            "generateUsername": "تولید نام کاربری"
+          },
+          "toasts": {
+            "success": "عضو با موفقیت به‌روزرسانی شد.",
+            "failed": "به‌روزرسانی عضو ناموفق بود."
+          },
+          "validation": {
+            "userIdRequired": "شناسایی عضو امکان‌پذیر نبود.",
+            "firstNameRequired": "نام الزامی است.",
+            "lastNameRequired": "نام خانوادگی الزامی است.",
+            "emailRequired": "ایمیل الزامی است.",
+            "emailInvalid": "لطفاً یک ایمیل معتبر وارد کنید.",
+            "mobileRequired": "شماره موبایل الزامی است.",
+            "usernameMin": "نام کاربری باید حداقل {{min}} کاراکتر باشد.",
+            "passwordMin": "رمز عبور باید حداقل {{min}} کاراکتر باشد.",
+            "roleRequired": "لطفاً نقش را انتخاب کنید."
+          }
         },
         "bulkUpload": {
           "button": "ثبت‌نام گروهی ",

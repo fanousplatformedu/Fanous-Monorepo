@@ -54,6 +54,32 @@ mutation RemoveSchoolMember($input: RemoveSchoolMemberInput!) {
   }
 }
 
+mutation AddSchoolUser($input: AddSchoolUserInput!) {
+  addSchoolUser(input: $input) {
+    id
+    role
+    email
+    mobile
+    status
+    firstName
+    lastName
+    createdAt
+  }
+}
+
+mutation EditSchoolUser($input: EditSchoolUserInput!) {
+  editSchoolUser(input: $input) {
+    id
+    role
+    email
+    mobile
+    status
+    firstName
+    lastName
+    createdAt
+  }
+}
+
 query SchoolAdminAccessRequests($input: ListAccessRequestsInput!) {
   accessRequests(input: $input) {
     total

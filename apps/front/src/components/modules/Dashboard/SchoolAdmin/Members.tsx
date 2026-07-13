@@ -21,6 +21,9 @@ import { toast } from "sonner";
 import * as L from "lucide-react";
 import * as T from "@/types/modules";
 import BulkUploadDialog from "./parts/BulkUploadDialog";
+import AddMemberDialog from "./parts/AddMemberDialog";
+import EditMemberDialog from "./parts/EditMemberDialog";
+import { convertToPersianDate } from "@/utils/jalali-date-conversion";
 
 const DEFAULT_FILTERS: T.TSchoolMemberFilterValues = {
   query: "",
@@ -39,6 +42,8 @@ const SchoolAdminMembersPage = () => {
   const [selectedMember, setSelectedMember] =
     useState<T.TSchoolMemberRow | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [editMember, setEditMember] = useState<T.TSchoolMemberRow | null>(null);
 
   const skip = (page - 1) * PAGE_SIZE;
   const { data, isLoading, isFetching, refetch } = useSchoolMembersQuery({
@@ -77,10 +82,10 @@ const SchoolAdminMembersPage = () => {
       }).unwrap();
       toast.success(t("dashboard.schoolAdmin.members.toasts.disableSuccess"));
       setSelectedMember(null);
-    } catch (error: unknown) {
+    } catch (error: any) {
       toast.error(
         getApiErrorMessage(
-          error,
+          error?.originalError?.message ?? error?.message ?? error,
           t("dashboard.schoolAdmin.members.toasts.disableFailed"),
         ),
       );
@@ -89,6 +94,16 @@ const SchoolAdminMembersPage = () => {
 
   const handleUploadSuccess = () => {
     toast.success(t("dashboard.schoolAdmin.members.bulkUpload.toasts.success"));
+    refetch();
+  };
+
+  const handleAddSuccess = () => {
+    toast.success(t("dashboard.schoolAdmin.members.addMember.toasts.success"));
+    refetch();
+  };
+
+  const handleEditSuccess = () => {
+    toast.success(t("dashboard.schoolAdmin.members.editMember.toasts.success"));
     refetch();
   };
 
@@ -158,7 +173,17 @@ const SchoolAdminMembersPage = () => {
             description={t("dashboard.schoolAdmin.members.table.description")}
             
           >
-            <div className="flex justify-end absolute top-5 left-5">
+            <div className="flex flex-wrap items-center justify-end gap-2 absolute top-5 left-5">
+              <Button
+                type="button"
+                variant="brand"
+                className="rounded-2xl gap-2"
+                onClick={() => setAddOpen(true)}
+              >
+                <L.UserPlus className="size-4" />
+                {t("dashboard.schoolAdmin.members.addMember.button")}
+              </Button>
+
               <Button
                 type="button"
                 variant="brand"
@@ -172,7 +197,7 @@ const SchoolAdminMembersPage = () => {
 
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="bg-secondary/30 text-left">
+                <thead className="bg-secondary/30 text-center">
                   <tr>
                     <th className="px-4 py-3 font-medium">
                       {t("dashboard.schoolAdmin.members.columns.fullName")}
@@ -201,7 +226,7 @@ const SchoolAdminMembersPage = () => {
                   {items.map((member) => {
                     const canDisable = member.status === "ACTIVE";
                     return (
-                      <tr key={member.id} className="border-t border-border/40">
+                      <tr key={member.id} className="border-t border-border/40 text-center ">
                         <td className="px-4 py-3">
                           <div className="font-medium">
                             {formatPersonName(member.firstName, member.lastName) || "-"}
@@ -223,13 +248,28 @@ const SchoolAdminMembersPage = () => {
                             )}
                           </span>
                         </td>
-                        <td className="px-4 py-3">{member.email || "-"}</td>
-                        <td className="px-4 py-3">{member.mobile || "-"}</td>
+                        <td dir="ltr" className="px-4 py-3">{member.email || "-"}</td>
+                        <td dir="ltr" className="px-4 py-3">{member.mobile || "-"}</td>
                         <td className="px-4 py-3">
-                          {new Date(member.createdAt).toLocaleDateString()}
+                          {convertToPersianDate(member.createdAt)}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="flex justify-end">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setEditMember(member)}
+                              className="inline-flex items-center gap-1.5 rounded-2xl border border-border/60 bg-secondary/40 px-3 py-2 text-xs font-medium transition hover:bg-primary/10 hover:text-primary"
+                              title={t(
+                                "dashboard.schoolAdmin.members.actions.edit",
+                              )}
+                            >
+                              <L.Pencil className="size-3.5" />
+                              <span className="hidden sm:inline">
+                                {t(
+                                  "dashboard.schoolAdmin.members.actions.edit",
+                                )}
+                              </span>
+                            </button>
                             <button
                               type="button"
                               disabled={isRemoving || !canDisable}
@@ -277,6 +317,21 @@ const SchoolAdminMembersPage = () => {
         open={uploadOpen}
         onOpenChange={setUploadOpen}
         onSuccess={handleUploadSuccess}
+      />
+
+      <AddMemberDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onSuccess={handleAddSuccess}
+      />
+
+      <EditMemberDialog
+        open={Boolean(editMember)}
+        onOpenChange={(open) => {
+          if (!open) setEditMember(null);
+        }}
+        member={editMember}
+        onSuccess={handleEditSuccess}
       />
     </>
   );

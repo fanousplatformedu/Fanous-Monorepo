@@ -44,23 +44,188 @@ export const getUserInitials = (
 };
 
 // ============= Errors Messages ============
+const formatErrorMessage = (value: unknown): string | null => {
+  if (typeof value === "string" && value.trim()) return value;
+  if (Array.isArray(value)) {
+    const parts = value.filter(
+      (item): item is string => typeof item === "string" && Boolean(item.trim()),
+    );
+    if (parts.length) return parts.join(", ");
+  }
+  return null;
+};
+
+const getOriginalErrorMessage = (error: unknown): string | null => {
+  if (!error || typeof error !== "object") return null;
+  const record = error as Record<string, unknown>;
+
+  const directOriginal = record.originalError;
+  if (directOriginal && typeof directOriginal === "object") {
+    const message = formatErrorMessage(
+      (directOriginal as Record<string, unknown>).message,
+    );
+    if (message) return message;
+  }
+
+  const data = record.data;
+  if (data && typeof data === "object") {
+    const errors = (data as Record<string, unknown>).errors;
+    if (Array.isArray(errors)) {
+      for (const item of errors) {
+        if (!item || typeof item !== "object") continue;
+        const extensions = (item as Record<string, unknown>).extensions;
+        if (!extensions || typeof extensions !== "object") continue;
+        const originalError = (extensions as Record<string, unknown>)
+          .originalError;
+        if (!originalError || typeof originalError !== "object") continue;
+        const message = formatErrorMessage(
+          (originalError as Record<string, unknown>).message,
+        );
+        if (message) return message;
+      }
+    }
+  }
+
+  return null;
+};
+
 export const getApiErrorMessage = (
   error: unknown,
   fallback = "Something went wrong",
 ) => {
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "data" in error &&
-    typeof (error as { data?: { message?: string } }).data?.message === "string"
-  ) {
-    return (error as { data: { message?: string } }).data.message ?? fallback;
+  const originalMessage = getOriginalErrorMessage(error);
+  if (originalMessage) return originalMessage;
+
+  const directMessage = formatErrorMessage(error);
+  if (directMessage) return directMessage;
+
+  if (typeof error === "object" && error !== null) {
+    const record = error as Record<string, unknown>;
+    const data = record.data;
+    if (data && typeof data === "object") {
+      const dataMessage = formatErrorMessage(
+        (data as Record<string, unknown>).message,
+      );
+      if (dataMessage) return dataMessage;
+    }
+
+    const topLevelMessage = formatErrorMessage(record.message);
+    if (topLevelMessage) return topLevelMessage;
   }
-  if (error instanceof Error) return error.message;
+
+  if (error instanceof Error && error.message.trim()) return error.message;
   return fallback;
 };
 
 // ============== Shared =================
+export const generateRandomPassword = (length = 12): string => {
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const digits = "0123456789";
+  const all = lower + upper + digits;
+
+  const pick = (chars: string) => {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    return chars[array[0] % chars.length] ?? chars[0];
+  };
+
+  const passwordChars = [pick(lower), pick(upper), pick(digits)];
+  while (passwordChars.length < length) {
+    passwordChars.push(pick(all));
+  }
+
+  for (let i = passwordChars.length - 1; i > 0; i--) {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    const j = array[0] % (i + 1);
+    [passwordChars[i], passwordChars[j]] = [passwordChars[j], passwordChars[i]];
+  }
+
+  return passwordChars.join("");
+};
+
+const FUN_USERNAME_ADJECTIVES = [
+  "happy",
+  "sunny",
+  "brave",
+  "swift",
+  "gentle",
+  "clever",
+  "cosmic",
+  "bubbly",
+  "merry",
+  "lively",
+  "golden",
+  "cozy",
+  "bold",
+  "calm",
+  "eager",
+  "jolly",
+  "kind",
+  "nimble",
+  "proud",
+  "quiet",
+  "royal",
+  "snappy",
+  "tidy",
+  "vivid",
+  "witty",
+  "zesty",
+  "bright",
+  "cheery",
+  "daring",
+  "friendly",
+] as const;
+
+const FUN_USERNAME_NOUNS = [
+  "panda",
+  "tiger",
+  "dolphin",
+  "eagle",
+  "fox",
+  "owl",
+  "bear",
+  "koala",
+  "rabbit",
+  "turtle",
+  "penguin",
+  "falcon",
+  "lion",
+  "whale",
+  "otter",
+  "deer",
+  "hawk",
+  "wolf",
+  "seal",
+  "finch",
+  "comet",
+  "cloud",
+  "star",
+  "moon",
+  "river",
+  "spark",
+  "rocket",
+  "badge",
+  "maple",
+  "cactus",
+] as const;
+
+const pickRandomItem = <T,>(items: readonly T[]): T => {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return items[array[0] % items.length] ?? items[0];
+};
+
+export const generateFunUsername = (): string => {
+  const adjective = pickRandomItem(FUN_USERNAME_ADJECTIVES);
+  const noun = pickRandomItem(FUN_USERNAME_NOUNS);
+  const suffixArray = new Uint32Array(1);
+  crypto.getRandomValues(suffixArray);
+  const suffix = (suffixArray[0] % 90) + 10;
+  return `${adjective}-${noun}-${suffix}`;
+};
+
 export const toIsoFromLocalDateTime = (value?: string): string | undefined => {
   if (!value?.trim()) return undefined;
   const date = new Date(value);

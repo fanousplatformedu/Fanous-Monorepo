@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import * as F from "@ui/form";
 
 export const FloatingInputField = <T extends FieldValues>({
+  dir = "ltr",
   control,
   name,
   label,
@@ -29,10 +30,10 @@ export const FloatingInputField = <T extends FieldValues>({
             <div className="relative">
               <F.FormLabel
                 className={cn(
-                  "pointer-events-none absolute left-4 z-10 transition-all duration-200",
+                  "pointer-events-none absolute start-4 z-10 transition-all duration-200",
                   (focused || hasValue) || type == "datetime-local"
                     ? "top-2 text-xs text-primary"
-                    :  "top-1/2 -translate-y-1/2 text-sm text-muted-foreground" 
+                    :  "top-1/2 -translate-y-1/2 text-sm text-muted-foreground"
                 )}
               >
                 {label}
@@ -40,6 +41,7 @@ export const FloatingInputField = <T extends FieldValues>({
 
               <F.FormControl>
                 <Input
+                  dir={dir}
                   {...field}
                   type={type}
                   onFocus={() => setFocused(true)}
@@ -48,9 +50,9 @@ export const FloatingInputField = <T extends FieldValues>({
                     field.onBlur();
                   }}
                   className={cn(
-                    "h-14 rounded-2xl border border-border/60 bg-card/45 px-4 pb-2 pt-6 backdrop-blur-xl",
+                    "h-14 rounded-2xl border border-border/60 bg-card/45 px-4 pb-2 pt-6 backdrop-blur-xl ",
                     "placeholder:text-transparent",
-                    "focus:border-primary/30 focus:bg-card/65 focus:ring-0 focus-visible:ring-0",
+                    "focus:border-primary/30 focus:bg-card/65 focus:ring-0 focus-visible:ring-0 focus-visible:#fff",
                     "shadow-none focus-visible:shadow-[0_0_0_1px_rgba(59,130,246,0.08)] dark:focus-visible:shadow-[0_0_0_1px_rgba(243,226,199,0.10)]",
                     inputClassName,
                   )}

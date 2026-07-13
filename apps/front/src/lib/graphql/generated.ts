@@ -54,6 +54,18 @@ export type AccessRequestStatus =
   | 'PENDING'
   | 'REJECTED';
 
+export type AddSchoolUserInput = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  forcePasswordChange: Scalars['Boolean']['input'];
+  isActive: Scalars['Boolean']['input'];
+  lastName: Scalars['String']['input'];
+  mobile: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  role: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
 export type AdminLoginInput = {
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
@@ -562,9 +574,9 @@ export type CounselorStudentCard = {
   __typename?: 'CounselorStudentCard';
   assignedAt: Scalars['DateTime']['output'];
   email: Maybe<Scalars['String']['output']>;
-  firstName: Scalars['String']['output'];
+  firstName: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  lastName: Scalars['String']['output'];
+  lastName: Maybe<Scalars['String']['output']>;
   latestResultAt: Maybe<Scalars['DateTime']['output']>;
   linkStatus: CounselorStudentLinkStatus;
   mobile: Maybe<Scalars['String']['output']>;
@@ -575,9 +587,9 @@ export type CounselorStudentCard = {
 export type CounselorStudentDetail = {
   __typename?: 'CounselorStudentDetail';
   email: Maybe<Scalars['String']['output']>;
-  firstName: Scalars['String']['output'];
+  firstName: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  lastName: Scalars['String']['output'];
+  lastName: Maybe<Scalars['String']['output']>;
   latestResultAt: Maybe<Scalars['DateTime']['output']>;
   latestSessionAt: Maybe<Scalars['DateTime']['output']>;
   mobile: Maybe<Scalars['String']['output']>;
@@ -649,6 +661,19 @@ export type CreateSchoolInput = {
   code?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   settings?: InputMaybe<Scalars['JSON']['input']>;
+};
+
+export type EditSchoolUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  forcePasswordChange?: InputMaybe<Scalars['Boolean']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  mobile?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['String']['input'];
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EnrollStudentInput = {
@@ -921,6 +946,7 @@ export type MarkNotificationReadInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addSchoolUser: User;
   adminLogin: AuthPayload;
   archiveClassroom: Classroom;
   archiveCounselorStudentAssignment: CounselorStudentAssignmentResult;
@@ -936,6 +962,7 @@ export type Mutation = {
   createGrade: Grade;
   createSchool: School;
   createSchoolAdmin: CreateSchoolAdminResult;
+  editSchoolUser: User;
   enrollStudent: Enrollment;
   exportCounselorStudentReport: CounselorExportResult;
   logout: LogoutResult;
@@ -944,7 +971,6 @@ export type Mutation = {
   markNotificationRead: NotificationStudentResult;
   parentCancelCounselingSession: ParentSessionRequestResult;
   parentRequestCounselingSession: ParentSessionRequestResult;
-  publishAssignment: SchoolAssignment;
   refreshAuth: AuthPayload;
   removeSchoolMember: User;
   requestCounselingSession: CounselingSession;
@@ -970,6 +996,11 @@ export type Mutation = {
   updateMe: User;
   updateSchool: School;
   verifyOtp: AuthPayload;
+};
+
+
+export type MutationAddSchoolUserArgs = {
+  input: AddSchoolUserInput;
 };
 
 
@@ -1048,6 +1079,11 @@ export type MutationCreateSchoolAdminArgs = {
 };
 
 
+export type MutationEditSchoolUserArgs = {
+  input: EditSchoolUserInput;
+};
+
+
 export type MutationEnrollStudentArgs = {
   input: EnrollStudentInput;
 };
@@ -1075,11 +1111,6 @@ export type MutationParentCancelCounselingSessionArgs = {
 
 export type MutationParentRequestCounselingSessionArgs = {
   input: ParentRequestSessionInput;
-};
-
-
-export type MutationPublishAssignmentArgs = {
-  id: Scalars['String']['input'];
 };
 
 
@@ -2220,7 +2251,7 @@ export type UpdateAssignmentInput = {
   assignmentId: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   dueAt?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<AssignmentStatus>;
+  status?: InputMaybe<Scalars['String']['input']>;
   targetClassroomId?: InputMaybe<Scalars['String']['input']>;
   targetGradeId?: InputMaybe<Scalars['String']['input']>;
   targetMode?: InputMaybe<Scalars['String']['input']>;
@@ -2304,14 +2335,14 @@ export type MyStudentsQueryVariables = Exact<{
 }>;
 
 
-export type MyStudentsQuery = { __typename?: 'Query', myStudents: { __typename?: 'CounselorStudentList', page: number, total: number, limit: number, hasNext: boolean, items: Array<{ __typename?: 'CounselorStudentCard', id: string, email: string | null, mobile: string | null, firstName: string, lastName: string, linkStatus: CounselorStudentLinkStatus, assignedAt: string, pendingReviews: number, latestResultAt: string | null, upcomingSessionAt: string | null }> } };
+export type MyStudentsQuery = { __typename?: 'Query', myStudents: { __typename?: 'CounselorStudentList', page: number, total: number, limit: number, hasNext: boolean, items: Array<{ __typename?: 'CounselorStudentCard', id: string, email: string | null, mobile: string | null, firstName: string | null, lastName: string | null, linkStatus: CounselorStudentLinkStatus, assignedAt: string, pendingReviews: number, latestResultAt: string | null, upcomingSessionAt: string | null }> } };
 
 export type CounselorStudentDetailQueryVariables = Exact<{
   studentId: Scalars['String']['input'];
 }>;
 
 
-export type CounselorStudentDetailQuery = { __typename?: 'Query', counselorStudentDetail: { __typename?: 'CounselorStudentDetail', id: string, email: string | null, mobile: string | null, firstName: string, lastName: string, totalResults: number, totalSessions: number, pendingReviews: number, latestResultAt: string | null, latestSessionAt: string | null } };
+export type CounselorStudentDetailQuery = { __typename?: 'Query', counselorStudentDetail: { __typename?: 'CounselorStudentDetail', id: string, email: string | null, mobile: string | null, firstName: string | null, lastName: string | null, totalResults: number, totalSessions: number, pendingReviews: number, latestResultAt: string | null, latestSessionAt: string | null } };
 
 export type StudentAssessmentQueueQueryVariables = Exact<{
   input: StudentAssessmentQueueInput;
@@ -2519,6 +2550,20 @@ export type RemoveSchoolMemberMutationVariables = Exact<{
 
 
 export type RemoveSchoolMemberMutation = { __typename?: 'Mutation', removeSchoolMember: { __typename?: 'User', id: string, status: string } };
+
+export type AddSchoolUserMutationVariables = Exact<{
+  input: AddSchoolUserInput;
+}>;
+
+
+export type AddSchoolUserMutation = { __typename?: 'Mutation', addSchoolUser: { __typename?: 'User', id: string, role: string, email: string | null, mobile: string | null, status: string, firstName: string | null, lastName: string | null, createdAt: string } };
+
+export type EditSchoolUserMutationVariables = Exact<{
+  input: EditSchoolUserInput;
+}>;
+
+
+export type EditSchoolUserMutation = { __typename?: 'Mutation', editSchoolUser: { __typename?: 'User', id: string, role: string, email: string | null, mobile: string | null, status: string, firstName: string | null, lastName: string | null, createdAt: string } };
 
 export type SchoolAdminAccessRequestsQueryVariables = Exact<{
   input: ListAccessRequestsInput;
@@ -3005,6 +3050,8 @@ export const SchoolAdminMeDocument = {"kind":"Document","definitions":[{"kind":"
 export const SchoolAdminChangePasswordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SchoolAdminChangePassword"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ChangeAdminPasswordInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"changeAdminPassword"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<SchoolAdminChangePasswordMutation, SchoolAdminChangePasswordMutationVariables>;
 export const SchoolMembersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SchoolMembers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ListSchoolMembersInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"schoolMembers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"take"}},{"kind":"Field","name":{"kind":"Name","value":"skip"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"mobile"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<SchoolMembersQuery, SchoolMembersQueryVariables>;
 export const RemoveSchoolMemberDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveSchoolMember"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RemoveSchoolMemberInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeSchoolMember"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<RemoveSchoolMemberMutation, RemoveSchoolMemberMutationVariables>;
+export const AddSchoolUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddSchoolUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AddSchoolUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addSchoolUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"mobile"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<AddSchoolUserMutation, AddSchoolUserMutationVariables>;
+export const EditSchoolUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"EditSchoolUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EditSchoolUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"editSchoolUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"mobile"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<EditSchoolUserMutation, EditSchoolUserMutationVariables>;
 export const SchoolAdminAccessRequestsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SchoolAdminAccessRequests"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ListAccessRequestsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessRequests"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"take"}},{"kind":"Field","name":{"kind":"Name","value":"skip"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"mobile"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"reviewedAt"}},{"kind":"Field","name":{"kind":"Name","value":"rejectReason"}},{"kind":"Field","name":{"kind":"Name","value":"reviewedById"}},{"kind":"Field","name":{"kind":"Name","value":"requestedRole"}},{"kind":"Field","name":{"kind":"Name","value":"approvedUserId"}}]}}]}}]}}]} as unknown as DocumentNode<SchoolAdminAccessRequestsQuery, SchoolAdminAccessRequestsQueryVariables>;
 export const ReviewAccessRequestDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ReviewAccessRequest"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ReviewAccessRequestInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reviewAccessRequest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"requestId"}},{"kind":"Field","name":{"kind":"Name","value":"createdUserId"}},{"kind":"Field","name":{"kind":"Name","value":"notificationError"}}]}}]}}]} as unknown as DocumentNode<ReviewAccessRequestMutation, ReviewAccessRequestMutationVariables>;
 export const SchoolAdminAuditLogsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SchoolAdminAuditLogs"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ListAuditLogsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"auditLogs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"take"}},{"kind":"Field","name":{"kind":"Name","value":"skip"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ip"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"actorId"}},{"kind":"Field","name":{"kind":"Name","value":"schoolId"}},{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"entityType"}}]}}]}}]}}]} as unknown as DocumentNode<SchoolAdminAuditLogsQuery, SchoolAdminAuditLogsQueryVariables>;

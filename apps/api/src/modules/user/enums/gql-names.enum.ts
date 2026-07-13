@@ -2,6 +2,8 @@ export enum UserGqlInputNames {
   UpdateMeInput = "UpdateMeInput",
   ListSchoolMembersInput = "ListSchoolMembersInput",
   RemoveSchoolMemberInput = "RemoveSchoolMemberInput",
+  AddSchoolUserInput = "AddSchoolUserInput",
+  EditSchoolUserInput = "EditSchoolUserInput",
 }
 
 export enum UserGqlObjectNames {
@@ -17,4 +19,6 @@ export enum UserGqlQueryNames {
 export enum UserGqlMutationNames {
   UpdateMe = "updateMe",
   RemoveSchoolMember = "removeSchoolMember",
+  AddSchoolUser = "addSchoolUser",
+  EditSchoolUser = "editSchoolUser",
 }

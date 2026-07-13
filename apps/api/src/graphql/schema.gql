@@ -39,6 +39,18 @@ enum AccessRequestStatus {
   REJECTED
 }
 
+input AddSchoolUserInput {
+  email: String!
+  firstName: String!
+  forcePasswordChange: Boolean!
+  isActive: Boolean!
+  lastName: String!
+  mobile: String!
+  password: String!
+  role: String!
+  username: String!
+}
+
 input AdminLoginInput {
   password: String!
   username: String!
@@ -604,6 +616,19 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input EditSchoolUserInput {
+  email: String
+  firstName: String
+  forcePasswordChange: Boolean
+  isActive: Boolean
+  lastName: String
+  mobile: String
+  password: String
+  role: String
+  userId: String!
+  username: String
+}
+
 input EnrollStudentInput {
   classroomId: String!
   schoolId: String!
@@ -872,6 +897,7 @@ input MarkNotificationReadInput {
 }
 
 type Mutation {
+  addSchoolUser(input: AddSchoolUserInput!): User!
   adminLogin(input: AdminLoginInput!): AuthPayload!
   archiveClassroom(id: String!): Classroom!
   archiveCounselorStudentAssignment(input: ArchiveCounselorStudentAssignmentInput!): CounselorStudentAssignmentResult!
@@ -887,6 +913,7 @@ type Mutation {
   createGrade(input: CreateGradeInput!): Grade!
   createSchool(input: CreateSchoolInput!): School!
   createSchoolAdmin(input: CreateSchoolAdminInput!): CreateSchoolAdminResult!
+  editSchoolUser(input: EditSchoolUserInput!): User!
   enrollStudent(input: EnrollStudentInput!): Enrollment!
   exportCounselorStudentReport(input: ExportCounselorStudentReportInput!): CounselorExportResult!
   logout: LogoutResult!

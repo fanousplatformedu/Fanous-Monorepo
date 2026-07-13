@@ -122,3 +122,67 @@ export const accessRequestFilterSchema = z.object({
 export type TAccessRequestFilterFormValues = z.infer<
   typeof accessRequestFilterSchema
 >;
+
+type TAddSchoolMemberMessage = (
+  key: string,
+  params?: Record<string, string>,
+) => string;
+
+export const createAddSchoolMemberSchema = (msg: TAddSchoolMemberMessage) =>
+  z.object({
+    firstName: z.string().min(1, { error: () => msg("firstNameRequired") }),
+    lastName: z.string().min(1, { error: () => msg("lastNameRequired") }),
+    email: z
+      .string()
+      .min(1, { error: () => msg("emailRequired") })
+      .email({ error: () => msg("emailInvalid") }),
+    mobile: z.string().min(1, { error: () => msg("mobileRequired") }),
+    username: z.string().min(3, {
+      error: () => msg("usernameMin", { min: "3" }),
+    }),
+    password: z.string().min(6, {
+      error: () => msg("passwordMin", { min: "6" }),
+    }),
+    role: z.enum(["STUDENT", "PARENT", "COUNSELOR", "SCHOOL_ADMIN"], {
+      error: () => msg("roleRequired"),
+    }),
+    isActive: z.boolean(),
+    forcePasswordChange: z.boolean(),
+  });
+
+export type TAddSchoolMemberForm = z.infer<
+  ReturnType<typeof createAddSchoolMemberSchema>
+>;
+
+export const createEditSchoolMemberSchema = (msg: TAddSchoolMemberMessage) =>
+  z.object({
+    userId: z.string().min(1, { error: () => msg("userIdRequired") }),
+    firstName: z.string().min(1, { error: () => msg("firstNameRequired") }),
+    lastName: z.string().min(1, { error: () => msg("lastNameRequired") }),
+    email: z
+      .string()
+      .min(1, { error: () => msg("emailRequired") })
+      .email({ error: () => msg("emailInvalid") }),
+    mobile: z.string().min(1, { error: () => msg("mobileRequired") }),
+    username: z
+      .string()
+      .optional()
+      .refine((v) => !v || v.length >= 3, {
+        error: () => msg("usernameMin", { min: "3" }),
+      }),
+    password: z
+      .string()
+      .optional()
+      .refine((v) => !v || v.length >= 6, {
+        error: () => msg("passwordMin", { min: "6" }),
+      }),
+    role: z.enum(["STUDENT", "PARENT", "COUNSELOR", "SCHOOL_ADMIN"], {
+      error: () => msg("roleRequired"),
+    }),
+    isActive: z.boolean(),
+    forcePasswordChange: z.boolean(),
+  });
+
+export type TEditSchoolMemberForm = z.infer<
+  ReturnType<typeof createEditSchoolMemberSchema>
+>;

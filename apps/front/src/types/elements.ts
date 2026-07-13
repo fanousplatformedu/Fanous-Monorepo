@@ -40,6 +40,7 @@ export type TFloatingInputFieldProps<T extends FieldValues> = {
   name: FieldPath<T>;
   control: Control<T>;
   inputClassName?: string;
+  dir?: "ltr" | "rtl";
   type?: React.HTMLInputTypeAttribute;
 };
 

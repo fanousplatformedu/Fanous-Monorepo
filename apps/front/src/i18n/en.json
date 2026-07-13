@@ -638,7 +638,8 @@
           "actions": "Actions"
         },
         "actions": {
-          "disable": "Disable"
+          "disable": "Disable",
+          "edit": "Edit"
         },
         "empty": {
           "title": "No members found",
@@ -690,6 +691,86 @@
           "fullName": "Full name",
           "email": "Email",
           "role": "Role"
+        },
+        "addMember": {
+          "button": "Add Member",
+          "dialog": {
+            "title": "Add School Member",
+            "description": "Create a new user and assign them to your school."
+          },
+          "fields": {
+            "firstName": "First name",
+            "lastName": "Last name",
+            "email": "Email",
+            "mobile": "Mobile",
+            "username": "Username",
+            "password": "Password",
+            "role": "Role",
+            "isActive": "Active",
+            "forcePasswordChange": "Force password change on first login"
+          },
+          "actions": {
+            "submit": "Add Member",
+            "submitting": "Adding…",
+            "cancel": "Cancel",
+            "generatePassword": "Generate password",
+            "generateUsername": "Generate username"
+          },
+          "toasts": {
+            "success": "Member added successfully.",
+            "failed": "Failed to add member."
+          },
+          "validation": {
+            "firstNameRequired": "First name is required.",
+            "lastNameRequired": "Last name is required.",
+            "emailRequired": "Email is required.",
+            "emailInvalid": "Please enter a valid email address.",
+            "mobileRequired": "Mobile number is required.",
+            "usernameMin": "Username must be at least {{min}} characters.",
+            "passwordMin": "Password must be at least {{min}} characters.",
+            "roleRequired": "Please select a role."
+          }
+        },
+        "editMember": {
+          "dialog": {
+            "title": "Edit Member",
+            "description": "Update the details of this school member."
+          },
+          "fields": {
+            "firstName": "First name",
+            "lastName": "Last name",
+            "email": "Email",
+            "mobile": "Mobile",
+            "username": "Username",
+            "usernameKeepHint": "Leave blank to keep current username",
+            "password": "Password",
+            "passwordKeepHint": "Leave blank to keep current password",
+            "role": "Role",
+            "isActive": "Active",
+            "forcePasswordChange": "Force password change on next login"
+          },
+          "actions": {
+            "submit": "Save Changes",
+            "submitting": "Saving…",
+            "cancel": "Cancel",
+            "generatePassword": "Generate password",
+            "generateUsername": "Generate username"
+          },
+          "toasts": {
+            "success": "Member updated successfully.",
+            "failed": "Failed to update member."
+          },
+          "validation": {
+            "userIdRequired": "Member could not be identified.",
+            "firstNameRequired": "First name is required.",
+            "lastNameRequired": "Last name is required.",
+            "emailRequired": "Email is required.",
+            "emailInvalid": "Please enter a valid email address.",
+            "mobileRequired": "Mobile number is required.",
+            "usernameMin": "Username must be at least {{min}} characters.",
+            "passwordMin": "Password must be at least {{min}} characters.",
+            "roleRequired": "Please select a role."
+          }
         },
         "bulkUpload": {
           "button": "Bulk Enroll Students",
