@@ -4,7 +4,7 @@ import {
   createEditSchoolMemberSchema,
   TEditSchoolMemberForm,
 } from "@/lib/validation/school-admin-schemas";
-import { useEditSchoolUserMutation } from "@/lib/redux/api";
+import { useEditSchoolUserMutation, useSchoolMemberQuery } from "@/lib/redux/api";
 import {
   generateFunUsername,
   generateRandomPassword,
@@ -36,15 +36,27 @@ type TEditMemberDialogProps = {
   member: TSchoolMemberRow | null;
 };
 
+type TFetchedMember = {
+  id: string;
+  role: string | null;
+  email: string | null;
+  mobile: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  username: string | null;
+  isActive: boolean | null;
+  forcePasswordChange: boolean | null;
+};
+
 const createDefaultValues = (
-  member: TSchoolMemberRow | null,
+  member: TFetchedMember | null,
 ): TEditSchoolMemberForm => ({
   userId: member?.id ?? "",
   firstName: member?.firstName ?? "",
   lastName: member?.lastName ?? "",
   email: member?.email ?? "",
   mobile: member?.mobile ?? "",
-  username: "",
+  username: member?.username ?? "",
   password: "",
   role:
     member?.role === "STUDENT" ||
@@ -53,8 +65,8 @@ const createDefaultValues = (
     member?.role === "SCHOOL_ADMIN"
       ? member.role
       : "STUDENT",
-  isActive: member?.status === "ACTIVE",
-  forcePasswordChange: false,
+  isActive: Boolean(member?.isActive),
+  forcePasswordChange: Boolean(member?.forcePasswordChange),
 });
 
 export default function EditMemberDialog({
@@ -65,10 +77,16 @@ export default function EditMemberDialog({
 }: TEditMemberDialogProps) {
   const { t, dir, language } = useI18n();
   const isRtl = dir === "rtl";
-  const [usernameFocused, setUsernameFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
   const [editSchoolUser, { isLoading }] = useEditSchoolUserMutation();
+
+  // Fetch the full member record (incl. username) from the singular query.
+  // The `member` prop is only used to know *which* user to edit.
+  const { data: fetchedMember } = useSchoolMemberQuery(
+    { userId: member?.id ?? "" },
+    { skip: !open || !member },
+  );
 
   const translateValidation = useRef(
     (key: string, params?: Record<string, string>) =>
@@ -88,7 +106,7 @@ export default function EditMemberDialog({
 
   const form = useForm<TEditSchoolMemberForm>({
     resolver: zodResolver(editSchoolMemberSchema),
-    defaultValues: createDefaultValues(member),
+    defaultValues: createDefaultValues(null),
   });
 
   useEffect(() => {
@@ -113,11 +131,10 @@ export default function EditMemberDialog({
 
   useEffect(() => {
     if (open) {
-      form.reset(createDefaultValues(member));
-      setUsernameFocused(false);
+      form.reset(createDefaultValues(fetchedMember ?? null));
       setPasswordFocused(false);
     }
-  }, [form, open, member]);
+  }, [form, open, fetchedMember]);
 
   const roleOptions = (
     ["STUDENT", "PARENT", "COUNSELOR", "SCHOOL_ADMIN"] as const
@@ -207,75 +224,32 @@ export default function EditMemberDialog({
                 label={t("dashboard.schoolAdmin.members.editMember.fields.mobile")}
               />
 
-              <F.FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => {
-                  const hasValue = String(field.value ?? "").length > 0;
-                  const usernameLabel = t(
-                    "dashboard.schoolAdmin.members.editMember.fields.username",
-                  );
-                  const keepHint = t(
-                    "dashboard.schoolAdmin.members.editMember.fields.usernameKeepHint",
-                  );
+              <div className="relative flex items-start gap-2 md:col-span-2">
+                <div className="min-w-0 flex-1">
+                  <FloatingInputField
+                    name="username"
+                    control={form.control}
+                    label={t(
+                      "dashboard.schoolAdmin.members.editMember.fields.username",
+                    )}
+                  />
+                </div>
 
-                  return (
-                    <F.FormItem className="relative md:col-span-2">
-                      <div className="flex items-start gap-2">
-                        <div className="relative min-w-0 flex-1">
-                          <F.FormLabel
-                            className={cn(
-                              "pointer-events-none absolute start-4 z-10 transition-all duration-200",
-                              usernameFocused || hasValue
-                                ? "top-2 text-xs text-primary"
-                                : "top-1/2 -translate-y-1/2 text-sm text-muted-foreground",
-                            )}
-                          >
-                            {usernameLabel}
-                          </F.FormLabel>
-
-                          <F.FormControl>
-                            <Input
-                              {...field}
-                              value={field.value ?? ""}
-                              type="text"
-                              autoComplete="username"
-                              placeholder={keepHint}
-                              onFocus={() => setUsernameFocused(true)}
-                              onBlur={() => {
-                                setUsernameFocused(false);
-                                field.onBlur();
-                              }}
-                              className={cn(
-                                "h-14 rounded-2xl border border-border/60 bg-card/45 px-4 pb-2 pt-6 text-sm backdrop-blur-xl",
-                                "focus:border-primary/30 focus:bg-card/65 focus:ring-0 focus-visible:ring-0",
-                                "shadow-none focus-visible:shadow-[0_0_0_1px_rgba(59,130,246,0.08)] dark:focus-visible:shadow-[0_0_0_1px_rgba(243,226,199,0.10)]",
-                              )}
-                            />
-                          </F.FormControl>
-                        </div>
-
-                        <Button
-                          type="button"
-                          variant="brandOutline"
-                          className="h-14 shrink-0 rounded-2xl px-3"
-                          onClick={handleGenerateUsername}
-                          title={t(
-                            "dashboard.schoolAdmin.members.editMember.actions.generateUsername",
-                          )}
-                          aria-label={t(
-                            "dashboard.schoolAdmin.members.editMember.actions.generateUsername",
-                          )}
-                        >
-                          <L.RefreshCw className="size-4" />
-                        </Button>
-                      </div>
-
-                      <F.FormMessage className="mt-1 px-1 text-xs" />
-                    </F.FormItem>
-                  );
-                }}
-              />
+                <Button
+                  type="button"
+                  variant="brandOutline"
+                  className="h-14 shrink-0 rounded-2xl px-3"
+                  onClick={handleGenerateUsername}
+                  title={t(
+                    "dashboard.schoolAdmin.members.editMember.actions.generateUsername",
+                  )}
+                  aria-label={t(
+                    "dashboard.schoolAdmin.members.editMember.actions.generateUsername",
+                  )}
+                >
+                  <L.RefreshCw className="size-4" />
+                </Button>
+              </div>
 
               <F.FormField
                 control={form.control}
@@ -304,13 +278,13 @@ export default function EditMemberDialog({
                             {passwordLabel}
                           </F.FormLabel>
 
-                          <F.FormControl>
+                              <F.FormControl>
                             <Input
                               {...field}
                               value={field.value ?? ""}
                               type="text"
                               autoComplete="new-password"
-                              placeholder={keepHint}
+                              placeholder={passwordFocused || hasValue ? keepHint : undefined}
                               onFocus={() => setPasswordFocused(true)}
                               onBlur={() => {
                                 setPasswordFocused(false);

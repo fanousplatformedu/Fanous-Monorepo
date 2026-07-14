@@ -2,6 +2,7 @@ import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { AllowForcePasswordChange } from "@superAdmin/decorators/allow-force-password-change.decorator";
 import { RemoveSchoolMemberInput } from "@user/dtos/remove-school-member.input";
 import { ListSchoolMembersInput } from "@user/dtos/list-school-members.input";
+import { SchoolMemberInput } from "@user/dtos/school-member.input";
 import { UserGqlMutationNames } from "@user/enums/gql-names.enum";
 import { UserGqlQueryNames } from "@user/enums/gql-names.enum";
 import { UserListEntity } from "@user/entities/user-list.entity";
@@ -56,6 +57,19 @@ export class UserResolver {
       status: input.status ?? null,
       take: input.take,
       skip: input.skip,
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @AllowForcePasswordChange()
+  @Query(() => UserEntity, { name: UserGqlQueryNames.SchoolMember })
+  schoolMember(
+    @CurrentUser() user: any,
+    @Args("input") input: SchoolMemberInput,
+  ) {
+    return this.usersService.schoolMember({
+      actor: { id: user.id, role: user.role, schoolId: user.schoolId },
+      userId: input.userId,
     });
   }
 

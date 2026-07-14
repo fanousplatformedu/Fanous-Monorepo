@@ -1274,6 +1274,7 @@ type Query {
   schoolAssessmentSummary(input: SchoolAssessmentSummaryInput): SchoolAssessmentSummary!
   schoolById(schoolId: String!): School!
   schoolCounselors(input: ListSchoolCounselors!): SchoolCounselorList!
+  schoolMember(input: SchoolMemberInput!): User!
   schoolMembers(input: ListSchoolMembersInput!): UserList!
   schoolStudentAnalytics: SchoolStudentAnalyticsEntity!
   schoolStudentsForCounselorAssignment(input: ListSchoolStudentsForCounselorAssignment!): SchoolStudentAssignmentCandidateList!
@@ -1445,6 +1446,10 @@ type SchoolList {
   skip: Int!
   take: Int!
   total: Int!
+}
+
+input SchoolMemberInput {
+  userId: String!
 }
 
 type SchoolStudentAnalyticsEntity {
@@ -1743,6 +1748,8 @@ type User {
   firstName: String
   forcePasswordChange: Boolean
   id: String!
+  isActive: Boolean!
+  lastLoginAt: DateTime
   lastName: String
   mobile: String
   role: String!

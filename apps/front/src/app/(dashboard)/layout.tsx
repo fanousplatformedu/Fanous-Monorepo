@@ -1,37 +1,18 @@
-import { StoreProvider } from "@/providers/StoreProvider";
-import { AppProviders } from "@/providers/AppProvider";
 import { ReactNode } from "react";
-import { Metadata } from "next";
-import { Toaster } from "@ui/sonner";
 
-import ForcePasswordChangeEnforcer from "@modules/Auth/ForceChangePsswordEnforce";
-import Header from "@layouts/Header";
-
-
-import "@/app/globals.css";
-
-export const metadata: Metadata = {
-  title: "Fanous",
-  description: "School & Talent Guidance Platform",
-};
-
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        suppressHydrationWarning
-        className="min-h-screen bg-background text-foreground antialiased transition-colors"
-      >
-        <StoreProvider>
-          <AppProviders>
-            <ForcePasswordChangeEnforcer />
-            <Toaster />
-            <Header />
-            {children}
-            {/* <Footer /> */}
-          </AppProviders>
-        </StoreProvider>
-      </body>
-    </html>
-  );
+/**
+ * The root layout (src/app/layout.tsx) already provides <html>/<body>,
+ * the store + app providers, the site <Header />, and the toaster.
+ *
+ * Do NOT re-render any of those here: a second <html>/<body> and a second
+ * <Header /> would stack on top of the root ones (causing two headers to
+ * paint over each other) and a second LanguageProvider would race with the
+ * root one over the shared localStorage key, flipping the app back to "en".
+ */
+export default function DashboardLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return <>{children}</>;
 }

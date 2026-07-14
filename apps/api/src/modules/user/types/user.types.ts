@@ -18,6 +18,11 @@ export type TListSchoolMembersArgs = {
   actor: { id: string; role: Role; schoolId: string | null };
 };
 
+export type TSchoolMemberArgs = {
+  userId: string;
+  actor: { id: string; role: Role; schoolId: string | null };
+};
+
 export type TRemoveSchoolMemberArgs = {
   targetUserId: string;
   hardDelete?: boolean;

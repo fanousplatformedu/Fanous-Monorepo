@@ -47,6 +47,21 @@ query SchoolMembers($input: ListSchoolMembersInput!) {
   }
 }
 
+query SchoolMember($input: SchoolMemberInput!) {
+  schoolMember(input: $input) {
+    id
+    role
+    email
+    mobile
+    status
+    firstName
+    lastName
+    username
+    forcePasswordChange
+    isActive
+  }
+}
+
 mutation RemoveSchoolMember($input: RemoveSchoolMemberInput!) {
   removeSchoolMember(input: $input) {
     id

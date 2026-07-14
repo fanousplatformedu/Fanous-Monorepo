@@ -1,4 +1,4 @@
-import { TAddSchoolUserArgs, TEditSchoolUserArgs, TRemoveSchoolMemberArgs, TUpdateMeArgs } from "@user/types/user.types";
+import { TAddSchoolUserArgs, TEditSchoolUserArgs, TRemoveSchoolMemberArgs, TSchoolMemberArgs, TUpdateMeArgs } from "@user/types/user.types";
 import { NotFoundException, BadRequestException } from "@nestjs/common";
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { TListSchoolMembersArgs } from "@user/types/user.types";
@@ -78,6 +78,33 @@ export class UserService {
       this.prismaService.user.count({ where }),
     ]);
     return { items, total, take: args.take, skip: args.skip };
+  }
+
+  async schoolMember(args: TSchoolMemberArgs) {
+    const target = await this.prismaService.user.findUnique({
+      where: { id: args.userId },
+      select: this.userSelect(),
+    });
+    if (!target)
+      throw new NotFoundException({ code: UserErrorCode.USER_NOT_FOUND });
+
+    // Super admin has full access.
+    if (args.actor.role === Role.SUPER_ADMIN) return target;
+
+    // A user can always view their own record.
+    if (args.actor.id === args.userId) return target;
+
+    // School admin or counselor can view members of their own school only.
+    if (
+      (args.actor.role === Role.SCHOOL_ADMIN ||
+        args.actor.role === Role.COUNSELOR) &&
+      args.actor.schoolId &&
+      target.schoolId === args.actor.schoolId
+    ) {
+      return target;
+    }
+
+    throw new ForbiddenException({ code: UserErrorCode.FORBIDDEN });
   }
 
   async removeSchoolMember(args: TRemoveSchoolMemberArgs) {
@@ -169,6 +196,7 @@ export class UserService {
       id: true,
       role: true,
       status: true,
+      isActive: true,
       schoolId: true,
       username: true,
       email: true,
@@ -176,6 +204,7 @@ export class UserService {
       firstName: true,
       lastName: true,
       avatarUrl: true,
+      lastLoginAt: true,
       createdAt: true,
       updatedAt: true,
       forcePasswordChange: true,

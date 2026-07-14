@@ -68,6 +68,20 @@ export const schoolAdminApi = baseApi.injectEndpoints({
           : [{ type: "SchoolMembers", id: LIST_ID }],
     }),
 
+    schoolMember: builder.query<
+      TAPI.SchoolMemberQuery["schoolMember"],
+      TAPI.SchoolMemberInput
+    >({
+      query: (input) => ({
+        document: API.SchoolMemberDocument,
+        variables: { input },
+      }),
+      transformResponse: (response: TAPI.SchoolMemberQuery) =>
+        response.schoolMember,
+      providesTags: (result) =>
+        result ? [{ type: "SchoolMembers", id: result.id }] : [],
+    }),
+
     removeSchoolMember: builder.mutation<
       TAPI.RemoveSchoolMemberMutation["removeSchoolMember"],
       TAPI.RemoveSchoolMemberInput
@@ -670,6 +684,7 @@ export const {
   useClassroomsQuery,
   useAssignmentsQuery,
   useSchoolMembersQuery,
+  useSchoolMemberQuery,
   useSchoolAdminMeQuery,
   useCreateGradeMutation,
   useUpdateGradeMutation,
